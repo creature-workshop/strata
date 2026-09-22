@@ -1,3 +1,0 @@
-# LikeC4 and the npm cache CI keeps between jobs
-/node_modules/
-/.npm-cache/
