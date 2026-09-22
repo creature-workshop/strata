@@ -1,0 +1,72 @@
+// Verify and recover: a tool asks a reader to verify, gets findings and a
+// refusal, and asks for a recovery only when it means to.
+
+specification {
+  // The program that opens a corpus; in the sequence its box carries the caption.
+  element tool {
+    style {
+      shape person
+      color muted
+    }
+  }
+
+  // The reader's operations.
+  element operation {
+    style {
+      shape rectangle
+      color primary
+    }
+  }
+
+  // A file at rest.
+  element file {
+    style {
+      shape storage
+      color green
+    }
+  }
+
+  // The findings document.
+  element findings {
+    style {
+      shape rectangle
+      color amber
+    }
+  }
+}
+
+model {
+  tool = tool 'Figure 1a. A tool asks a reader to verify, gets findings and a refusal, and asks for a recovery only when it means to.' {
+    description 'A tool'
+  }
+  verify = operation 'verify' {
+    description 'reads and writes nothing'
+  }
+  recover = operation 'recover' {
+    description 'a run: appends a stratum'
+  }
+  corpus = file 'a.opx'
+  findings = findings 'Findings' {
+    description 'one node per failed check; the reader\'s output, never the corpus'
+  }
+
+  tool -> verify
+  verify -> corpus
+  verify -> findings
+  tool -> recover
+  recover -> findings
+  recover -> corpus
+}
+
+views {
+  dynamic view f1a {
+    title 'Verify by default, recover when told'
+    tool -> verify 'open a.opx'
+    verify -> corpus 'read by position, check every rule'
+    verify -> findings 'write one node per failed check to the output'
+    verify -> tool 'refused: document 2, place 3, rule lid'
+    tool -> recover 'recover a.opx, when told to'
+    recover -> findings 'read the findings'
+    recover -> corpus 'append a stratum: history entry, recovery document'
+  }
+}

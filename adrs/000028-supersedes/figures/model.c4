@@ -1,0 +1,91 @@
+// A replacement document: the new toc entry names the old, the old bytes
+// sit in the store, and the loop opens only the live entries.
+
+specification {
+  // A figure: its caption is the title of an outer frame drawn without a border.
+  element figure {
+    style {
+      shape rectangle
+      color slate
+      opacity 100%
+      border none
+    }
+  }
+
+  // A part of the corpus, drawn as a group.
+  element part {
+    style {
+      shape rectangle
+      color gray
+      opacity 100%
+      border solid
+    }
+  }
+
+  // A toc entry.
+  element entry {
+    style {
+      shape rectangle
+      color primary
+    }
+  }
+
+  // A live document on disk.
+  element live {
+    style {
+      shape rectangle
+      color green
+    }
+  }
+
+  // Old bytes in the store.
+  element blob {
+    style {
+      shape storage
+      color amber
+    }
+  }
+}
+
+model {
+  fig1a = figure 'Figure 1a. The toc after a replacement: the new entry names the old, the old bytes sit in the store, and the loop opens only the live entries.' {
+    toc = part 'toc, in the header' {
+      e1 = entry 'entry 1' {
+        description 'path 2026-09-20; digest a1…'
+      }
+      e2 = entry 'entry 2' {
+        description 'path 2026-09-21; digest b2…'
+      }
+      e3 = entry 'entry 3' {
+        description 'path 2026-09-20; digest c3…; supersedes 1'
+      }
+    }
+    disk = part 'jobs/, the live layout' {
+      d3 = live '2026-09-20.opxh' {
+        description 'document 3'
+      }
+      d2 = live '2026-09-21.opxh' {
+        description 'document 2'
+      }
+      b1 = blob 'blobs/sha256/a1…' {
+        description 'document 1, superseded'
+      }
+    }
+  }
+
+  fig1a.toc.e1 -> fig1a.toc.e2 'then'
+  fig1a.toc.e2 -> fig1a.toc.e3 'then'
+  fig1a.toc.e3 -> fig1a.disk.d3 'the loop opens'
+  fig1a.toc.e2 -> fig1a.disk.d2 'the loop opens'
+  fig1a.toc.e1 -> fig1a.disk.b1 'superseded by 3: skipped; bytes by digest'
+}
+
+views {
+  view f1a {
+    title 'The toc after a replacement'
+    include fig1a, fig1a.toc.*, fig1a.disk.*
+    autoLayout TopBottom
+    rank same { fig1a.toc.e1, fig1a.toc.e2, fig1a.toc.e3 }
+    rank same { fig1a.disk.d3, fig1a.disk.d2, fig1a.disk.b1 }
+  }
+}
