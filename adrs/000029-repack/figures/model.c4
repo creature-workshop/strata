@@ -1,0 +1,101 @@
+// A repack: the live frames copied as they are into a new corpus under new
+// seeds, and one history entry pointing back.
+
+specification {
+  // A figure: its caption is the title of an outer frame drawn without a border.
+  element figure {
+    style {
+      shape rectangle
+      color slate
+      opacity 100%
+      border none
+    }
+  }
+
+  // A corpus, drawn as a group.
+  element corpus {
+    style {
+      shape rectangle
+      color gray
+      opacity 100%
+      border solid
+    }
+  }
+
+  // A header frame.
+  element header {
+    style {
+      shape rectangle
+      color primary
+    }
+  }
+
+  // A live document frame.
+  element live {
+    style {
+      shape rectangle
+      color green
+    }
+  }
+
+  // A superseded document, left behind.
+  element dead {
+    style {
+      shape rectangle
+      color amber
+    }
+  }
+}
+
+model {
+  fig1a = figure 'Figure 1a. A repack: the live frames copied as they are into a new corpus under new seeds, and one history entry pointing back.' {
+    old = corpus 'old corpus, seeds 0013d4fd…' {
+      oh = header 'header' {
+        description 'toc 1, 2, 3; 3 supersedes 1; digest 9f86…'
+      }
+      o1 = dead 'document 1' {
+        description 'superseded; bytes at a1… in the store'
+      }
+      o2 = live 'document 2' {
+        description 'digest b2…'
+      }
+      o3 = live 'document 3' {
+        description 'digest c3…'
+      }
+    }
+    new = corpus 'new corpus, seeds 07c2e91a…' {
+      nh = header 'header' {
+        description 'toc 1, 2, 3; history 1: repack, read old@9f86…, wrote 1..3'
+      }
+      n1 = live 'document 1' {
+        description 'was old 2; same frame, digest b2…'
+      }
+      n2 = live 'document 2' {
+        description 'was old 3; same frame, digest c3…'
+      }
+      n3 = live 'document 3: manifest' {
+        description 'old 1 left at a1…; old 2 → 1; old 3 → 2'
+      }
+    }
+  }
+
+  fig1a.old.oh -> fig1a.old.o1 'then'
+  fig1a.old.o1 -> fig1a.old.o2 'then'
+  fig1a.old.o2 -> fig1a.old.o3 'then'
+  fig1a.new.nh -> fig1a.new.n1 'then'
+  fig1a.new.n1 -> fig1a.new.n2 'then'
+  fig1a.new.n2 -> fig1a.new.n3 'then'
+  fig1a.old.o2 -> fig1a.new.n1 'copied as is'
+  fig1a.old.o3 -> fig1a.new.n2 'copied as is'
+  fig1a.new.nh -> fig1a.old.oh 'read old@9f86…'
+}
+
+views {
+  view f1a {
+    title 'A repack'
+    include fig1a, fig1a.old.*, fig1a.new.*
+    autoLayout TopBottom
+    rank same { fig1a.old.oh, fig1a.old.o1, fig1a.old.o2, fig1a.old.o3 }
+    rank same { fig1a.new.nh, fig1a.new.n1, fig1a.new.n2, fig1a.new.n3 }
+  }
+}

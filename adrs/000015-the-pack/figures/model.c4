@@ -1,0 +1,109 @@
+// A .opx of two strata, and a GID followed to its line through two frames.
+
+specification {
+  color paper #ffffff
+
+  // A figure: its caption is the title of an outer frame drawn without a border.
+  element figure {
+    style {
+      shape rectangle
+      color slate
+      opacity 100%
+      border none
+    }
+  }
+
+  // A stratum: one header and the documents it names, drawn as a group.
+  element stratum {
+    style {
+      shape rectangle
+      color gray
+      opacity 100%
+      border solid
+    }
+  }
+
+  // Frame 0 of a stratum: the corpus's header plus contents.
+  element header {
+    style {
+      shape rectangle
+      color primary
+    }
+  }
+
+  // A document frame: one document as .opxt text.
+  element frame {
+    style {
+      shape rectangle
+      color green
+    }
+  }
+
+  // The seek table: frame sizes in a skippable frame.
+  element seek {
+    style {
+      shape rectangle
+      color amber
+    }
+  }
+
+  // A global id arriving from outside; in the sequence its box carries the caption.
+  element gid {
+    style {
+      shape rectangle
+      color paper
+    }
+  }
+}
+
+model {
+  fig1a = figure 'Figure 1a. A .opx of two strata: each a header naming the documents that follow it, joined by cat.' {
+    a = stratum 'Stratum A' {
+      a0 = header 'Frame 0: header' {
+        description 'fingerprint, index, toc, history; contents [1, 2]'
+      }
+      a1 = frame 'Frame 1: document 1' {
+        description '.opxt lines, split by the toc\'s lines'
+      }
+      a2 = frame 'Frame 2: document 2'
+      aseek = seek 'Seek table' {
+        description 'the frames\' sizes, in a skippable frame'
+      }
+    }
+
+    b = stratum 'Stratum B, appended later' {
+      b0 = header 'Frame 0: header' {
+        description 'same seeds; longer toc and history; contents [3]'
+      }
+      b1 = frame 'Frame 1: document 3'
+    }
+  }
+
+  fig1a.a.a0 -> fig1a.a.a1 'then'
+  fig1a.a.a1 -> fig1a.a.a2 'then'
+  fig1a.a.a2 -> fig1a.a.aseek 'then'
+  fig1a.a.aseek -> fig1a.b.b0 'cat a.opx b.opx'
+  fig1a.b.b0 -> fig1a.b.b1 'then'
+
+  lookup = gid 'Figure 1b. A GID followed to its line through two frames and nothing else.' {
+    description 'GID 0013d4fd00019919.67e924b17b970259: document 1, line 3'
+  }
+}
+
+views {
+  view f1a {
+    title 'A .opx of two strata'
+    include fig1a, fig1a.a.*, fig1a.b.*
+    exclude lookup
+    autoLayout TopBottom
+    rank same { fig1a.a.a0, fig1a.a.a1, fig1a.a.a2, fig1a.a.aseek }
+    rank same { fig1a.b.b0, fig1a.b.b1 }
+  }
+
+  dynamic view f1b {
+    title 'A GID followed to its line through two frames'
+    lookup -> fig1a.a.a0 'decode frame 0: the doc half gives k, the line half gives i'
+    lookup -> fig1a.a.aseek 'read the offset of frame k'
+    lookup -> fig1a.a.a1 'decode frame k alone, take line i'
+  }
+}

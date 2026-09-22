@@ -1,0 +1,172 @@
+// Recovery: the partition a reader makes of a damaged file, and the merge a
+// blind cat of two corpora recovers into.
+
+specification {
+  // A figure: its caption is the title of an outer frame drawn without a border.
+  element figure {
+    style {
+      shape rectangle
+      color slate
+      opacity 100%
+      border none
+    }
+  }
+
+  // A file or directory, drawn as a group.
+  element container {
+    style {
+      shape rectangle
+      color gray
+      opacity 100%
+      border solid
+    }
+  }
+
+  // A part the reader verifies.
+  element verified {
+    style {
+      shape rectangle
+      color green
+    }
+  }
+
+  // A part the reader cannot verify.
+  element foreign {
+    style {
+      shape rectangle
+      color amber
+    }
+  }
+
+  // A number the toc names with no bytes behind it.
+  element absent {
+    style {
+      shape rectangle
+      color muted
+      border dashed
+    }
+  }
+
+  // A header frame.
+  element header {
+    style {
+      shape rectangle
+      color primary
+    }
+  }
+
+  // A blob, kept by digest.
+  element blob {
+    style {
+      shape storage
+      color secondary
+    }
+  }
+}
+
+model {
+  fig1a = figure 'Figure 1a. A packed file cut mid-frame keeps its front: the reader verifies by position until position is lost.' {
+  packed = container 'a.opx, cut mid-frame by head -c' {
+    p0 = header 'Frame 0: header' {
+      description 'contents [1, 2, 3]'
+    }
+    p1 = verified 'Frame 1: document 1' {
+      description 'digest matches'
+    }
+    p2 = verified 'Frame 2: document 2' {
+      description 'digest matches'
+    }
+    p3 = foreign 'Frame 3, cut short' {
+      description 'position lost here; document 3 is lost'
+    }
+  }
+  }
+
+  fig1b = figure 'Figure 1b. An unpacked corpus keeps each document that checks, whatever happened to its neighbours.' {
+  unpacked = container 'a/, a directory' {
+    u0 = header 'a.opxh.head' {
+      description 'toc names 1, 2, 3'
+    }
+    u1 = verified 'jobs.opxh, document 1' {
+      description 'digest matches'
+    }
+    u2 = foreign 'runs.opxh, document 2' {
+      description 'edited by hand: place 3 carries the LID of place 5'
+    }
+    u3 = absent 'tags.opxh, document 3' {
+      description 'no file; the number is lost'
+    }
+  }
+  }
+
+  fig1a.packed.p0 -> fig1a.packed.p1 'then'
+  fig1a.packed.p1 -> fig1a.packed.p2 'then'
+  fig1a.packed.p2 -> fig1a.packed.p3 'then'
+
+  fig1b.unpacked.u0 -> fig1b.unpacked.u1 'entry 1'
+  fig1b.unpacked.u1 -> fig1b.unpacked.u2 'entry 2'
+  fig1b.unpacked.u2 -> fig1b.unpacked.u3 'entry 3'
+
+  fig1c = figure 'Figure 1c. Two corpora joined blindly by cat recover into a merge whose history reads both headers, kept as blobs.' {
+  joined = container 'cat a.opx b.opx' {
+    ja = header 'Stratum A' {
+      description 'seeds 0013d4fd…, documents 1, 2'
+    }
+    jb = foreign 'Stratum B' {
+      description 'seeds 00a0f3c1…, documents 1; refused: seeds differ'
+    }
+  }
+
+  merged = container 'c.opx, recovered' {
+    m0 = header 'Frame 0: header' {
+      description 'new seeds; history: recover read A@sha256:9f86…, B@sha256:2c1b…; wrote 1..4'
+    }
+    m1 = verified 'Document 1: recovery' {
+      description 'findings; ref A, ref B; A.1→2, A.2→3, B.1→4'
+    }
+    m2 = verified 'Documents 2, 3, 4' {
+      description 'renumbered under the new seeds'
+    }
+    ba = blob 'blobs/sha256/9f86…' {
+      description 'header A as found'
+    }
+    bb = blob 'blobs/sha256/2c1b…' {
+      description 'header B as found'
+    }
+  }
+  }
+
+  fig1c.joined.ja -> fig1c.joined.jb 'then'
+  fig1c.joined.jb -> fig1c.merged.m0 'recover: a run that reads both and writes c.opx'
+  fig1c.merged.m0 -> fig1c.merged.m1 'then'
+  fig1c.merged.m1 -> fig1c.merged.m2 'then'
+  fig1c.joined.ja -> fig1c.merged.ba 'kept as a blob'
+  fig1c.joined.jb -> fig1c.merged.bb 'kept as a blob'
+  fig1c.merged.m1 -> fig1c.merged.ba 'ref'
+  fig1c.merged.m1 -> fig1c.merged.bb 'ref'
+}
+
+views {
+  view f1a {
+    title 'A packed file cut mid-frame keeps its front'
+    include fig1a, fig1a.packed.*
+    autoLayout TopBottom
+    rank same { fig1a.packed.p0, fig1a.packed.p1, fig1a.packed.p2, fig1a.packed.p3 }
+  }
+
+  view f1b {
+    title 'An unpacked corpus keeps each document that checks'
+    include fig1b, fig1b.unpacked.*
+    autoLayout TopBottom
+    rank same { fig1b.unpacked.u0, fig1b.unpacked.u1, fig1b.unpacked.u2, fig1b.unpacked.u3 }
+  }
+
+  view f1c {
+    title 'A blind cat of two corpora recovers into a merge'
+    include fig1c, fig1c.joined.*, fig1c.merged.*
+    autoLayout TopBottom
+    rank same { fig1c.joined.ja, fig1c.joined.jb }
+    rank same { fig1c.merged.m0, fig1c.merged.m1, fig1c.merged.m2 }
+    rank same { fig1c.merged.ba, fig1c.merged.bb }
+  }
+}
