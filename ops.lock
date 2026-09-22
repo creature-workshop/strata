@@ -1,0 +1,8 @@
+{
+  "npm": {
+    "likec4": {
+      "version": "1.59.3",
+      "bin": "bin/likec4.mjs"
+    }
+  }
+}

@@ -1,9 +1,0 @@
-{
-  "name": "opx",
-  "description": "OPX: the language, its formats and its tool",
-  "scripts": {},
-  "private": true,
-  "devDependencies": {
-    "likec4": "1.59.3"
-  }
-}
