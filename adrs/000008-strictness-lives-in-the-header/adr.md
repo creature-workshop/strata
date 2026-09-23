@@ -2,7 +2,7 @@
 
 - Status: approved
 - Date: 2026-09-20
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/8
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/8
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1182
 - Implementation: not started
 
@@ -21,9 +21,9 @@ readers, two writers, and a question at every boundary.
 
 ## Decision
 
-There is one grammar ([ADR.2@opx](../000002-one-node-per-line/adr.md)), and how
+There is one grammar ([ADR.2@strata](../000002-one-node-per-line/adr.md)), and how
 strict a corpus is belongs to its header
-([ADR.5@opx](../000005-the-header/adr.md)), whose fingerprint MUST say whether
+([ADR.5@strata](../000005-the-header/adr.md)), whose fingerprint MUST say whether
 it is closed. The field has no default, so whoever makes a header chooses:
 
 ```
@@ -49,7 +49,7 @@ the format it describes.
 
 A language that wants its keys to be lowercase words names them so. Nothing
 in the grammar stops a key from being any string
-([ADR.4@opx](../000004-keys/adr.md)), and nothing has to.
+([ADR.4@strata](../000004-keys/adr.md)), and nothing has to.
 
 A store starts with an empty open index and learns its keys from the data.
 Once its shape settles it can be closed, and from then on a field that appears

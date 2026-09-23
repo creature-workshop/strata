@@ -2,18 +2,18 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/13
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/13
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1191
 - Implementation: not started
 
 ## Context
 
-A corpus's header ([ADR.5@opx](../000005-the-header/adr.md)) knows the
+A corpus's header ([ADR.5@strata](../000005-the-header/adr.md)) knows the
 corpus's seeds and its keys, and nothing of its documents. A document is
 addressed by the name of its unit, so a LID drawn from that name keeps two
 documents apart only by odds, and a corpus packed into one file has no order
 to store its documents in and, since nothing marks a document's end
-([ADR.2@opx](../000002-one-node-per-line/adr.md)), no way to find where one
+([ADR.2@strata](../000002-one-node-per-line/adr.md)), no way to find where one
 stops and the next begins.
 
 An archive's table of contents answers all three at once: it numbers the
@@ -35,7 +35,7 @@ corpus's documents.
   is document 0 and has no entry.
 - `path` is where the document stands under the corpus's root: segments
   joined by `/`, none of them `.` or `..`, and no file ending, since the
-  ending says the form ([ADR.6@opx](../000006-three-forms/adr.md)). Unpacked,
+  ending says the form ([ADR.6@strata](../000006-three-forms/adr.md)). Unpacked,
   the document is the file `<root>/<path>.<ending>`. No two entries share a
   path.
 - `lines` is the document's line count, which is its node count, and it is
@@ -50,7 +50,7 @@ corpus's documents.
 
 A number is a document's identity in its corpus, and a name is not. Renaming
 a file changes its entry's text and nothing else, and
-[ADR.11@opx](../000011-lids-from-number-and-place/adr.md) draws LIDs from the
+[ADR.11@strata](../000011-lids-from-number-and-place/adr.md) draws LIDs from the
 number, so no id moves with it.
 
 Every append to any document rewrites the header, under the one writer a
@@ -64,4 +64,4 @@ A deleted document keeps its number and its entry. What the tool does with an
 entry whose file is gone is the tool's to say.
 
 How a corpus is packed into one file, in toc order, is
-[ADR.15@opx](../000015-the-pack/adr.md).
+[ADR.15@strata](../000015-the-pack/adr.md).

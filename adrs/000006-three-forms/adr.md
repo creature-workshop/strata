@@ -2,7 +2,7 @@
 
 - Status: approved
 - Date: 2026-09-20
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/6
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/6
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1180
 - Implementation: not started
 
@@ -17,7 +17,7 @@ every line were about half of its bytes, and writing them as a short code
 brought the raw size under compact JSON's.
 
 A second, binary format was weighed for the store and set aside
-([ADR.2@opx](../000002-one-node-per-line/adr.md)). What the store needs is the
+([ADR.2@strata](../000002-one-node-per-line/adr.md)). What the store needs is the
 same lines with less in them.
 
 ## Decision
@@ -37,18 +37,18 @@ A document is written in one of three forms, and its file's ending says which.
 - **`.strh`**, the human-readable form, writes every part of a line in full.
 - **`.strt`**, the terse form, omits the LID and the space after it. It writes
   a string key as `@` and the key's code from the index
-  ([ADR.5@opx](../000005-the-header/adr.md)), a type as its code
-  ([ADR.3@opx](../000003-natural-primitives/adr.md)), and a `bool` as `1` or
+  ([ADR.5@strata](../000005-the-header/adr.md)), a type as its code
+  ([ADR.3@strata](../000003-natural-primitives/adr.md)), and a `bool` as `1` or
   `0`. An index, the depth and every other value are written as `.strh` writes
   them.
 - **`.strata`** is reserved for a terse document compressed with zstd. It is what
   a corpus keeps at rest.
 - Translating between the forms MUST lose nothing. Given the header, a terse
   document becomes the `.strh` it was written from, LIDs included
-  ([ADR.7@opx](../000007-ids-are-generator-state/adr.md)), byte for byte.
+  ([ADR.7@strata](../000007-ids-are-generator-state/adr.md)), byte for byte.
 - A writer that meets a key the index lacks appends it before writing the
   line, where the header is open, and refuses the document where it is closed
-  ([ADR.8@opx](../000008-strictness-lives-in-the-header/adr.md)).
+  ([ADR.8@strata](../000008-strictness-lives-in-the-header/adr.md)).
 - A reader MUST refuse a terse document that holds a code its header lacks.
 
 ## Consequences

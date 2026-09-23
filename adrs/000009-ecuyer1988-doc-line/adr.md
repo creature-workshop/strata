@@ -2,13 +2,13 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/9
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/9
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1187
 - Implementation: not started
 
 ## Context
 
-[ADR.11@opx](../000011-lids-from-number-and-place/adr.md) says what a
+[ADR.11@strata](../000011-lids-from-number-and-place/adr.md) says what a
 generator owes: a LID that is its state, arithmetic under 2^53, no two LIDs
 alike in a corpus, and a definition of its own. The default has to serve a
 corpus of many large documents.

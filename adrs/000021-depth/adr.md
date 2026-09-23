@@ -2,13 +2,13 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/24
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/24
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1227
 - Implementation: not started
 
 ## Context
 
-[ADR.2@opx](../000002-one-node-per-line/adr.md) reads a document with a
+[ADR.2@strata](../000002-one-node-per-line/adr.md) reads a document with a
 stack as deep as its tree and states no maximum. Left to each tool, one
 refuses at 128 and another at a million, and the same document is valid to
 one and not the other.
@@ -57,4 +57,4 @@ serde_json at 128, both configurable, and the translators' hardening ticket
 carries that.
 
 The bound is a grammar constant, so raising it is a later grammar and the
-version carries it ([ADR.14@opx](../000014-the-version/adr.md)).
+version carries it ([ADR.14@strata](../000014-the-version/adr.md)).

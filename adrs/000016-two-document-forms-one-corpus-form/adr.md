@@ -2,18 +2,18 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/19
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/19
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1234
 - Implementation: not started
 
 ## Context
 
-[ADR.6@opx](../000006-three-forms/adr.md) gave one grammar three spellings of
+[ADR.6@strata](../000006-three-forms/adr.md) gave one grammar three spellings of
 a document, and made `.strata` a terse document compressed alone. Such a file
 travels without the header that names its fields, and read under another
 corpus's header it does not fail, it misnames every field.
 
-[ADR.15@opx](../000015-the-pack/adr.md) makes `.strata` a corpus at rest, header
+[ADR.15@strata](../000015-the-pack/adr.md) makes `.strata` a corpus at rest, header
 included. That leaves no compressed form of a lone document, and none is
 wanted: a document alone is a corpus of one. An approved record is not
 edited, so this record restates ADR.6 and supersedes it.
@@ -36,8 +36,8 @@ file's ending says which.
 - **`.strh`**, the human-readable form, writes every part of a line in full.
 - **`.strt`**, the terse form, omits the LID and the space after it. It
   writes a string key as `@` and the key's code from the index
-  ([ADR.5@opx](../000005-the-header/adr.md)), a type as its code
-  ([ADR.3@opx](../000003-natural-primitives/adr.md)), and a `bool` as `1` or
+  ([ADR.5@strata](../000005-the-header/adr.md)), a type as its code
+  ([ADR.3@strata](../000003-natural-primitives/adr.md)), and a `bool` as `1` or
   `0`. An index, the depth, a keyless line's empty key and every other value
   are written as `.strh` writes them.
 - Unpacked, a corpus is a directory: its header in a file ending
@@ -46,10 +46,10 @@ file's ending says which.
   need. Inside a `.strata` it is `.strh` text.
 - Translating between the forms MUST lose nothing. Given the header, a terse
   document becomes the `.strh` it was written from, LIDs included
-  ([ADR.11@opx](../000011-lids-from-number-and-place/adr.md)), byte for byte.
+  ([ADR.11@strata](../000011-lids-from-number-and-place/adr.md)), byte for byte.
 - A writer that meets a key the index lacks appends it before writing the
   line where the header is open, and refuses the document where it is closed
-  ([ADR.8@opx](../000008-strictness-lives-in-the-header/adr.md)).
+  ([ADR.8@strata](../000008-strictness-lives-in-the-header/adr.md)).
 - A reader MUST refuse a terse document that holds a code its header lacks.
 
 ## Consequences

@@ -2,7 +2,7 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/20
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/20
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1186
 - Implementation: not started
 
@@ -24,9 +24,9 @@ one value stand for everything beneath it.
 - A **digest** is written `sha256:` followed by the sixty-four lowercase hex
   characters of SHA-256 over the bytes named. The algorithm is part of the
   value, so a later grammar may add another by appending.
-- A toc entry ([ADR.10@opx](../000010-the-toc/adr.md)) carries `digest`: the
+- A toc entry ([ADR.10@strata](../000010-the-toc/adr.md)) carries `digest`: the
   digest of the document's `.strt` text under its header, the bytes a
-  stratum's frame holds ([ADR.15@opx](../000015-the-pack/adr.md)). The writer
+  stratum's frame holds ([ADR.15@strata](../000015-the-pack/adr.md)). The writer
   keeps it current with `lines`.
 
   ```
@@ -48,7 +48,7 @@ one value stand for everything beneath it.
 
 Substitution is caught where corruption already was. A document decoded
 from a frame is checked against its entry before it is trusted, and a
-history entry ([ADR.18@opx](../000018-the-history/adr.md)) that names an
+history entry ([ADR.18@strata](../000018-the-history/adr.md)) that names an
 input by its corpus digest pins the exact content that was read, every
 document included, in one value.
 

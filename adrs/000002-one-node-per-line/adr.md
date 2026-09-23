@@ -2,7 +2,7 @@
 
 - Status: approved
 - Date: 2026-09-20
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/2
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/2
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1176
 - Implementation: not started
 
@@ -39,7 +39,7 @@ A document is UTF-8 text, and every line of it is one node:
   the line above it.
 - The lines at depth 0 are the document's top level, and they are the members
   of a map or the elements of a list, as their keys say
-  ([ADR.4@opx](../000004-keys/adr.md)). A document of one primitive is one
+  ([ADR.4@strata](../000004-keys/adr.md)). A document of one primitive is one
   line. A list of records reads across to JSON Lines, and appending a record
   appends lines.
 
@@ -53,12 +53,12 @@ A document is UTF-8 text, and every line of it is one node:
 - A document holds nothing but nodes: no preamble, no blank line, no comment.
   Its line count is its node count. What a document needs from outside
   itself, it finds in its corpus's header
-  ([ADR.5@opx](../000005-the-header/adr.md)).
+  ([ADR.5@strata](../000005-the-header/adr.md)).
 - A reader MUST refuse a line that does not fit, naming its line number.
 
-[ADR.7@opx](../000007-ids-are-generator-state/adr.md) says what a LID is,
-[ADR.3@opx](../000003-natural-primitives/adr.md) a type and a value, and
-[ADR.6@opx](../000006-three-forms/adr.md) gives the line a shorter spelling.
+[ADR.7@strata](../000007-ids-are-generator-state/adr.md) says what a LID is,
+[ADR.3@strata](../000003-natural-primitives/adr.md) a type and a value, and
+[ADR.6@strata](../000006-three-forms/adr.md) gives the line a shorter spelling.
 
 ## Consequences
 

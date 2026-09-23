@@ -2,13 +2,13 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/26
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/26
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1229
 - Implementation: not started
 
 ## Context
 
-[ADR.3@opx](../000003-natural-primitives/adr.md) makes `time-rfc3339-utc`
+[ADR.3@strata](../000003-natural-primitives/adr.md) makes `time-rfc3339-utc`
 an RFC 3339 instant in UTC with a capital `T` and `Z`, and has a writer
 convert an offset to UTC on the way in. RFC 3339 leaves the fraction's
 width free, so `18:11:50Z`, `18:11:50.9Z` and `18:11:50.900Z` are one
@@ -54,4 +54,4 @@ it.
 
 A translator to JSON writes the same thirty characters, and a translator
 from JSON reads a string as a time only where the header says the key
-takes one ([ADR.5@opx](../000005-the-header/adr.md)).
+takes one ([ADR.5@strata](../000005-the-header/adr.md)).

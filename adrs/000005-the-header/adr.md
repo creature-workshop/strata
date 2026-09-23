@@ -2,7 +2,7 @@
 
 - Status: approved
 - Date: 2026-09-20
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/5
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/5
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1179
 - Implementation: not started
 
@@ -23,7 +23,7 @@ old data stays readable. This is that rule.
 - A corpus shares one **header**. It is a document of its own, kept with the
   corpus where the corpus's tool finds it, and no document points at it. It is
   written in the human-readable form, in a file ending `.strh.head`
-  ([ADR.6@opx](../000006-three-forms/adr.md)).
+  ([ADR.6@strata](../000006-three-forms/adr.md)).
 
   ```
   3c3064613c9a4244 0."fingerprint":map
@@ -42,12 +42,12 @@ old data stays readable. This is that rule.
 
 - Every header extends the **default header**, which the language defines and
   every implementation carries: the grammar's version and the natural
-  primitives ([ADR.3@opx](../000003-natural-primitives/adr.md)). A corpus's
+  primitives ([ADR.3@strata](../000003-natural-primitives/adr.md)). A corpus's
   header never restates it.
 - The **fingerprint** is what makes the corpus this one and no other. `seeds`
   and `rng` are what its LIDs are drawn from
-  ([ADR.7@opx](../000007-ids-are-generator-state/adr.md)), and `closed` is
-  [ADR.8@opx](../000008-strictness-lives-in-the-header/adr.md)'s.
+  ([ADR.7@strata](../000007-ids-are-generator-state/adr.md)), and `closed` is
+  [ADR.8@strata](../000008-strictness-lives-in-the-header/adr.md)'s.
 - The **index** is the list of the corpus's keys, and a key's place in it is
   its **code**. An element holds the `key` and what it `takes`: the names of
   the types a node under that key may carry.

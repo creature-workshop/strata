@@ -2,13 +2,13 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/22
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/22
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1225
 - Implementation: not started
 
 ## Context
 
-[ADR.2@opx](../000002-one-node-per-line/adr.md) makes a document UTF-8 text,
+[ADR.2@strata](../000002-one-node-per-line/adr.md) makes a document UTF-8 text,
 one node per line, and says nothing of what ends a line, whether the last
 line ends at all, what a byte-order mark means, or whether two keys that
 look alike under Unicode normalisation are one key.
@@ -23,7 +23,7 @@ look broken.
 
 - A line ends in one LF byte, and the document's last byte is an LF.
 - A document holds no byte below 0x20 but LF. A `str` carries a control
-  character as a JSON escape ([ADR.3@opx](../000003-natural-primitives/adr.md)),
+  character as a JSON escape ([ADR.3@strata](../000003-natural-primitives/adr.md)),
   never raw.
 - A document MUST be valid UTF-8 and MUST NOT begin with a byte-order mark.
 - Keys and values are compared as bytes once their escapes are read. No

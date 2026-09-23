@@ -2,7 +2,7 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/31
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/31
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1256
 - Implementation: not started
 
@@ -10,10 +10,10 @@
 
 The records so far say a replacement document "supersedes" the old one and
 mark nothing, so a loop over the toc hands back the stale one beside the
-new. [ADR.10@opx](../000010-the-toc/adr.md) let an entry change after it
+new. [ADR.10@strata](../000010-the-toc/adr.md) let an entry change after it
 was written: `lines` with every append, `path` at will. A frame is written
-once ([ADR.15@opx](../000015-the-pack/adr.md)), and `before`
-([ADR.27@opx](../000027-the-root/adr.md)) rebuilds a past header from entry
+once ([ADR.15@strata](../000015-the-pack/adr.md)), and `before`
+([ADR.27@strata](../000027-the-root/adr.md)) rebuilds a past header from entry
 counts. Both need an entry that never changes.
 
 ## Decision
@@ -37,13 +37,13 @@ counts. Both need an entry that never changes.
   superseded numbers, then open each live entry's path.
 - A superseded entry keeps its number, `lines` and `digest`. Its bytes
   leave the live layout for the store, named by that digest
-  ([ADR.24@opx](../000024-the-ref/adr.md)), in the same writeback that
+  ([ADR.24@strata](../000024-the-ref/adr.md)), in the same writeback that
   writes the replacement. Packed, that writeback is a shift
-  ([ADR.27@opx](../000027-the-root/adr.md)): after any run the file holds
+  ([ADR.27@strata](../000027-the-root/adr.md)): after any run the file holds
   the live documents in toc order and nothing else. A run with nowhere to
   put the bytes MUST refuse rather than leave them or drop them. A
   superseded entry with no bytes behind it raises no finding
-  ([ADR.25@opx](../000025-verify-and-recover/adr.md)).
+  ([ADR.25@strata](../000025-verify-and-recover/adr.md)).
 - The history is unchanged: the run's entry says `wrote [3]`.
 
 ```
@@ -77,4 +77,4 @@ Every entry being immutable, each stratum's toc is a byte prefix of the
 next, and a past header rebuilds exactly.
 
 A corpus only grows. Shedding what it names is a change of identity, and
-that is a repack ([ADR.29@opx](../000029-repack/adr.md)).
+that is a repack ([ADR.29@strata](../000029-repack/adr.md)).

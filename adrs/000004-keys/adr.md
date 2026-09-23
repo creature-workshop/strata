@@ -2,7 +2,7 @@
 
 - Status: approved
 - Date: 2026-09-20
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/4
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/4
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1178
 - Implementation: not started
 
@@ -39,7 +39,7 @@ kept apart from a key spelled `item`.
   ```
 
 - The same holds at a document's top level
-  ([ADR.2@opx](../000002-one-node-per-line/adr.md)): string keys there make the
+  ([ADR.2@strata](../000002-one-node-per-line/adr.md)): string keys there make the
   document a map, and indices a list.
 - A map MUST NOT hold a key twice. Two keys are the same when they are the
   same text once their escapes are read, so `"a"` and `"a"` are one key.
@@ -48,7 +48,7 @@ kept apart from a key spelled `item`.
 - A list MAY hold elements that are alike. No key is reserved.
 
 A terse document writes a string key as a code
-([ADR.6@opx](../000006-three-forms/adr.md)). What this ADR says of a key holds
+([ADR.6@strata](../000006-three-forms/adr.md)). What this ADR says of a key holds
 for the key the code stands for.
 
 ## Consequences
