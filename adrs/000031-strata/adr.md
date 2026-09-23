@@ -33,6 +33,9 @@ the wild and reads as "string" first.
   .strh.head   the header, unpacked                           was .opxh.head
   ```
 
+- `.str` is an alias of `.strata`. A reader MUST accept a corpus under
+  either ending; a writer MUST write `.strata`, so two implementations
+  write the same name.
 - Where a record writes the language's own name as a value, it is `strata`:
   the `format` of a native spelling
   ([ADR.20@opx](../000020-numbers/adr.md)) and a run's name.
