@@ -1,4 +1,4 @@
-// A .opx of two strata, and a GID followed to its line through two frames.
+// A .strata of two strata, and a GID followed to its line through two frames.
 
 specification {
   color paper #ffffff
@@ -31,7 +31,7 @@ specification {
     }
   }
 
-  // A document frame: one document as .opxt text.
+  // A document frame: one document as .strt text.
   element frame {
     style {
       shape rectangle
@@ -57,13 +57,13 @@ specification {
 }
 
 model {
-  fig1a = figure 'Figure 1a. A .opx of two strata: each a header naming the documents that follow it, joined by cat.' {
+  fig1a = figure 'Figure 1a. A .strata of two strata: each a header naming the documents that follow it, joined by cat.' {
     a = stratum 'Stratum A' {
       a0 = header 'Frame 0: header' {
         description 'fingerprint, index, toc, history; contents [1, 2]'
       }
       a1 = frame 'Frame 1: document 1' {
-        description '.opxt lines, split by the toc\'s lines'
+        description '.strt lines, split by the toc\'s lines'
       }
       a2 = frame 'Frame 2: document 2'
       aseek = seek 'Seek table' {
@@ -82,7 +82,7 @@ model {
   fig1a.a.a0 -> fig1a.a.a1 'then'
   fig1a.a.a1 -> fig1a.a.a2 'then'
   fig1a.a.a2 -> fig1a.a.aseek 'then'
-  fig1a.a.aseek -> fig1a.b.b0 'cat a.opx b.opx'
+  fig1a.a.aseek -> fig1a.b.b0 'cat a.strata b.strata'
   fig1a.b.b0 -> fig1a.b.b1 'then'
 
   lookup = gid 'Figure 1b. A GID followed to its line through two frames and nothing else.' {
@@ -92,7 +92,7 @@ model {
 
 views {
   view f1a {
-    title 'A .opx of two strata'
+    title 'A .strata of two strata'
     include fig1a, fig1a.a.*, fig1a.b.*
     exclude lookup
     autoLayout TopBottom

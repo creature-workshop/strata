@@ -61,10 +61,10 @@ model {
       }
     }
     disk = part 'jobs/, the live layout' {
-      d3 = live '2026-09-20.opxh' {
+      d3 = live '2026-09-20.strh' {
         description 'document 3'
       }
-      d2 = live '2026-09-21.opxh' {
+      d2 = live '2026-09-21.strh' {
         description 'document 2'
       }
       b1 = blob 'blobs/sha256/a1…' {

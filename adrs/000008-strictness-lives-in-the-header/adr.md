@@ -8,7 +8,7 @@
 
 ## Context
 
-OPX has two jobs. It is the form a program is compiled to, which an interpreter
+Strata has two jobs. It is the form a program is compiled to, which an interpreter
 walks and runs, and it is a format data is stored in. The first job wants a
 small, fixed set of keys, since a key there is an instruction and an
 interpreter has to know every one. The second wants any key a JSON document
@@ -43,7 +43,7 @@ it is closed. The field has no default, so whoever makes a header chooses:
 
 ## Consequences
 
-A language on OPX is a closed index and the meaning its interpreter gives each
+A language on Strata is a closed index and the meaning its interpreter gives each
 key. Its instruction set is a document anyone can read, diff and review, in
 the format it describes.
 

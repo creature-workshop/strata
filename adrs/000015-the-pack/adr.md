@@ -1,4 +1,4 @@
-# ADR.15: `.opx` is a corpus at rest, one or more strata of zstd frames, each a header naming the documents that follow it
+# ADR.15: `.strata` is a corpus at rest, one or more strata of zstd frames, each a header naming the documents that follow it
 
 - Status: approved
 - Date: 2026-09-22
@@ -24,18 +24,18 @@ and the history of a place is read down through them.
 
 ## Decision
 
-A `.opx` file is a corpus at rest: one or more **strata**, concatenated.
+A `.strata` file is a corpus at rest: one or more **strata**, concatenated.
 A document alone is a corpus of one.
 
 ```
-stratum   frame 0   the corpus's header as .opxh text, plus one top-level
+stratum   frame 0   the corpus's header as .strh text, plus one top-level
                     key, "contents": a rising list of the numbers of the
                     documents that follow; absent, every toc entry follows
-          frames    those documents, in that order, as .opxt text
+          frames    those documents, in that order, as .strt text
           last      a seek table in a skippable frame, optional
 ```
 
-![Figure 1a: A .opx of two strata: each a header naming the documents that follow it, joined by cat.](figures/1a.png)
+![Figure 1a: A .strata of two strata: each a header naming the documents that follow it, joined by cat.](figures/1a.png)
 
 ![Figure 1b: A GID followed to its line through two frames and nothing else.](figures/1b.png)
 
@@ -54,7 +54,7 @@ stratum   frame 0   the corpus's header as .opxh text, plus one top-level
 
 ## Consequences
 
-`cat a.opx b.opx > c.opx` joins two files of one corpus, and no id or
+`cat a.strata b.strata > c.strata` joins two files of one corpus, and no id or
 history entry changes, since a stratum is a layout of documents the history
 already records: the strata are the rock, and the history is the log. A stratum whose contents is `[k]` is an extraction that
 moves nothing. A run that appends a stratum writes its history entry in that

@@ -8,7 +8,7 @@
 
 ## Context
 
-OPX begins as a day of design rulings: what a line holds, which types a node
+Strata begins as a day of design rulings: what a line holds, which types a node
 takes, what a header is for, how an id is drawn. A ruling made in conversation
 is lost to the next reader unless it is written where the language lives, and
 a language outlives every tool that reads it, so its decisions have to be

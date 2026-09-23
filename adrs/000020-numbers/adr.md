@@ -47,7 +47,7 @@ float   -?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?   with a . or an e
                      4."value":int=31              where the target holds it
                      4."spelling":str="0x1F"       as the source wrote it
                      4."format":str="toml"         the source's syntax
-  inf to JSON        {"spelling":"inf","format":"opx"}
+  inf to JSON        {"spelling":"inf","format":"strata"}
   ```
 
 - A translator from JSON refuses `Infinity` and `NaN`, since they are not

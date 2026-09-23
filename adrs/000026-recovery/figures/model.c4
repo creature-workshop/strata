@@ -66,7 +66,7 @@ specification {
 
 model {
   fig1a = figure 'Figure 1a. A packed file cut mid-frame keeps its front: the reader verifies by position until position is lost.' {
-  packed = container 'a.opx, cut mid-frame by head -c' {
+  packed = container 'a.strata, cut mid-frame by head -c' {
     p0 = header 'Frame 0: header' {
       description 'contents [1, 2, 3]'
     }
@@ -84,16 +84,16 @@ model {
 
   fig1b = figure 'Figure 1b. An unpacked corpus keeps each document that checks, whatever happened to its neighbours.' {
   unpacked = container 'a/, a directory' {
-    u0 = header 'a.opxh.head' {
+    u0 = header 'a.strh.head' {
       description 'toc names 1, 2, 3'
     }
-    u1 = verified 'jobs.opxh, document 1' {
+    u1 = verified 'jobs.strh, document 1' {
       description 'digest matches'
     }
-    u2 = foreign 'runs.opxh, document 2' {
+    u2 = foreign 'runs.strh, document 2' {
       description 'edited by hand: place 3 carries the LID of place 5'
     }
-    u3 = absent 'tags.opxh, document 3' {
+    u3 = absent 'tags.strh, document 3' {
       description 'no file; the number is lost'
     }
   }
@@ -108,7 +108,7 @@ model {
   fig1b.unpacked.u2 -> fig1b.unpacked.u3 'entry 3'
 
   fig1c = figure 'Figure 1c. Two corpora joined blindly by cat recover into a merge whose history reads both headers, kept as blobs.' {
-  joined = container 'cat a.opx b.opx' {
+  joined = container 'cat a.strata b.strata' {
     ja = header 'Stratum A' {
       description 'seeds 0013d4fd…, documents 1, 2'
     }
@@ -117,7 +117,7 @@ model {
     }
   }
 
-  merged = container 'c.opx, recovered' {
+  merged = container 'c.strata, recovered' {
     m0 = header 'Frame 0: header' {
       description 'new seeds; history: recover read A@sha256:9f86…, B@sha256:2c1b…; wrote 1..4'
     }
@@ -137,7 +137,7 @@ model {
   }
 
   fig1c.joined.ja -> fig1c.joined.jb 'then'
-  fig1c.joined.jb -> fig1c.merged.m0 'recover: a run that reads both and writes c.opx'
+  fig1c.joined.jb -> fig1c.merged.m0 'recover: a run that reads both and writes c.strata'
   fig1c.merged.m0 -> fig1c.merged.m1 'then'
   fig1c.merged.m1 -> fig1c.merged.m2 'then'
   fig1c.joined.ja -> fig1c.merged.ba 'kept as a blob'

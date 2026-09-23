@@ -21,7 +21,7 @@ C11 minimum 63   CPython 200   Lua 200   Clang and C++ 256   Chromium DOM 512
 Jackson 1000     bison 10000   go/parser 100000 (a stack-exhaustion fix)
 ```
 
-An OPX reader walks a document with a loop and an array indexed by depth,
+A Strata reader walks a document with a loop and an array indexed by depth,
 so depth costs it memory, not stack, and every level is at least one line,
 so that memory is never more than the document's own size. Measured: `mawk`
 walked 2^20 levels in 0.18 s at 70 MB, and a recursive `awk` function dies

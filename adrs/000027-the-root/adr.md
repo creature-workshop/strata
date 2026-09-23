@@ -43,7 +43,7 @@ an edited document passes every check the file can make.
     those, the line seed is exact from any line, and the document seed is
     fixed up to which number the first document had
     ([ADR.9@opx](../000009-ecuyer1988-doc-line/adr.md)). The index rebuilds
-    from `.opxh` keys, never from `.opxt` codes. The toc rebuilds from paths,
+    from `.strh` keys, never from `.strt` codes. The toc rebuilds from paths,
     line counts and digests. The history does not come back: the recovered
     corpus's entry reads nothing, and its recovery document says so.
 

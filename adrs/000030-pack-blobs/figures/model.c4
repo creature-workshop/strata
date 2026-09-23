@@ -58,7 +58,7 @@ specification {
 
 model {
   fig1a = figure 'Figure 1a. A stratum with its blobs at the back: the stream zstd -dc emits, and the frames it passes over.' {
-    s = stratum 'one stratum of jobs.opx' {
+    s = stratum 'one stratum of jobs.strata' {
       h = header 'frame 0: header' {
         description 'contents [3]; blobs [9f86… lines 1204, 2c1b…]'
       }
