@@ -33,9 +33,10 @@ the wild and reads as "string" first.
   .strh.head   the header, unpacked                           was .opxh.head
   ```
 
-- `.str` is an alias of `.strata`. A reader MUST accept a corpus under
-  either ending; a writer MUST write `.strata`, so two implementations
-  write the same name.
+- `.str` and `.strata` are two spellings of one ending. A reader MUST
+  accept either, and a writer writes whichever it is asked for: a toc path
+  carries no ending ([ADR.10@opx](../000010-the-toc/adr.md)), so a file's
+  name is the caller's and not the corpus's.
 - Where a record writes the language's own name as a value, it is `strata`:
   the `format` of a native spelling
   ([ADR.20@opx](../000020-numbers/adr.md)) and a run's name.
