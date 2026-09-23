@@ -2,7 +2,7 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/21
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/21
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1186
 - Implementation: not started
 
@@ -13,11 +13,11 @@ them, transforms read some and write others. What a dataset came from, and
 which version of it, has to be answerable without a second system keeping
 notes, and without opening a document.
 
-A corpus is named by its seeds ([ADR.11@opx](../000011-lids-from-number-and-place/adr.md)),
+A corpus is named by its seeds ([ADR.11@strata](../000011-lids-from-number-and-place/adr.md)),
 and its content at a moment by its digest
-([ADR.17@opx](../000017-the-digest/adr.md)). Those two are enough to point
+([ADR.17@strata](../000017-the-digest/adr.md)). Those two are enough to point
 at exactly one input as it was read. The header is the one place every
-stratum of a corpus carries ([ADR.15@opx](../000015-the-pack/adr.md)).
+stratum of a corpus carries ([ADR.15@strata](../000015-the-pack/adr.md)).
 
 ## Decision
 

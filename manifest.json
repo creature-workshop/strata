@@ -1,7 +1,7 @@
 {
-  "name": "opx",
+  "name": "strata",
   "description": "Dead simple high-performance data representation.",
   "linear-team": "OPS",
   "org": "creature-workshop",
-  "repo": "opx"
+  "repo": "strata"
 }

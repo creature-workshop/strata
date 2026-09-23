@@ -1,8 +1,8 @@
-# ADR.1: opx records each decision as a one-page ADR, in the global form
+# ADR.1: strata records each decision as a one-page ADR, in the global form
 
 - Status: approved
 - Date: 2026-09-20
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/1
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/1
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1175
 - Implementation: not started
 
@@ -21,7 +21,7 @@ repository that follows it to say so in an ADR of its own.
 
 ## Decision
 
-opx adopts the form of
+strata adopts the form of
 [ADR.1@global](https://gitlab.creature-workshop.com/ksoft/global-adrs/-/blob/main/adrs/0001-global-adrs/adr.md)
 for its own decisions.
 
@@ -35,11 +35,11 @@ for its own decisions.
   beside a `figures/` directory when it has figures.
 - ADRs are numbered from 1, each taking the next free number when its merge
   request opens.
-- An ADR is cited as a link whose text is `ADR.<n>@opx`, with no leading
+- An ADR is cited as a link whose text is `ADR.<n>@strata`, with no leading
   zeros:
 
   ```
-  [ADR.2@opx](../000002-one-node-per-line/adr.md)
+  [ADR.2@strata](../000002-one-node-per-line/adr.md)
   ```
 
 - The merge request is the discussion. An ADR is written with

@@ -2,7 +2,7 @@
 
 - Status: approved
 - Date: 2026-09-20
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/7
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/7
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1181
 - Implementation: not started
 
@@ -29,7 +29,7 @@ every language, `awk` among them, whose numbers are exact only up to 2^53.
   seeds 104729 and 1299709  ->  000199190013d4fd.1b35966b49da4467
   ```
 
-- The fingerprint's `rng` ([ADR.5@opx](../000005-the-header/adr.md)) names a
+- The fingerprint's `rng` ([ADR.5@strata](../000005-the-header/adr.md)) names a
   **generator**: the rule that gives the nth node of a document its LID from
   the seeds, the document's unit and n, and from nothing else.
 - A generator's LID is its state, never a value cut down from it. A step
@@ -38,7 +38,7 @@ every language, `awk` among them, whose numbers are exact only up to 2^53.
 - Every product a generator computes MUST stay under 2^53.
 - A generator is defined by an ADR of its own, which gives its step, how its
   state becomes sixteen characters, how many nodes it serves, and a test
-  vector. [ADR.9@opx](../000009-ecuyer1988-state/adr.md) defines
+  vector. [ADR.9@strata](../000009-ecuyer1988-state/adr.md) defines
   `ecuyer1988-state`, the default.
 - Every generator starts a document from the seeds and the unit through one
   function, a byte of the unit's UTF-8 text at a time:

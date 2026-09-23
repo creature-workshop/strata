@@ -2,13 +2,13 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/23
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/23
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1226
 - Implementation: not started
 
 ## Context
 
-[ADR.3@opx](../000003-natural-primitives/adr.md) gives `int` a pattern and
+[ADR.3@strata](../000003-natural-primitives/adr.md) gives `int` a pattern and
 `float` "any other JSON number, or inf, -inf, nan", and keeps a number's
 text as written. "A JSON number" leaves its edges to whoever reads the
 JSON grammar: `-0`, `1E5`, `+1`, `01`, `1.`, `.5`, and the case of `Inf`.
@@ -62,7 +62,7 @@ they read RFC 8259 the same way.
 Nothing is rewritten, so a round trip returns the spelling the source
 wrote, and a consumer that wants arithmetic reads `value`. The map is the
 shape ADR.3 gives a value richer than the primitives, and a header may name
-it as a derived primitive ([ADR.5@opx](../000005-the-header/adr.md)) once
+it as a derived primitive ([ADR.5@strata](../000005-the-header/adr.md)) once
 the first translator does.
 
 No natural primitive is added per syntax, so there is no pairwise

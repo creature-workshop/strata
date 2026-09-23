@@ -2,7 +2,7 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/18
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/18
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1234
 - Implementation: not started
 
@@ -44,7 +44,7 @@ stratum   frame 0   the corpus's header as .strh text, plus one top-level
 - Each stratum's index, toc and history MUST be a prefix of the longest
   stratum's, which the reader takes as the corpus's.
 - A stratum's documents are split by its own toc's `lines`
-  ([ADR.10@opx](../000010-the-toc/adr.md)), and a reader MUST refuse a
+  ([ADR.10@strata](../000010-the-toc/adr.md)), and a reader MUST refuse a
   stratum whose frame count differs from its contents.
 - A number that appears in two strata: the copy in the stratum with the
   longer history stands, whatever the file order.
@@ -58,7 +58,7 @@ stratum   frame 0   the corpus's header as .strh text, plus one top-level
 history entry changes, since a stratum is a layout of documents the history
 already records: the strata are the rock, and the history is the log. A stratum whose contents is `[k]` is an extraction that
 moves nothing. A run that appends a stratum writes its history entry in that
-stratum's header ([ADR.18@opx](../000018-the-history/adr.md)), so the data
+stratum's header ([ADR.18@strata](../000018-the-history/adr.md)), so the data
 and its provenance land in one write.
 
 Two files of different corpora concatenated are refused at the second

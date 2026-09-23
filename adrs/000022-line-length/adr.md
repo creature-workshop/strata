@@ -2,14 +2,14 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/25
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/25
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1228
 - Implementation: not started
 
 ## Context
 
 A `str` is a JSON string literal on one line
-([ADR.3@opx](../000003-natural-primitives/adr.md)), so a file stored as a
+([ADR.3@strata](../000003-natural-primitives/adr.md)), so a file stored as a
 value, a compiled unit's source for one, is a line as long as the file. Some
 `awk` implementations hold a record in a fixed buffer and cannot read past
 it, and the `awk` reader is the portable fallback. A line one reader takes
@@ -34,7 +34,7 @@ record buffer is smaller does not conform, and the fallback says which
 
 A value larger than a line is not a value. It is a blob beside the corpus,
 named by a `ref` that carries its digest
-([ADR.24@opx](../000024-the-ref/adr.md)). Splitting it into chunks would
+([ADR.24@strata](../000024-the-ref/adr.md)). Splitting it into chunks would
 change its type, and a reader would have to know to join them.
 
 Sixteen MiB is a bound, not a target. A document of a million short lines
@@ -42,4 +42,4 @@ is what the format is for; a document of one long line is what a file is
 for.
 
 The bound is a grammar constant, so raising it is a later grammar and the
-version carries it ([ADR.14@opx](../000014-the-version/adr.md)).
+version carries it ([ADR.14@strata](../000014-the-version/adr.md)).

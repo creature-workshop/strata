@@ -2,13 +2,13 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/27
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/27
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1247
 - Implementation: not started
 
 ## Context
 
-[ADR.22@opx](../000022-line-length/adr.md) bounds a line at 16 MiB, and a
+[ADR.22@strata](../000022-line-length/adr.md) bounds a line at 16 MiB, and a
 value larger than that is not a value but a file beside the corpus. Naming
 that file in a `str` promises nothing: no type says the string is a name, no
 digest pins the bytes it names, no tool knows to carry the file with the
@@ -16,13 +16,13 @@ corpus, and a path breaks the moment the file moves.
 
 Git names a blob by its digest and keeps it in a store addressed the same
 way, and OCI does the same for image layers. A digest survives a move, a
-copy and a merge, and it is what [ADR.17@opx](../000017-the-digest/adr.md)
+copy and a merge, and it is what [ADR.17@strata](../000017-the-digest/adr.md)
 already writes.
 
 ## Decision
 
 - `ref` is the ninth natural primitive, code -8
-  ([ADR.3@opx](../000003-natural-primitives/adr.md)). Its value is a digest
+  ([ADR.3@strata](../000003-natural-primitives/adr.md)). Its value is a digest
   as ADR.17 writes one, naming a **blob**: bytes kept outside every
   document.
 
@@ -39,7 +39,7 @@ already writes.
 - A translator to a format without references writes a `ref` as the map
   `{"ref": "<digest>"}`, and one from such a format reads that map back.
 - How a pack carries blobs is a later append to
-  [ADR.15@opx](../000015-the-pack/adr.md). Until then a pack names the blobs
+  [ADR.15@strata](../000015-the-pack/adr.md). Until then a pack names the blobs
   its store holds and carries none.
 
 ## Consequences
@@ -56,7 +56,7 @@ reason.
 
 A corpus's digest covers its blobs: a blob's digest is in a document, the
 document's is in the toc, and the toc is in the header
-([ADR.17@opx](../000017-the-digest/adr.md)). A history entry that pins a
+([ADR.17@strata](../000017-the-digest/adr.md)). A history entry that pins a
 corpus pins its blobs too.
 
 The awk fallback reads a ref as text, as it reads a digest, and verifies a

@@ -2,16 +2,16 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/17
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/17
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1224
 - Implementation: not started
 
 ## Context
 
 The default header carries the grammar's version
-([ADR.5@opx](../000005-the-header/adr.md)), and nothing yet says how it is
+([ADR.5@strata](../000005-the-header/adr.md)), and nothing yet says how it is
 numbered or what a tool does with it. A document has no preamble
-([ADR.2@opx](../000002-one-node-per-line/adr.md)), so its corpus states it.
+([ADR.2@strata](../000002-one-node-per-line/adr.md)), so its corpus states it.
 
 The grammar is append-only: a feature arrives in one grammar and is at
 most retired in a later one, never changed. A version number alone answers

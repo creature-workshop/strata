@@ -2,7 +2,7 @@
 
 - Status: approved
 - Date: 2026-09-20
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/3
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/3
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1177
 - Implementation: not started
 
@@ -21,7 +21,7 @@ step out, and a format that lacks one cannot round-trip a format that has it.
 
 Every node MUST carry a type, a collection included. Eight are Strata's **natural
 primitives**: the language defines them, the default header carries them
-([ADR.5@opx](../000005-the-header/adr.md)), and no corpus declares them.
+([ADR.5@strata](../000005-the-header/adr.md)), and no corpus declares them.
 
 ```
  0 null               no value

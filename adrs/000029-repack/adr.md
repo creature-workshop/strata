@@ -2,21 +2,21 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/32
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/32
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1257
 - Implementation: not started
 
 ## Context
 
-A corpus only grows ([ADR.28@opx](../000028-supersedes/adr.md)). A shift
-([ADR.27@opx](../000027-the-root/adr.md)) folds its file but keeps
+A corpus only grows ([ADR.28@strata](../000028-supersedes/adr.md)). A shift
+([ADR.27@strata](../000027-the-root/adr.md)) folds its file but keeps
 everything the corpus names, because a corpus is its seeds and its header,
 and a header that names bytes it cannot produce is a broken promise. A
 corpus that rewrites documents daily therefore carries every old version
 in its store and every dead entry in its toc, for as long as it is itself.
 
 Shedding them means the corpus no longer names them, which is a change of
-identity. [ADR.18@opx](../000018-the-history/adr.md) already says that a
+identity. [ADR.18@strata](../000018-the-history/adr.md) already says that a
 new corpus made from others writes that corpus's first history entry.
 
 ## Decision
@@ -26,7 +26,7 @@ new corpus made from others writes that corpus's first history entry.
   seeds.
 - The index is carried over unchanged, so every live document's terse text,
   and so its digest and its frame, is copied as it is
-  ([ADR.16@opx](../000016-two-document-forms-one-corpus-form/adr.md)).
+  ([ADR.16@strata](../000016-two-document-forms-one-corpus-form/adr.md)).
   Only the LIDs change, and the terse form does not write them.
 - The new corpus's first history entry reads the old corpus by seeds and
   digest and writes every number. No other entry carries over: the old
@@ -59,7 +59,7 @@ entries, an empty store, and a size equal to its live documents.
 
 Provenance is one hop. The new header's first entry names the old corpus
 at the digest it was read at, and a reader rebuilds that state from the
-old header and checks it ([ADR.27@opx](../000027-the-root/adr.md)).
+old header and checks it ([ADR.27@strata](../000027-the-root/adr.md)).
 
 The cost is the copy of every live frame, byte for byte, and a new header.
 No document is decompressed.

@@ -2,7 +2,7 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/28
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/28
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1249
 - Implementation: not started
 
@@ -10,11 +10,11 @@
 
 Every rule of the grammar and the pack is checked by a reader from the file
 itself: seeds, prefixes, frame counts, line counts, digests, checksums,
-depth and place ([ADR.15@opx](../000015-the-pack/adr.md),
-[ADR.10@opx](../000010-the-toc/adr.md),
-[ADR.17@opx](../000017-the-digest/adr.md),
-[ADR.21@opx](../000021-depth/adr.md),
-[ADR.11@opx](../000011-lids-from-number-and-place/adr.md)). A tool that
+depth and place ([ADR.15@strata](../000015-the-pack/adr.md),
+[ADR.10@strata](../000010-the-toc/adr.md),
+[ADR.17@strata](../000017-the-digest/adr.md),
+[ADR.21@strata](../000021-depth/adr.md),
+[ADR.11@strata](../000011-lids-from-number-and-place/adr.md)). A tool that
 knows none of them, `cat` among them, cannot make a file that reads as
 valid but is not, only one that is refused.
 
@@ -51,12 +51,12 @@ unless told otherwise.
   ```
 
 - The list of rules is closed. Each names the feature whose check it is
-  ([ADR.14@opx](../000014-the-version/adr.md)), and a later grammar adds a
+  ([ADR.14@strata](../000014-the-version/adr.md)), and a later grammar adds a
   rule by appending.
 - Two readers MUST produce the same findings for the same file, in the same
   order, node for node.
 - A number the history lists as lost raises no finding
-  ([ADR.26@opx](../000026-recovery/adr.md)).
+  ([ADR.26@strata](../000026-recovery/adr.md)).
 - Recover is a run of its own, and ADR.26 defines it. A reader MUST NOT
   recover unless told to, and a tool that reads for computation refuses.
 

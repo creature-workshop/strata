@@ -2,19 +2,19 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/14
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/14
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1235
 - Implementation: not started
 
 ## Context
 
-[ADR.7@opx](../000007-ids-are-generator-state/adr.md) makes a node's id the
+[ADR.7@strata](../000007-ids-are-generator-state/adr.md) makes a node's id the
 state of a named generator, and starts every document's draw by mixing the
 name of its unit into the seeds. A draw started from a name keeps two
 documents apart only by odds, and a LID is meant to be unique across its
 corpus by construction.
 
-[ADR.10@opx](../000010-the-toc/adr.md) numbers the corpus's documents, which
+[ADR.10@strata](../000010-the-toc/adr.md) numbers the corpus's documents, which
 gives a generator something better than a name to start from. An approved
 record is not edited, so this record restates ADR.7 with the number in the
 unit's place, and supersedes it.
@@ -24,7 +24,7 @@ unit's place, and supersedes it.
 - A node's **local id**, its **LID**, is sixteen lowercase hex characters,
   and it MUST be unique across its corpus.
 - The fingerprint holds two seeds, `doc-seed` and `line-seed`, each an `int`.
-  They are the corpus's identity ([ADR.5@opx](../000005-the-header/adr.md)).
+  They are the corpus's identity ([ADR.5@strata](../000005-the-header/adr.md)).
 - A **global id**, a **GID**, is the two seeds as sixteen hex characters, a
   `.`, and the LID:
 
@@ -41,11 +41,11 @@ unit's place, and supersedes it.
 - A generator is defined by an ADR of its own, which gives its start, its
   step, how its state becomes sixteen characters, how many documents and
   lines it serves, and a test vector.
-  [ADR.9@opx](../000009-ecuyer1988-doc-line/adr.md) defines
+  [ADR.9@strata](../000009-ecuyer1988-doc-line/adr.md) defines
   `ecuyer1988-doc-line`, the default.
 - A reader MUST know the generator a header names. A corpus whose generator
   it lacks is one it does not support, and it refuses the corpus
-  ([ADR.14@opx](../000014-the-version/adr.md)) rather than read documents
+  ([ADR.14@strata](../000014-the-version/adr.md)) rather than read documents
   whose LIDs it cannot restore.
 
 ## Consequences

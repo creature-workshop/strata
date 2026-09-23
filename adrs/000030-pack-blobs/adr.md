@@ -2,17 +2,17 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/33
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/33
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1259
 - Implementation: not started
 
 ## Context
 
-[ADR.24@opx](../000024-the-ref/adr.md) made a `ref` name a blob in a
+[ADR.24@strata](../000024-the-ref/adr.md) made a `ref` name a blob in a
 store and left how a pack carries blobs for later: a pack named the blobs
 its store held and carried none. Two records now need it. `zstd -dc | grep`
 reaches a `ref` line and not the bytes it names, and
-[ADR.28@opx](../000028-supersedes/adr.md) has a run refuse when it has
+[ADR.28@strata](../000028-supersedes/adr.md) has a run refuse when it has
 nowhere to put a superseded document's bytes, which for a lone file is
 always.
 
@@ -38,14 +38,14 @@ must never reach it.
   ```
 
 - A **text** blob, one that is text under
-  [ADR.19@opx](../000019-text/adr.md), is a zstd frame like a document, and
+  [ADR.19@strata](../000019-text/adr.md), is a zstd frame like a document, and
   `zstd -dc` emits it. A **binary** blob is a skippable frame whose payload
   is its bytes as one zstd frame, and `zstd -dc` passes over it. A reader
   that verifies MUST refuse a blob frame whose bytes do not hash to the
   digest that names it.
 - A `ref` resolves in the file first, then in a store beside it. A reader
   MUST report a `ref` it resolves in neither as `absent`
-  ([ADR.25@opx](../000025-verify-and-recover/adr.md)).
+  ([ADR.25@strata](../000025-verify-and-recover/adr.md)).
 - A lone `.strata` is its own store. A superseded document's bytes become a
   blob frame in the stratum whose run superseded it, so ADR.28's refusal
   does not apply to a packed corpus.

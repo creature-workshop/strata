@@ -2,13 +2,13 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/15
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/15
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1223
 - Implementation: not started
 
 ## Context
 
-[ADR.2@opx](../000002-one-node-per-line/adr.md) dropped the root line: the
+[ADR.2@strata](../000002-one-node-per-line/adr.md) dropped the root line: the
 lines at depth 0 are a map's members or a list's elements, and a document of
 one primitive is one line. That left two things unsaid.
 
@@ -34,13 +34,13 @@ A line with nothing between its `.` and its `:` has no key. It is a
 - A keyless line MUST be at depth 0 and MUST be the document's only line.
 - A keyless `map` or `list` therefore has no children. A non-empty collection
   keeps its one spelling: members at depth 0
-  ([ADR.4@opx](../000004-keys/adr.md)).
+  ([ADR.4@strata](../000004-keys/adr.md)).
 - Below depth 0 a key is always present, a string under a map and an index
   under a list. A reader MUST refuse a keyless line anywhere else.
 - A document MUST have at least one line. A reader MUST refuse an empty
   file.
 - The terse form writes a keyless line with nothing before the `:` as well:
-  `0.:-5=1` ([ADR.6@opx](../000006-three-forms/adr.md)).
+  `0.:-5=1` ([ADR.6@strata](../000006-three-forms/adr.md)).
 
 ## Consequences
 

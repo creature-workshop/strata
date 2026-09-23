@@ -2,7 +2,7 @@
 
 - Status: approved
 - Date: 2026-09-22
-- Merge request: https://gitlab.creature-workshop.com/ksoft/opx/-/merge_requests/29
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/29
 - Argued from: https://linear.app/grand-cluster-city/issue/OPS-1250
 - Implementation: not started
 
@@ -10,16 +10,16 @@
 
 Files are cut, edited and joined by tools that know no grammar: `cat`,
 `head`, `sed -i`, an editor, a crash mid-write. Verify says where a file
-stops being a corpus ([ADR.25@opx](../000025-verify-and-recover/adr.md))
+stops being a corpus ([ADR.25@strata](../000025-verify-and-recover/adr.md))
 and nothing more, and the history has no entry for what was not a run
-([ADR.18@opx](../000018-the-history/adr.md)).
+([ADR.18@strata](../000018-the-history/adr.md)).
 
 What survives is provable. A LID is a function of number and place
-([ADR.11@opx](../000011-lids-from-number-and-place/adr.md)), so a cut
+([ADR.11@strata](../000011-lids-from-number-and-place/adr.md)), so a cut
 inside a document is located to the line; a digest names a document's
-content ([ADR.17@opx](../000017-the-digest/adr.md)); a number is never
-given twice ([ADR.10@opx](../000010-the-toc/adr.md)); and a blob keeps
-bytes by their digest ([ADR.24@opx](../000024-the-ref/adr.md)).
+content ([ADR.17@strata](../000017-the-digest/adr.md)); a number is never
+given twice ([ADR.10@strata](../000010-the-toc/adr.md)); and a blob keeps
+bytes by their digest ([ADR.24@strata](../000024-the-ref/adr.md)).
 
 ## Decision
 
