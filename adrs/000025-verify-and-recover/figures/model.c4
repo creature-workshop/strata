@@ -45,7 +45,7 @@ model {
   recover = operation 'recover' {
     description 'a run: appends a stratum'
   }
-  corpus = file 'a.opx'
+  corpus = file 'a.strata'
   findings = findings 'Findings' {
     description 'one node per failed check; the reader\'s output, never the corpus'
   }
@@ -61,11 +61,11 @@ model {
 views {
   dynamic view f1a {
     title 'Verify by default, recover when told'
-    tool -> verify 'open a.opx'
+    tool -> verify 'open a.strata'
     verify -> corpus 'read by position, check every rule'
     verify -> findings 'write one node per failed check to the output'
     verify -> tool 'refused: document 2, place 3, rule lid'
-    tool -> recover 'recover a.opx, when told to'
+    tool -> recover 'recover a.strata, when told to'
     recover -> findings 'read the findings'
     recover -> corpus 'append a stratum: history entry, recovery document'
   }

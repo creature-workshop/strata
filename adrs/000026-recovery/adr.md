@@ -38,7 +38,7 @@ document**, writes a new stratum or a new file, and modifies no input byte.
   its toc entry stands.
 
   ```
-  2."run":str="opx/recover@2026-09-22T19:02:11Z"
+  2."run":str="strata/recover@2026-09-22T19:02:11Z"
   2."wrote":list        the recovery document, then every number appended
   2."read":list         every verified header, by seeds and digest
   2."lost":list

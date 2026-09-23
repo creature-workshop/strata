@@ -1,4 +1,4 @@
-# ADR.30: A stratum carries the blobs its run made after its documents, frame 0 lists them, and a lone `.opx` is its own store
+# ADR.30: A stratum carries the blobs its run made after its documents, frame 0 lists them, and a lone `.strata` is its own store
 
 - Status: approved
 - Date: 2026-09-22
@@ -46,7 +46,7 @@ must never reach it.
 - A `ref` resolves in the file first, then in a store beside it. A reader
   MUST report a `ref` it resolves in neither as `absent`
   ([ADR.25@opx](../000025-verify-and-recover/adr.md)).
-- A lone `.opx` is its own store. A superseded document's bytes become a
+- A lone `.strata` is its own store. A superseded document's bytes become a
   blob frame in the stratum whose run superseded it, so ADR.28's refusal
   does not apply to a packed corpus.
 - A shift copies blob frames as it copies document frames and puts every

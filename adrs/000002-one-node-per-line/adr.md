@@ -1,4 +1,4 @@
-# ADR.2: An OPX document is a value written one node per line
+# ADR.2: A Strata document is a value written one node per line
 
 - Status: approved
 - Date: 2026-09-20
@@ -8,13 +8,13 @@
 
 ## Context
 
-OPX stores a value as text: a tree, a list of records, or one primitive. Its
+Strata stores a value as text: a tree, a list of records, or one primitive. Its
 first form, written in shellops, put a node on a line as
 `<id> <depth>.<role>:<type>.<value>`. One dot parted the depth from the role
 and another the type from the value.
 
 Text lines were measured against JSON on 27,300 records of CI jobs. Compressed,
-the two were within 2 percent, and a sixty-line C reader read OPX as fast as
+the two were within 2 percent, and a sixty-line C reader read Strata as fast as
 the fastest JSON parsers read JSON. What lines buy is that a shell, `grep` and
 one `awk` rule read a document with no parser.
 

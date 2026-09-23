@@ -25,7 +25,7 @@ one value stand for everything beneath it.
   characters of SHA-256 over the bytes named. The algorithm is part of the
   value, so a later grammar may add another by appending.
 - A toc entry ([ADR.10@opx](../000010-the-toc/adr.md)) carries `digest`: the
-  digest of the document's `.opxt` text under its header, the bytes a
+  digest of the document's `.strt` text under its header, the bytes a
   stratum's frame holds ([ADR.15@opx](../000015-the-pack/adr.md)). The writer
   keeps it current with `lines`.
 
@@ -35,7 +35,7 @@ one value stand for everything beneath it.
   2."digest":str="sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
   ```
 
-- A **corpus's digest** is the digest of its header's `.opxh` text without
+- A **corpus's digest** is the digest of its header's `.strh` text without
   the `contents` key. Since the toc holds every document's digest, the
   header's digest names the corpus's whole content as it stood when the
   header was written.

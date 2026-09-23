@@ -8,7 +8,7 @@
 
 ## Context
 
-A node's key says what it is to its parent. The first form of OPX called it a
+A node's key says what it is to its parent. The first form of Strata called it a
 role and held it to a lowercase word, `[a-z][a-z0-9-]*`. A key that was no
 such word, and `created_at` is none, was written as three lines: an entry, its
 name and its value. On real CI records that doubled the line count, and it

@@ -8,7 +8,7 @@
 
 ## Context
 
-A **corpus** is a set of OPX documents kept together. Three things about it
+A **corpus** is a set of Strata documents kept together. Three things about it
 belong to none of its documents. The seeds their LIDs are drawn from cover the
 whole corpus. A document that writes a key as a number needs the key's text
 kept somewhere. And an interpreter has to know which keys it may meet before
@@ -22,7 +22,7 @@ old data stays readable. This is that rule.
 
 - A corpus shares one **header**. It is a document of its own, kept with the
   corpus where the corpus's tool finds it, and no document points at it. It is
-  written in the human-readable form, in a file ending `.opxh.head`
+  written in the human-readable form, in a file ending `.strh.head`
   ([ADR.6@opx](../000006-three-forms/adr.md)).
 
   ```

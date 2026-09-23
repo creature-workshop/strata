@@ -1,4 +1,4 @@
-# ADR.3: Every node carries a type, and OPX's eight natural primitives are the ones every corpus shares
+# ADR.3: Every node carries a type, and Strata's eight natural primitives are the ones every corpus shares
 
 - Status: approved
 - Date: 2026-09-20
@@ -8,7 +8,7 @@
 
 ## Context
 
-The first form of OPX typed only its leaves. Whether a node with children was
+The first form of Strata typed only its leaves. Whether a node with children was
 a list or a map was guessed from them, which took a reserved role and three
 made-up leaves for a null, an empty list and an empty map.
 
@@ -19,7 +19,7 @@ step out, and a format that lacks one cannot round-trip a format that has it.
 
 ## Decision
 
-Every node MUST carry a type, a collection included. Eight are OPX's **natural
+Every node MUST carry a type, a collection included. Eight are Strata's **natural
 primitives**: the language defines them, the default header carries them
 ([ADR.5@opx](../000005-the-header/adr.md)), and no corpus declares them.
 
