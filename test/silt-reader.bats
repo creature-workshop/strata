@@ -3,8 +3,9 @@
 # The properties of the SILT reader (shell/silt/api.sh) that a golden
 # transcript cannot carry; the goldens themselves are test/silt-goldens.bats.
 # Here: the jq oracle over the fixture's JSON twin, the answer variable's
-# check, and the process and timing cases, which run test/silt-exercise.sh
-# under strace and under the clock.
+# check, the process and timing cases, which run test/silt-exercise.sh under
+# strace and under the clock, and the coverage gate, test/silt-coverage.sh,
+# which reads bash's trace of the goldens.
 
 bats_require_minimum_version 1.5.0
 
@@ -100,4 +101,10 @@ process_starts() {
     assert_line --index 1 4000
     [ "${lines[2]}" -lt 1000 ] || fail "under $shell the three verbs took ${lines[2]} ms"
   done
+}
+
+@test "coverage: the goldens enter every function in shell/silt and run at least 90% of its lines" {
+  run bash "$REPO/test/silt-coverage.sh"
+  echo "$output"
+  assert_success
 }

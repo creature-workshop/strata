@@ -12,6 +12,8 @@
 set -u
 
 main() {
+  require_usage "$@"
+  load_library "$1"
   DOC="$(cat "$2")"
   case "$3" in
     import) ;;

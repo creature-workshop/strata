@@ -1,7 +1,8 @@
 unwrap "lib/a.sh"
 unwrap "a \"b\"\nc"
 unwrap "\/\b\f"
-unwrap "café 😀"
+unwrap "caf\u00e9 \ud83d\ude00"
+unwrap "\u0041 \u00e9 \u20ac \ud83d\ude00"
 unwrap bats
 unwrap "a\qb"
 wrap plain

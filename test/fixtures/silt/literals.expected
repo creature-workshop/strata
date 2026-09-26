@@ -5,8 +5,10 @@ a "b"
 c
 ## unwrap "\/\b\f"
 /
-## unwrap "café 😀"
+## unwrap "caf\u00e9 \ud83d\ude00"
 café 😀
+## unwrap "\u0041 \u00e9 \u20ac \ud83d\ude00"
+A é € 😀
 ## unwrap bats
 !! 1 silt: not a string literal: bats
 ## unwrap "a\qb"
