@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 # Measures how much of shell/silt the golden fixtures and the exercise script
-# run, and fails when it is under the bar. bash traces every command it runs
-# with the file, the line and the function it sits in, so the goldens run
-# once more under `bash -x` and the trace is the coverage: which functions
-# were entered, and which lines of each file were executed.
+# run, and fails when either share is under its bar; there is no warning
+# band. bash traces every command it runs with the file, the line and the
+# function it sits in, so the goldens run once more under the trace and the
+# trace is the coverage: which functions were entered, and which lines of
+# each file were executed.
 #
 # Usage: test/silt-coverage.sh [--functions <percent>] [--lines <percent>]
 #
 #   --functions  The share of functions that must be entered; 100 unless given
-#   --lines      The share of executable lines that must run; 90 unless given
+#   --lines      The share of executable lines that must run; 95 unless given
 #
 # An executable line is one inside a function body that is not blank, not a
 # comment, and not syntax alone (fi, esac, done, else, then, do, a closing
@@ -23,7 +24,7 @@ TRACE="$(mktemp)"
 trap 'rm -f "$TRACE" "$TRACE.raw" "$TRACE.executable"' EXIT
 
 FUNCTIONS_BAR=100
-LINES_BAR=90
+LINES_BAR=95
 
 main() {
   parse_args "$@"
@@ -63,11 +64,12 @@ trace_exercise() {
   rm -f "$doc"
 }
 
-# Runs a script under bash -x with the trace on a descriptor of its own, so a
-# redirection of stderr inside the script cannot swallow it, and keeps the
-# trace lines from the library, each as file:line:function.
+# Runs a script under test/silt-trace.bash, which puts bash's trace on a
+# descriptor of its own so a redirection of stderr inside the script cannot
+# swallow it, and keeps the trace lines from the library, each as
+# file:line:function.
 traced() {
-  BASH_XTRACEFD=9 PS4='+cov ${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]:-} ' bash -x "$@" 9>>"$TRACE.raw" >/dev/null 2>&1 || true
+  bash "$REPO/test/silt-trace.bash" "$@" 9>>"$TRACE.raw" >/dev/null 2>&1 || true
   awk -v library="$LIBRARY/" 'sub(/^\++cov /, "") && index($1, library) == 1 { print $1 }' "$TRACE.raw" >> "$TRACE"
   : > "$TRACE.raw"
 }
@@ -92,7 +94,7 @@ report_functions() {
 
   printf 'functions: %s of %s entered, %s%% (bar %s%%)\n' "$((total - $(count_lines "$missing")))" "$total" "$percent" "$FUNCTIONS_BAR"
   if [ -n "$missing" ]; then
-    printf '  never entered: %s\n' $missing
+    printf '%s\n' "$missing" | sed 's/^/  never entered: /'
   fi
   [ "$percent" -ge "$FUNCTIONS_BAR" ] || fail "function coverage is under the bar"
 }

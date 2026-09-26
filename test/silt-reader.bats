@@ -103,7 +103,7 @@ process_starts() {
   done
 }
 
-@test "coverage: the goldens enter every function in shell/silt and run at least 90% of its lines" {
+@test "coverage: the goldens enter every function in shell/silt and run at least 95% of its lines" {
   run bash "$REPO/test/silt-coverage.sh"
   echo "$output"
   assert_success
