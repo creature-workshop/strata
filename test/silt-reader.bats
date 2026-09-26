@@ -16,7 +16,8 @@
 # and no new test code; UPDATE_GOLDENS=1 rewrites the .expected files from the
 # live answers under bash, to be read before they are committed. The remaining
 # cases are the properties a transcript cannot carry: the jq oracle over the
-# JSON twin, the answer variable's check, strace and time.
+# JSON twin, the answer variable's check, and the process and timing cases,
+# which run test/silt-exercise.sh under strace and under the clock.
 
 bats_require_minimum_version 1.5.0
 
@@ -27,6 +28,7 @@ load "${SHELLOPS_DIR:-$REPO/shell/.ops}/test/lib/bats-support/load.bash"
 load "${SHELLOPS_DIR:-$REPO/shell/.ops}/test/lib/bats-assert/load.bash"
 
 setup() {
+  export SILT_DIR="$REPO/shell/silt"
   # shellcheck source=../shell/silt/api.sh
   . "$REPO/shell/silt/api.sh"
   MAP="$(cat "$REPO/shell/silt/map.fixture.silt")"
@@ -113,33 +115,27 @@ register_golden_cases
   assert_failure
 }
 
-@test "no process: a type, a get, a string, a has, a len, a keys and an each over 4,000 lines start nothing beyond the import" {
-  command -v strace >/dev/null || skip "strace is not installed"
-  doc="$(wide_map 4000)"
-  printf '%s' "$doc" > "$BATS_TEST_TMPDIR/wide.silt"
-  # shellcheck disable=SC2016  # the programs are dash's to expand, not this shell's
-  import_only='. "$1/shell/silt/api.sh"; d="$(cat "$2")"'
-  # shellcheck disable=SC2016
-  verbs='. "$1/shell/silt/api.sh"; d="$(cat "$2")"; silt__type t "$d"; silt__get g "$d" ".key3999"; silt__string s "$d" ".key7"; silt__has h "$d" ".key1"; silt__len n "$d"; silt__keys k "$d"; cb() { :; }; silt__each cb "$d" extra'
-  strace -f -qq -e trace=clone,clone3,fork,vfork,execve -o "$BATS_TEST_TMPDIR/import.trace" dash -c "$import_only" dash "$REPO" "$BATS_TEST_TMPDIR/wide.silt"
-  strace -f -qq -e trace=clone,clone3,fork,vfork,execve -o "$BATS_TEST_TMPDIR/verbs.trace" dash -c "$verbs" dash "$REPO" "$BATS_TEST_TMPDIR/wide.silt"
-  # The import pays for the four control-character constants and both runs
-  # for the cat; the verbs add nothing.
-  assert_equal "$(grep -c 'clone\|fork\|execve' "$BATS_TEST_TMPDIR/verbs.trace")" "$(grep -c 'clone\|fork\|execve' "$BATS_TEST_TMPDIR/import.trace")"
+# The process starts (clone, fork, execve) one mode of test/silt-exercise.sh
+# makes under dash over the wide document, counted by strace.
+process_starts() {
+  strace -f -qq -e trace=clone,clone3,fork,vfork,execve -o "$BATS_TEST_TMPDIR/$1.trace" \
+    dash "$REPO/test/silt-exercise.sh" "$REPO/shell/silt/api.sh" "$BATS_TEST_TMPDIR/wide.silt" "$1"
+  grep -c 'clone\|fork\|execve' "$BATS_TEST_TMPDIR/$1.trace"
 }
 
-@test "linear: a get, a len and an each over 4,000 lines stay far under what the quadratic idioms cost, under dash and bash alike" {
-  doc="$(wide_map 4000)"
-  printf '%s' "$doc" > "$BATS_TEST_TMPDIR/wide.silt"
-  # Outside bats's own process, whose DEBUG trap prices every command.
-  # shellcheck disable=SC2016  # the program is each shell's to expand, not this one's
-  timed='. "$1/shell/silt/api.sh"; d="$(cat "$2")"; s=$(date +%s%N); silt__get g "$d" .key3999; silt__len n "$d"; cb() { :; }; silt__each cb "$d"; e=$(date +%s%N); printf "%s|%s|%s\n" "$g" "$n" $(( (e - s) / 1000000 ))'
+@test "no process: the verbs over 4,000 lines start nothing beyond the import" {
+  command -v strace >/dev/null || skip "strace is not installed"
+  wide_map 4000 > "$BATS_TEST_TMPDIR/wide.silt"
+  assert_equal "$(process_starts verbs)" "$(process_starts import)"
+}
+
+@test "linear: get, len and each over 4,000 lines take under a second, under dash and under bash" {
+  wide_map 4000 > "$BATS_TEST_TMPDIR/wide.silt"
   for shell in dash bash; do
-    run "$shell" -c "$timed" "$shell" "$REPO" "$BATS_TEST_TMPDIR/wide.silt"
+    run "$shell" "$REPO/test/silt-exercise.sh" "$REPO/shell/silt/api.sh" "$BATS_TEST_TMPDIR/wide.silt" timed
     assert_success
-    IFS='|' read -r got n elapsed_ms <<< "$output"
-    assert_equal "$got" '0.:str="value number 3999"'
-    assert_equal "$n" 4000
-    [ "$elapsed_ms" -lt 1000 ] || fail "under $shell three verbs over 4,000 lines took ${elapsed_ms} ms; the expansion loop and \${doc#*pat} take seconds here"
+    assert_line --index 0 '0.:str="value number 3999"'
+    assert_line --index 1 4000
+    [ "${lines[2]}" -lt 1000 ] || fail "under $shell the three verbs took ${lines[2]} ms"
   done
 }

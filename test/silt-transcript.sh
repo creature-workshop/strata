@@ -16,6 +16,7 @@
 set -u
 
 main() {
+  export SILT_DIR="${1%/*}"
   . "$1"
   DOC=''
   if [ -n "${3:-}" ]; then
