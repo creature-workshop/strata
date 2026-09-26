@@ -1,3 +1,5 @@
+#!/bin/sh
+
 : <<'MODULE'
 SILT, structured inline live text: a Strata document carried between shell
 functions without its id column, and read here without starting a process.
