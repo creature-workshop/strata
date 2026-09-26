@@ -1,0 +1,170 @@
+## as r str bats
+0.:str="bats"
+## as q str a "quoted" key: with.dots
+0.:str="a \"quoted\" key: with.dots"
+## as c obj runner $r count 0.:int=3
+0."runner":str="bats"
+0."count":int=3
+## type @c
+map
+## get @c .count
+0.:int=3
+## as l arr $r 0.:int=2 0.:null
+0.0:str="bats"
+0.1:int=2
+0.2:null
+## len @l
+3
+## arr
+0.:list
+## obj
+0.:map
+## as l2 push @l 0.:bool=true $c
+0.0:str="bats"
+0.1:int=2
+0.2:null
+0.3:bool=true
+0.4:map
+1."runner":str="bats"
+1."count":int=3
+## get @l2 .[4].count
+0.:int=3
+## push @l
+0.0:str="bats"
+0.1:int=2
+0.2:null
+## as c2 set @c .count 0.:int=4
+0."runner":str="bats"
+0."count":int=4
+## string @c2 .count
+4
+## as c3 set @c .tests.a.b $r
+0."runner":str="bats"
+0."count":int=3
+0."tests":map
+1."a":map
+2."b":str="bats"
+## string @c3 .tests.a.b
+bats
+## as c4 set @c3 .tests.a $l
+0."runner":str="bats"
+0."count":int=3
+0."tests":map
+1."a":list
+2.0:str="bats"
+2.1:int=2
+2.2:null
+## keys @c4
+0.0:str="runner"
+0.1:str="count"
+0.2:str="tests"
+## get @c4 .tests.a
+0.0:str="bats"
+0.1:int=2
+0.2:null
+## as c5 set @c4 .tests.a[1] 0.:int=9
+0."runner":str="bats"
+0."count":int=3
+0."tests":map
+1."a":list
+2.0:str="bats"
+2.1:int=9
+2.2:null
+## string @c5 .tests.a[1]
+9
+## as c6 set @c4 .tests.a 0.:null
+0."runner":str="bats"
+0."count":int=3
+0."tests":map
+1."a":null
+## get @c6 .tests
+0."a":null
+## set @c . 0.:int=7
+0.:int=7
+## as m obj
+0.:map
+## as e set @m .a[0].b 0.:int=1
+0."a":list
+1.0:map
+2."b":int=1
+## get @e .a[0]
+0."b":int=1
+## as el arr
+0.:list
+## as el2 set @el .[0] $r
+0.0:str="bats"
+## len @el2
+1
+## as l3 set @l .[1] $c
+0.0:str="bats"
+0.1:map
+1."runner":str="bats"
+1."count":int=3
+0.2:null
+## string @l3 .[1].runner
+bats
+## join @l ,
+bats,2,null
+## join @l \040|\040
+bats | 2 | null
+## join @l
+bats2null
+## concat @l $l
+0.0:str="bats"
+0.1:int=2
+0.2:null
+0.3:str="bats"
+0.4:int=2
+0.5:null
+## concat @el $l
+0.0:str="bats"
+0.1:int=2
+0.2:null
+## as j obj k $q
+0."k":str="a \"quoted\" key: with.dots"
+## string @j .k
+a "quoted" key: with.dots
+## as z set @c .[0] 0.:int=1
+!! 1 silt: a map takes a name, not the index 0
+## as z2 set @l .name 0.:int=1
+!! 1 silt: a list takes an index, not the name "name"
+## split a,,b ,
+0.0:str="a"
+0.1:str="b"
+## split one\ntwo
+0.0:str="one"
+0.1:str="two"
+## split a::b ::
+0.0:str="a"
+0.1:str="b"
+## split
+0.:list
+## collect 0.:int=1\n\036\n0."x":map\n1."z":null\n\036
+0.0:int=1
+0.1:map
+1."x":map
+2."z":null
+## collect
+0.:list
+## set @r .x 0.:int=1
+!! 1 silt: str has no members
+## set @c .runner.deeper 0.:int=1
+!! 1 silt: not a collection at "runner"
+## set @l .[7] 0.:int=1
+!! 1 silt: no element 7 to set; push appends to a list
+## push @c 0.:int=1
+!! 1 silt: push onto a map, not a list
+## concat @l $c
+!! 1 silt: concat with a map, not a list
+## concat @c $l
+!! 1 silt: concat of a map, not a list
+## join @l2 ,
+!! 1 silt: join of a list holding a collection
+## push @el
+0.:list
+## push @el $r
+0.0:str="bats"
+## join @l3 ,
+!! 1 silt: join of a list holding a collection
+## obj k
+!! 1 silt: a key without a document: k

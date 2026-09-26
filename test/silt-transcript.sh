@@ -11,7 +11,11 @@
 # and a path; unwrap takes the literal; wrap and roundtrip take text read
 # through printf %b, so a line can spell a newline or a control character;
 # each takes an extra argument for its callback, and each-until the key at
-# which the callback returns 3.
+# which the callback returns 3. A call written "as <name> <call>" keeps its
+# answer in a register, "@<name>" in place of the document makes a call read
+# that register, and a writer's words may name one as "$<name>": obj, arr,
+# split and collect take their words alone; push, set, concat and join take
+# the document first; str takes the rest of the line as its text.
 
 set -u
 
@@ -56,32 +60,95 @@ transcribe_calls() {
   done
 }
 
-# The call's line, then what the verb answered or why it refused.
+# The call's line, then what the verb answered or why it refused. A line
+# "as <name> <call>" also keeps the answer in the register <name>.
 transcribe_call() {
   ANSWER=''
   STATUS=0
-
   printf '## %s\n' "$1"
-  run_verb "${1%% *}" "$(argument_of "$1")"
+
+  case "${1%% *}" in
+    as) keep_answer "$(argument_of "$1")" ;;
+    *) run_call "$1" ;;
+  esac
+
   report_answer
 }
 
-# The text after the verb and one space, or nothing.
+# Runs the call after the register's name and keeps the answer under it.
+keep_answer() {
+  run_call "$(argument_of "$1")"
+  eval "REGISTER_${1%% *}=\$ANSWER"
+}
+
+# The text after the first word and one space, or nothing.
 argument_of() {
   __argument_of__rest="${1#"${1%% *}"}"
   printf '%s' "${__argument_of__rest# }"
 }
 
-# Dispatches a verb to the reader, with the document where the verb takes one.
+# Runs one call: its verb on the document it names, "@<register>" first or
+# the fileset's, with the rest of the line as its argument. A writer's
+# arguments are words, and a word "$<register>" is that register's document.
+run_call() {
+  DOCUMENT_FOR_CALL="$DOCUMENT"
+  __run_call__rest="$(argument_of "$1")"
+
+  case "$__run_call__rest" in
+    @*)
+      DOCUMENT_FOR_CALL="$(register_of "${__run_call__rest%% *}")"
+      __run_call__rest="$(argument_of "$__run_call__rest")"
+      ;;
+  esac
+
+  # shellcheck disable=SC2086  # a writer's words are split on purpose
+  case "${1%% *}" in
+    obj | arr | push | set | concat | join | split | collect) run_writer "${1%% *}" $__run_call__rest ;;
+    *) run_verb "${1%% *}" "$__run_call__rest" ;;
+  esac
+}
+
+# The document a register holds, named with or without its @ or $.
+register_of() {
+  __register_of__name="${1#[@\$]}"
+  eval "printf '%s' \"\$REGISTER_$__register_of__name\""
+}
+
+# Runs a writer on its words, each "$<register>" word replaced by the
+# document it names, and the words of split and collect read through
+# printf %b, so a line can spell a newline or the record separator.
+run_writer() {
+  __run_writer__verb="$1"
+  shift
+
+  __run_writer__count=$#
+  while [ "$__run_writer__count" -gt 0 ]; do
+    __run_writer__word="$1"
+    shift
+    case "$__run_writer__word" in
+      \$*) set -- "$@" "$(register_of "$__run_writer__word")" ;;
+      *) set -- "$@" "$(unescape "$__run_writer__word")" ;;
+    esac
+    __run_writer__count=$((__run_writer__count - 1))
+  done
+
+  case "$__run_writer__verb" in
+    obj | arr | split | collect) capture "silt__$__run_writer__verb" ANSWER "$@" ;;
+    *) capture "silt__$__run_writer__verb" ANSWER "$DOCUMENT_FOR_CALL" "$@" ;;
+  esac
+}
+
+# Dispatches a reader verb, with the document where the verb takes one.
 run_verb() {
   case "$1" in
-    type | scalar | len | keys) capture "silt__$1" ANSWER "$DOCUMENT" ;;
-    get | string | has) capture "silt__$1" ANSWER "$DOCUMENT" "$2" ;;
+    type | scalar | len | keys) capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
+    get | string | has) capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
     unwrap) capture silt__unwrap ANSWER "$2" ;;
     wrap) capture silt__wrap ANSWER "$(unescape "$2")" ;;
+    str) capture silt__str ANSWER "$(unescape "$2")" ;;
     roundtrip) roundtrip "$(unescape "$2")" ;;
-    each) capture silt__each note "$DOCUMENT" "$2" ;;
-    each-until) capture silt__each until_key "$DOCUMENT" "$2" ;;
+    each) capture silt__each note "$DOCUMENT_FOR_CALL" "$2" ;;
+    each-until) capture silt__each until_key "$DOCUMENT_FOR_CALL" "$2" ;;
     *) STATUS=127 ;;
   esac
 }

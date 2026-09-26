@@ -70,6 +70,22 @@ assert_string_like_jq() {
   assert_equal "$got" "$(jq -rn '"\/\b\f"')"
 }
 
+@test "the twin: obj, set, split and join build what jq builds" {
+  silt__str runner bats
+  silt__obj doc runner "$runner" count '0.:int=3'
+  silt__set doc "$doc" .tests.reads '0.0:str="lib/a.sh"'
+
+  silt__string got "$doc" '.tests.reads[0]'
+  assert_equal "$got" "$(jq -rn '{runner: "bats", count: 3, tests: {reads: ["lib/a.sh"]}} | .tests.reads[0]')"
+
+  silt__keys keys "$doc"
+  assert_equal "$(list_as_json "$keys" | jq -c .)" "$(jq -cn '{runner: 1, count: 1, tests: 1} | keys_unsorted')"
+
+  silt__split parts 'a,b,c' ','
+  silt__join text "$parts" ' - '
+  assert_equal "$text" "$(jq -rn '"a,b,c" | split(",") | join(" - ")')"
+}
+
 @test "the answer variable is checked before anything is evaluated through it" {
   run silt__get 'x; touch /tmp/silt-pwned' "$MAP" .runner
   assert_failure
