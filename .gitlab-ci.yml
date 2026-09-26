@@ -1,6 +1,7 @@
 # strata CI via the creatures catalog.
 #
-# The repository holds decisions and no code yet, so it carries no version and
+# The repository holds decisions and the SILT shell library, and carries no
+# version yet, so it
 # takes the governance members of `forge` and not its release members:
 # code-review hygiene on a merge request, and the label sync so the forge's
 # labels track the manifest. The label sync self-gates to release tags in the
@@ -8,6 +9,8 @@
 # `linear` keeps the merge request and the Linear issues it names in step;
 # `agents` puts the owning hat's label on the merge request from those issues,
 # which hygiene requires.
+# `shell--lint` and `shell--test` check and run the shell under `shell/`, the
+# SILT library first, with the bats the vendored shellops carries.
 
 include:
   - component: $CI_SERVER_FQDN/ksoft/creatures/forge--code-review-hygiene@0.19.1
@@ -15,6 +18,10 @@ include:
   - component: $CI_SERVER_FQDN/ksoft/creatures/linear@0.19.1
   - component: $CI_SERVER_FQDN/ksoft/creatures/agents@0.19.1
   - component: $CI_SERVER_FQDN/ksoft/creatures/shell--ops-lint@0.20.0-dev.8
+  - component: $CI_SERVER_FQDN/ksoft/creatures/shell--lint@0.19.1
+  - component: $CI_SERVER_FQDN/ksoft/creatures/shell--test@0.19.1
+    inputs:
+      tests: test/*.bats
 
 workflow:
   rules:
