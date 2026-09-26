@@ -31,3 +31,9 @@ __silt__QUOTE='"'
 The backslash, named so no line has to spell it doubled.
 CONST
 __silt__BACKSLASH=\\
+
+: <<'CONST'
+The record separator, which a line holding it alone spells the boundary
+between two documents carried in one variable.
+CONST
+__silt__RS="$(printf '\036')"

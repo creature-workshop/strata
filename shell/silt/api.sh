@@ -31,6 +31,15 @@ tier, which answers the same call the same way.
   silt__each      a callback per member, with its key and its value
   silt__unwrap    a JSON string literal to text
   silt__wrap      text to a JSON string literal
+  silt__str       a str document from text
+  silt__obj       a map from key and document pairs
+  silt__arr       a list from documents
+  silt__push      documents appended to a list
+  silt__set       a document placed at a path
+  silt__concat    two lists, one after the other
+  silt__join      a list's scalars as one text
+  silt__split     text cut on a separator, as a list of str
+  silt__collect   a run of documents as a list
 
 A path names members from the top: ".a.b" the member b of the member a,
 ".a[2]" the third element of the list a, ".[0]" the first element of a list
@@ -96,3 +105,13 @@ __silt__home || return 1
 . "$__silt__DIR/len.sh"
 . "$__silt__DIR/keys.sh"
 . "$__silt__DIR/each.sh"
+. "$__silt__DIR/nest.sh"
+. "$__silt__DIR/str.sh"
+. "$__silt__DIR/obj.sh"
+. "$__silt__DIR/arr.sh"
+. "$__silt__DIR/push.sh"
+. "$__silt__DIR/set.sh"
+. "$__silt__DIR/concat.sh"
+. "$__silt__DIR/join.sh"
+. "$__silt__DIR/split.sh"
+. "$__silt__DIR/collect.sh"
