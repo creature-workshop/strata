@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# silt__scalar: the value text of a scalar document.
+: <<'MODULE'
+silt__scalar: the value text of a scalar document.
+MODULE
 
 : <<'PUB_FUN'
 Answers the value text of a scalar document: the JSON literal of a str, the

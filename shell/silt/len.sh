@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# silt__len: the number of members, or characters of a str.
+: <<'MODULE'
+silt__len: the number of members, or characters of a str.
+MODULE
 
 : <<'PUB_FUN'
 Answers how many members a map or a list holds, how many characters a str

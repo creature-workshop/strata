@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# silt__has: whether a path holds a value.
+: <<'MODULE'
+silt__has: whether a path holds a value.
+MODULE
 
 : <<'PUB_FUN'
 Answers true when the document holds a value at the path, a null included,

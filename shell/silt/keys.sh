@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# silt__keys: the members' keys, as a list document.
+: <<'MODULE'
+silt__keys: the members' keys, as a list document.
+MODULE
 
 : <<'PUB_FUN'
 Answers the members' keys as a list document: a map's as str leaves holding

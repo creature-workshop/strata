@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# silt__type: the kind of value a document is.
+: <<'MODULE'
+silt__type: the kind of value a document is.
+MODULE
 
 : <<'PUB_FUN'
 Answers what kind of value a document is: map or list from the key of its

@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# The constants: the line count that hands a document to the awk tier, and the characters a shell literal cannot spell.
+: <<'MODULE'
+The constants: the line count that hands a document to the awk tier, and the characters a shell literal cannot spell.
+MODULE
 
 : <<'CONST'
 The line count past which a document is the awk tier's, measured on dash and

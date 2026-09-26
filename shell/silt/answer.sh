@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# How a verb reports: a failure on stderr, the answer variable checked and assigned, a document built one line at a time.
+: <<'MODULE'
+How a verb reports: a failure on stderr, the answer variable checked and assigned, a document built one line at a time.
+MODULE
 
 : <<'FUN'
 Reports a failure of this library on stderr and returns 1, so a caller under

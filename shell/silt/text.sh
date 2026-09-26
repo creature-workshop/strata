@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# JSON string literals: unwrap decodes one to text and wrap encodes text to one, every escape included.
+: <<'MODULE'
+JSON string literals: unwrap decodes one to text and wrap encodes text to one, every escape included.
+MODULE
 
 : <<'FUN'
 Decodes the escape at the front of <rest>, the text just after a backslash,

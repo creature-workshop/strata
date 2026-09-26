@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# Reading one line into the registers: its depth, its key (quoted or bare), its type and its value.
+: <<'MODULE'
+Reading one line into the registers: its depth, its key (quoted or bare), its type and its value.
+MODULE
 
 : <<'FUN'
 Sets __silt__ODD to true when <text> ends in an odd run of backslashes, the

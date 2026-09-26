@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# silt__each: a callback per member, with its key and its value.
+: <<'MODULE'
+silt__each: a callback per member, with its key and its value.
+MODULE
 
 : <<'PUB_FUN'
 Calls <callback> once per member of a map or a list, with the member's key

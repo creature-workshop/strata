@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# Reading a path one segment at a time: .a, .a[2], .[0], ."quoted" and ["quoted"].
+: <<'MODULE'
+Reading a path one segment at a time: .a, .a[2], .[0], ."quoted" and ["quoted"].
+MODULE
 
 : <<'FUN'
 Reads the next segment off the front of the path in __silt__PATH into

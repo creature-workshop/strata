@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# silt__string: the text at a path, a str unquoted.
+: <<'MODULE'
+silt__string: the text at a path, a str unquoted.
+MODULE
 
 : <<'PUB_FUN'
 Answers the text at a path the way jq -r would: a str unquoted, another

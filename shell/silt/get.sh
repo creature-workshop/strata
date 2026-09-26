@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# silt__get: the value at a path, as a document of its own.
+: <<'MODULE'
+silt__get: the value at a path, as a document of its own.
+MODULE
 
 : <<'PUB_FUN'
 Answers the value at a path as a document of its own: a leaf becomes one
