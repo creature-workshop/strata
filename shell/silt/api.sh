@@ -104,24 +104,56 @@ args:
   $1  The text
 FUN
 __silt__trailing_backslashes_odd() {
-  __silt__trailing_backslashes_odd__text="$1"
-  __silt__trailing_backslashes_odd__count=0
-  while [ "${__silt__trailing_backslashes_odd__text%\\}" != "$__silt__trailing_backslashes_odd__text" ]; do
-    __silt__trailing_backslashes_odd__text="${__silt__trailing_backslashes_odd__text%\\}"
-    __silt__trailing_backslashes_odd__count=$((__silt__trailing_backslashes_odd__count + 1))
-  done
-  case $((__silt__trailing_backslashes_odd__count % 2)) in
+  __silt__trailing_backslashes_odd__run="${1##*[!\\]}"
+
+  case $((${#__silt__trailing_backslashes_odd__run} % 2)) in
     1) __silt__ODD=true ;;
     *) __silt__ODD=false ;;
   esac
 }
 
 : <<'FUN'
-Reads a quoted key off the front of <rest>, the text after a line's depth,
-into __silt__KEY with its quotes, and leaves what follows the key's closing
-quote and colon in __silt__REST. The key ends at the first quote that is not
-escaped, which is the first '":' whose quote does not follow an odd run of
-backslashes (ADR.4@strata).
+Reads a quoted literal off the front of <text> into __silt__LITERAL, quotes
+and escapes as written, and leaves what follows the closer in __silt__REST.
+The literal ends at the first <closer> whose quote does not follow an odd run
+of backslashes (ADR.4@strata); a closer escaped that way is part of it.
+
+  __silt__quoted_literal '"a \"b\": c":int=1' '":'   ->  LITERAL '"a \"b\": c"'  REST 'int=1'
+  __silt__quoted_literal '"a\"b".c' '"'              ->  LITERAL '"a\"b"'        REST '.c'
+
+args:
+  $1  The text from its opening quote
+  $2  The closer: the closing quote and what must follow it
+FUN
+__silt__quoted_literal() {
+  __silt__quoted_literal__rest="${1#\"}"
+  __silt__LITERAL='"'
+
+  while :; do
+    __silt__quoted_literal__head="${__silt__quoted_literal__rest%%"$2"*}"
+
+    if [ "$__silt__quoted_literal__head" = "$__silt__quoted_literal__rest" ]; then
+      __silt__fail "a quoted literal never closes: $1"
+      return 1
+    fi
+
+    __silt__quoted_literal__rest="${__silt__quoted_literal__rest#*"$2"}"
+    __silt__LITERAL="$__silt__LITERAL$__silt__quoted_literal__head"
+
+    __silt__trailing_backslashes_odd "$__silt__quoted_literal__head"
+    [ "$__silt__ODD" = true ] || break
+
+    __silt__LITERAL="$__silt__LITERAL$2"
+  done
+
+  __silt__LITERAL="$__silt__LITERAL\""
+  __silt__REST="$__silt__quoted_literal__rest"
+}
+
+: <<'FUN'
+Reads a quoted key off the front of a line's text after its depth into
+__silt__KEY, and leaves what follows the key's closing quote and colon in
+__silt__REST.
 
   __silt__quoted_key '"a \"b\": c":int=1'  ->  KEY '"a \"b\": c"'  REST 'int=1'
 
@@ -129,24 +161,83 @@ args:
   $1  The line's text from its opening quote
 FUN
 __silt__quoted_key() {
-  __silt__quoted_key__rest="${1#\"}"
-  __silt__quoted_key__key='"'
-  while :; do
-    __silt__quoted_key__head="${__silt__quoted_key__rest%%\":*}"
-    if [ "$__silt__quoted_key__head" = "$__silt__quoted_key__rest" ]; then
-      __silt__fail "a quoted key never closes: $1"
-      return 1
-    fi
-    __silt__quoted_key__rest="${__silt__quoted_key__rest#*\":}"
-    __silt__quoted_key__key="$__silt__quoted_key__key$__silt__quoted_key__head"
-    __silt__trailing_backslashes_odd "$__silt__quoted_key__head"
-    case "$__silt__ODD" in
-      true) __silt__quoted_key__key="$__silt__quoted_key__key\":" ;;
-      *) break ;;
-    esac
-  done
-  __silt__KEY="$__silt__quoted_key__key\""
-  __silt__REST="$__silt__quoted_key__rest"
+  __silt__quoted_literal "$1" '":' || return 1
+  __silt__KEY="$__silt__LITERAL"
+}
+
+: <<'FUN'
+Reads a bare key, an index or nothing at all, off the front of a line's text
+after its depth into __silt__KEY, and leaves what follows the colon in
+__silt__REST.
+
+  __silt__bare_key '0:str="x"'  ->  KEY 0   REST 'str="x"'
+  __silt__bare_key ':map'       ->  KEY ''  REST 'map'
+
+args:
+  $1  The line's text after its depth
+FUN
+__silt__bare_key() {
+  __silt__KEY="${1%%:*}"
+  __silt__REST="${1#*:}"
+}
+
+: <<'FUN'
+Reads a line's key, quoted or bare, into __silt__KEY, and leaves what follows
+the colon in __silt__REST.
+
+args:
+  $1  The line's text after its depth
+FUN
+__silt__parse_key() {
+  case "$1" in
+    \"*) __silt__quoted_key "$1" ;;
+    *) __silt__bare_key "$1" ;;
+  esac
+}
+
+: <<'FUN'
+Reads a leaf's type and value into __silt__TYPE and __silt__VALUE, and sets
+__silt__LEAF to true.
+
+  __silt__leaf 'str="x"'  ->  TYPE str  VALUE '"x"'  LEAF true
+
+args:
+  $1  The line's text after its key, holding an equals sign
+FUN
+__silt__leaf() {
+  __silt__TYPE="${1%%=*}"
+  __silt__VALUE="${1#*=}"
+  __silt__LEAF=true
+}
+
+: <<'FUN'
+Reads a collection's or a null's type into __silt__TYPE, empties
+__silt__VALUE, and sets __silt__LEAF to false.
+
+  __silt__node 'map'  ->  TYPE map  VALUE ''  LEAF false
+
+args:
+  $1  The line's text after its key, a type alone
+FUN
+__silt__node() {
+  __silt__TYPE="$1"
+  __silt__VALUE=''
+  __silt__LEAF=false
+}
+
+: <<'FUN'
+Reads a line's type and value, the text after its key, into __silt__TYPE,
+__silt__VALUE and __silt__LEAF: a leaf carries "=<value>" after its type, a
+collection or a null carries nothing.
+
+args:
+  $1  The line's text after its key
+FUN
+__silt__parse_node() {
+  case "$1" in
+    *=*) __silt__leaf "$1" ;;
+    *) __silt__node "$1" ;;
+  esac
 }
 
 : <<'FUN'
@@ -162,36 +253,15 @@ args:
   $1  The line
 FUN
 __silt__parse() {
-  case "$1" in
-    *.*) ;;
-    *)
-      __silt__fail "not a SILT line: $1"
-      return 1
-      ;;
-  esac
   __silt__DEPTH="${1%%.*}"
-  __silt__REST="${1#*.}"
-  case "$__silt__REST" in
-    \"*)
-      __silt__quoted_key "$__silt__REST" || return 1
-      ;;
-    *)
-      __silt__KEY="${__silt__REST%%:*}"
-      __silt__REST="${__silt__REST#*:}"
-      ;;
-  esac
-  case "$__silt__REST" in
-    *=*)
-      __silt__TYPE="${__silt__REST%%=*}"
-      __silt__VALUE="${__silt__REST#*=}"
-      __silt__LEAF=true
-      ;;
-    *)
-      __silt__TYPE="$__silt__REST"
-      __silt__VALUE=''
-      __silt__LEAF=false
-      ;;
-  esac
+
+  if [ "$__silt__DEPTH" = "$1" ]; then
+    __silt__fail "not a SILT line: $1"
+    return 1
+  fi
+
+  __silt__parse_key "${1#*.}" || return 1
+  __silt__parse_node "$__silt__REST"
 }
 
 : <<'FUN'
@@ -447,8 +517,7 @@ __silt__next_segment() {
 : <<'FUN'
 Reads a quoted key off the front of a path into __silt__SEGMENT, quotes and
 escapes as written, and leaves the path after its closing quote in
-__silt__PATH. The key ends at the first quote that does not follow an odd
-run of backslashes.
+__silt__PATH.
 
   __silt__quoted_segment '"a\"b".c'   ->  SEGMENT '"a\"b"'  PATH '.c'
 
@@ -456,24 +525,9 @@ args:
   $1  The path from its opening quote
 FUN
 __silt__quoted_segment() {
-  __silt__quoted_segment__rest="${1#\"}"
-  __silt__quoted_segment__key='"'
-  while :; do
-    __silt__quoted_segment__head="${__silt__quoted_segment__rest%%\"*}"
-    if [ "$__silt__quoted_segment__head" = "$__silt__quoted_segment__rest" ]; then
-      __silt__fail "a quoted path segment never closes: $1"
-      return 1
-    fi
-    __silt__quoted_segment__rest="${__silt__quoted_segment__rest#*\"}"
-    __silt__quoted_segment__key="$__silt__quoted_segment__key$__silt__quoted_segment__head"
-    __silt__trailing_backslashes_odd "$__silt__quoted_segment__head"
-    case "$__silt__ODD" in
-      true) __silt__quoted_segment__key="$__silt__quoted_segment__key\"" ;;
-      *) break ;;
-    esac
-  done
-  __silt__SEGMENT="$__silt__quoted_segment__key\""
-  __silt__PATH="$__silt__quoted_segment__rest"
+  __silt__quoted_literal "$1" '"' || return 1
+  __silt__SEGMENT="$__silt__LITERAL"
+  __silt__PATH="$__silt__REST"
 }
 
 : <<'PUB_FUN'
@@ -572,15 +626,14 @@ args:
 PUB_FUN
 silt__scalar() {
   __silt__out "$1" || return 1
-  case "$2" in
-    *"$__silt__NL"*)
-      __silt__fail "not a scalar document: $2"
-      return 1
-      ;;
-  esac
+  __silt__scalar__first="${2%%"$__silt__NL"*}"
+  if [ "$__silt__scalar__first" != "$2" ]; then
+    __silt__fail "not a scalar document, its first line: $__silt__scalar__first"
+    return 1
+  fi
   __silt__parse "$2" || return 1
   if [ -n "$__silt__KEY" ]; then
-    __silt__fail "not a scalar document: $2"
+    __silt__fail "not a scalar document, its line: $2"
     return 1
   fi
   __silt__ANSWER="$__silt__VALUE"
@@ -699,7 +752,7 @@ silt__len() {
       __silt__ANSWER=0
       ;;
     *)
-      __silt__fail "a $__silt__len__kind has no length"
+      __silt__fail "$__silt__len__kind has no length"
       return 1
       ;;
   esac
@@ -727,7 +780,7 @@ silt__keys() {
   case "$__silt__keys__kind" in
     map | list) ;;
     *)
-      __silt__fail "a $__silt__keys__kind has no keys"
+      __silt__fail "$__silt__keys__kind has no keys"
       return 1
       ;;
   esac
@@ -788,7 +841,7 @@ silt__each() {
   case "$__silt__each__kind" in
     map | list) ;;
     *)
-      __silt__fail "a $__silt__each__kind has no members"
+      __silt__fail "$__silt__each__kind has no members"
       return 1
       ;;
   esac

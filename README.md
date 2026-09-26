@@ -8,7 +8,3 @@ per line, as a language an interpreter reads and a format data is stored in.
 - `shell/silt/` holds SILT, structured inline live text: a document carried
   between shell functions without its id column, read in strict POSIX shell
   without starting a process. `shell/.ops` vendors shellops for its tests.
-
-The work is tracked in Linear under the initiative "jq leaves: structs runs
-on SILT" and the project "SILT: a Strata document carried inline, read and
-written from POSIX shell".
