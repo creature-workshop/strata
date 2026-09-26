@@ -120,3 +120,45 @@ false
 0.8:str="a \"quoted\" key: with.dots"
 0.9:str="text"
 0.10:str="unicode"
+## each
+runner: 0.:str="bats"
+count: 0.:int=3
+ratio: 0.:float=-1.5e3
+clean: 0.:bool=true
+nothing: 0.:null
+empty: 0.:map
+none: 0.:list
+tests: 0."test/a.bats":map
+1."status":str="passed"
+1."reads":list
+2.0:str="lib/a.sh"
+2.1:str="test/a.bats"
+0."test/b.bats":map
+1."status":str="failed"
+1."reads":list
+a "quoted" key: with.dots: 0.:str="every mark a line is split on"
+text: 0.:str="a \"quote\", a \\ backslash,\na line\tand a tab"
+unicode: 0.:str="café 😀"
+## each tag
+runner tag: 0.:str="bats"
+count tag: 0.:int=3
+ratio tag: 0.:float=-1.5e3
+clean tag: 0.:bool=true
+nothing tag: 0.:null
+empty tag: 0.:map
+none tag: 0.:list
+tests tag: 0."test/a.bats":map
+1."status":str="passed"
+1."reads":list
+2.0:str="lib/a.sh"
+2.1:str="test/a.bats"
+0."test/b.bats":map
+1."status":str="failed"
+1."reads":list
+a "quoted" key: with.dots tag: 0.:str="every mark a line is split on"
+text tag: 0.:str="a \"quote\", a \\ backslash,\na line\tand a tab"
+unicode tag: 0.:str="café 😀"
+## each-until count
+runner
+count
+!! 3 

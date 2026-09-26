@@ -1,6 +1,7 @@
 {
   "include": [
-    "shell/silt/api.sh"
+    "shell/silt/api.sh",
+    "test/silt-transcript.sh"
   ],
   "exclude": [
     "shell/.ops"

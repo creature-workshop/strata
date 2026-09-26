@@ -20,3 +20,6 @@ lib/a.sh
 ## get
 0.0:str="lib/a.sh"
 0.1:str="test/a.bats"
+## each
+0: 0.:str="lib/a.sh"
+1: 0.:str="test/a.bats"

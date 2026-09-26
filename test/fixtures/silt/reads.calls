@@ -8,3 +8,4 @@ has .[1]
 string .[0]
 scalar
 get
+each

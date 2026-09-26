@@ -31,3 +31,6 @@ has .missing
 scalar
 len
 keys
+each
+each tag
+each-until count

@@ -8,3 +8,5 @@ wrap plain
 wrap
 wrap a "quote" and a \ backslash
 wrap café 😀
+wrap a "quote", a \\ backslash,\na line\tand a tab, \r\b\f and \0001
+roundtrip café 😀 with "quotes" and \\ and\nlines

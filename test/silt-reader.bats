@@ -7,14 +7,14 @@
 # listing verbs to run, one per line with the verb's one argument after it, an
 # optional <name>.silt holding the document they run against (absent, the
 # module's own <name>.fixture.silt), and a <name>.expected holding the
-# transcript: each call under a "## " line, its answer below it, or "!! " with
-# the status and the message for a refusal. The first test runs every
-# fixture and diffs the transcripts, so a new case is one more line in a
-# .calls file and its block in .expected; UPDATE_GOLDENS=1 rewrites the
-# .expected files from the live answers, to be read before they are committed.
-# The remaining cases cover what a transcript cannot: the jq oracle over the
-# JSON twin, the each callback, text the shell has to build, the answer
-# variable's check, dash, strace and time.
+# transcript test/silt-transcript.sh writes: each call under a "## " line, its
+# answer below it, or "!! " with the status and the message for a refusal. The
+# first case runs every fixture under bash and under dash, the CI image's sh,
+# and diffs the transcripts, so a new case is one more line in a .calls file
+# and its block in .expected; UPDATE_GOLDENS=1 rewrites the .expected files
+# from the live answers under bash, to be read before they are committed. The
+# remaining cases are the properties a transcript cannot carry: the jq oracle
+# over the JSON twin, the answer variable's check, strace and time.
 
 bats_require_minimum_version 1.5.0
 
@@ -36,40 +36,10 @@ setup() {
 # calls, else the module's own <name>.fixture.silt, else nothing.
 fixture_doc() {
   if [ -f "$FIXTURES/$1.silt" ]; then
-    cat "$FIXTURES/$1.silt"
+    printf '%s' "$FIXTURES/$1.silt"
   elif [ -f "$REPO/shell/silt/$1.fixture.silt" ]; then
-    cat "$REPO/shell/silt/$1.fixture.silt"
+    printf '%s' "$REPO/shell/silt/$1.fixture.silt"
   fi
-}
-
-# One call transcribed: the verb's answer, or "!! <status> <message>" when it
-# refuses. unwrap and wrap take the argument alone; type, scalar, len and keys
-# the document alone; the rest the document and the argument.
-transcribe() {
-  local verb="$1" doc="$2" argument="$3" got='' status=0
-  case "$verb" in
-    unwrap | wrap) "silt__$verb" got "$argument" 2>"$BATS_TEST_TMPDIR/stderr" || status=$? ;;
-    type | scalar | len | keys) "silt__$verb" got "$doc" 2>"$BATS_TEST_TMPDIR/stderr" || status=$? ;;
-    *) "silt__$verb" got "$doc" "$argument" 2>"$BATS_TEST_TMPDIR/stderr" || status=$? ;;
-  esac
-  if [ "$status" -eq 0 ]; then
-    printf '%s\n' "$got"
-  else
-    printf '!! %s %s\n' "$status" "$(cat "$BATS_TEST_TMPDIR/stderr")"
-  fi
-}
-
-# The transcript of a fixture: every call in its .calls, each under its line.
-transcript() {
-  local doc line verb argument
-  doc="$(fixture_doc "$1")"
-  while IFS= read -r line; do
-    verb="${line%% *}"
-    argument="${line#"$verb"}"
-    argument="${argument# }"
-    printf '## %s\n' "$line"
-    transcribe "$verb" "$doc" "$argument"
-  done < "$FIXTURES/$1.calls"
 }
 
 # A SILT list document of str or int leaves, as the JSON array it spells:
@@ -92,18 +62,20 @@ wide_map() {
   printf '%s' "$doc"
 }
 
-@test "every golden fixture: the transcript of its calls matches" {
+@test "every golden fixture: the transcript of its calls matches, under bash and under dash" {
   failed=''
   for calls in "$FIXTURES"/*.calls; do
     name="$(basename "$calls" .calls)"
-    actual="$(transcript "$name")"
-    if [ "${UPDATE_GOLDENS:-}" = 1 ]; then
-      printf '%s\n' "$actual" > "$FIXTURES/$name.expected"
-    fi
-    if ! diff "$FIXTURES/$name.expected" - <<< "$actual"; then
-      echo "## transcript mismatch for fixture: $name"
-      failed="$failed $name"
-    fi
+    for shell in bash dash; do
+      actual="$("$shell" "$REPO/test/silt-transcript.sh" "$REPO/shell/silt/api.sh" "$calls" "$(fixture_doc "$name")")"
+      if [ "${UPDATE_GOLDENS:-}" = 1 ] && [ "$shell" = bash ]; then
+        printf '%s\n' "$actual" > "$FIXTURES/$name.expected"
+      fi
+      if ! diff "$FIXTURES/$name.expected" - <<< "$actual"; then
+        echo "## transcript mismatch for fixture: $name under $shell"
+        failed="$failed $name@$shell"
+      fi
+    done
   done
   [ -z "$failed" ] || fail "mismatched fixtures:$failed"
 }
@@ -121,74 +93,12 @@ wide_map() {
   silt__unwrap got '"\/\b\f"'; assert_equal "$got" "$(jq -rn '"\/\b\f"')"
 }
 
-@test "each: the callback sees every member's key as text and its value as a document, in order" {
-  seen=''
-  note() { seen="$seen$1=$2;"; }
-  silt__get tests "$MAP" .tests
-  silt__each note "$tests"
-  assert_equal "$seen" "test/a.bats=0.\"status\":str=\"passed\"${NL}0.\"reads\":list${NL}1.0:str=\"lib/a.sh\"${NL}1.1:str=\"test/a.bats\";test/b.bats=0.\"status\":str=\"failed\"${NL}0.\"reads\":list;"
-  count=0
-  tally() { count=$((count + 1)); }
-  silt__each tally "$MAP"
-  assert_equal "$count" "$(jq length "$MAP_JSON")"
-}
-
-@test "each: extra arguments reach the callback, and a callback's non-zero status stops the walk with it" {
-  keys=''
-  first_two() { keys="$keys$1,"; [ "$3" = tag ] || return 9; [ "$1" = count ] && return 3; return 0; }
-  run silt__each first_two "$MAP" tag
-  assert_equal "$status" 3
-  silt__each first_two "$MAP" tag || true
-  assert_equal "$keys" "runner,count,"
-}
-
-@test "each: a list's keys are its indices" {
-  seen=''
-  note() { seen="$seen$1:$2 "; }
-  silt__get reads "$MAP" '.tests."test/a.bats".reads'
-  silt__each note "$reads"
-  assert_equal "$seen" '0:0.:str="lib/a.sh" 1:0.:str="test/a.bats" '
-}
-
-@test "wrap: the literal jq writes for the same text, control characters included" {
-  text="a \"quote\", a \\ backslash,${NL}a line$(printf '\t')and a tab, $(printf '\r\b\f') and $(printf '\001')"
-  silt__wrap got "$text"
-  assert_equal "$got" "$(jq -cn --arg t "$text" '$t')"
-  silt__wrap got 'plain'
-  assert_equal "$got" '"plain"'
-  silt__wrap got ''
-  assert_equal "$got" '""'
-}
-
-@test "wrap and unwrap: a round trip is the identity on text, and on a literal jq accepts" {
-  text="café 😀 with \"quotes\" and \\ and${NL}lines"
-  silt__wrap literal "$text"
-  silt__unwrap back "$literal"
-  assert_equal "$back" "$text"
-  assert_equal "$(jq -r . <<< "$literal")" "$text"
-}
-
 @test "the answer variable is checked before anything is evaluated through it" {
   run silt__get 'x; touch /tmp/silt-pwned' "$MAP" .runner
   assert_failure
   assert_output --partial "not a variable name"
   run silt__type '1abc' "$MAP"
   assert_failure
-}
-
-@test "dash: the reader runs on the CI image's sh and answers as under bash" {
-  # shellcheck disable=SC2016  # the program is dash's to expand, not this shell's
-  run dash -c '. "$1/shell/silt/api.sh"; doc="$(cat "$1/shell/silt/map.fixture.silt")"; silt__string r "$doc" ".tests[\"test/a.bats\"].reads[1]"; silt__len n "$doc"; silt__keys k "$doc"; printf "%s|%s|%s\n" "$r" "$n" "$(printf "%s" "$k" | wc -l)"' dash "$REPO"
-  assert_success
-  assert_output "test/a.bats|$(jq length "$MAP_JSON")|$(( $(jq length "$MAP_JSON") - 1 ))"
-}
-
-@test "dash: unwrap and wrap agree with jq there too" {
-  # shellcheck disable=SC2016  # the program is dash's to expand, not this shell's
-  run dash -c '. "$1/shell/silt/api.sh"; silt__unwrap t "$2"; silt__wrap w "$t"; printf "%s\n%s\n" "$t" "$w"' dash "$REPO" "$(jq -c .unicode "$MAP_JSON")"
-  assert_success
-  assert_line --index 0 "$(jq -r .unicode "$MAP_JSON")"
-  assert_equal "$(jq -r . <<< "${lines[1]}")" "$(jq -r .unicode "$MAP_JSON")"
 }
 
 @test "no process: a type, a get, a string, a has, a len, a keys and an each over 4,000 lines start nothing beyond the import" {
