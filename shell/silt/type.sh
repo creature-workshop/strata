@@ -19,10 +19,12 @@ PUB_FUN
 silt__type() {
   __silt__out "$1" || return 1
   __silt__parse "${2%%"$__silt__NL"*}" || return 1
+
   case "$__silt__KEY" in
     '') __silt__ANSWER="$__silt__TYPE" ;;
-    '"'*) __silt__ANSWER=map ;;
+    "$__silt__QUOTE"*) __silt__ANSWER=map ;;
     *) __silt__ANSWER=list ;;
   esac
+
   __silt__answer
 }

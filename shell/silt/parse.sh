@@ -1,7 +1,8 @@
 #!/bin/sh
 
 : <<'MODULE'
-Reading one line into the registers: its depth, its key (quoted or bare), its type and its value.
+Reading one line into the registers: its depth, its key (quoted or bare),
+its type and its value.
 MODULE
 
 : <<'FUN'
@@ -37,8 +38,8 @@ args:
   $2  The closer: the closing quote and what must follow it
 FUN
 __silt__quoted_literal() {
-  __silt__quoted_literal__rest="${1#\"}"
-  __silt__LITERAL='"'
+  __silt__quoted_literal__rest="${1#"$__silt__QUOTE"}"
+  __silt__LITERAL="$__silt__QUOTE"
 
   while :; do
     __silt__quoted_literal__head="${__silt__quoted_literal__rest%%"$2"*}"
@@ -52,12 +53,14 @@ __silt__quoted_literal() {
     __silt__LITERAL="$__silt__LITERAL$__silt__quoted_literal__head"
 
     __silt__trailing_backslashes_odd "$__silt__quoted_literal__head"
-    [ "$__silt__ODD" = true ] || break
+    if [ "$__silt__ODD" = false ]; then
+      break
+    fi
 
     __silt__LITERAL="$__silt__LITERAL$2"
   done
 
-  __silt__LITERAL="$__silt__LITERAL\""
+  __silt__LITERAL="$__silt__LITERAL$__silt__QUOTE"
   __silt__REST="$__silt__quoted_literal__rest"
 }
 
@@ -72,7 +75,7 @@ args:
   $1  The line's text from its opening quote
 FUN
 __silt__quoted_key() {
-  __silt__quoted_literal "$1" '":' || return 1
+  __silt__quoted_literal "$1" "$__silt__QUOTE:" || return 1
   __silt__KEY="$__silt__LITERAL"
 }
 
@@ -101,7 +104,7 @@ args:
 FUN
 __silt__parse_key() {
   case "$1" in
-    '"'*) __silt__quoted_key "$1" ;;
+    "$__silt__QUOTE"*) __silt__quoted_key "$1" ;;
     *) __silt__bare_key "$1" ;;
   esac
 }

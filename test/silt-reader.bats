@@ -11,8 +11,8 @@
 # (absent, the module's own <name>.fixture.silt), and a <name>.expected holding
 # the transcript test/silt-transcript.sh writes: each call under a "## " line,
 # its answer below it, or "!! " with the status and the message for a refusal.
-# Every fixture is registered as a test of its own under bash and under dash,
-# the CI image's sh, and diffs the transcripts, so a new case is a new fileset
+# Every fixture is registered as a test of its own under bash, dash and
+# /bin/sh, and diffs the transcripts, so a new case is a new fileset
 # and no new test code; UPDATE_GOLDENS=1 rewrites the .expected files from the
 # live answers under bash, to be read before they are committed. The remaining
 # cases are the properties a transcript cannot carry: the jq oracle over the
@@ -86,7 +86,7 @@ register_golden_cases() {
   local calls name shell
   for calls in "$FIXTURES"/*.calls; do
     name="$(basename "$calls" .calls)"
-    for shell in bash dash; do
+    for shell in bash dash sh; do
       bats_test_function --description "golden under $shell: $(cat "$FIXTURES/$name.name")" -- golden_case "$name" "$shell"
     done
   done
@@ -129,9 +129,9 @@ process_starts() {
   assert_equal "$(process_starts verbs)" "$(process_starts import)"
 }
 
-@test "linear: get, len and each over 4,000 lines take under a second, under dash and under bash" {
+@test "linear: get, len and each over 4,000 lines take under a second, under dash, bash and sh" {
   wide_map 4000 > "$BATS_TEST_TMPDIR/wide.silt"
-  for shell in dash bash; do
+  for shell in dash bash sh; do
     run "$shell" "$REPO/test/silt-exercise.sh" "$REPO/shell/silt/api.sh" "$BATS_TEST_TMPDIR/wide.silt" timed
     assert_success
     assert_line --index 0 '0.:str="value number 3999"'

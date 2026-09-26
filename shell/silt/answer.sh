@@ -1,7 +1,8 @@
 #!/bin/sh
 
 : <<'MODULE'
-How a verb reports: a failure on stderr, the answer variable checked and assigned, a document built one line at a time.
+How a verb reports: a failure on stderr, the answer variable checked and
+assigned, a document built one line at a time.
 MODULE
 
 : <<'FUN'
@@ -31,6 +32,7 @@ __silt__out() {
       return 1
       ;;
   esac
+
   __silt__OUT="$1"
 }
 

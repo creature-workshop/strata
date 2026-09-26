@@ -16,13 +16,16 @@ PUB_FUN
 silt__has() {
   __silt__out "$1" || return 1
   __silt__has__out="$__silt__OUT"
+
   __silt__has__value=''
   silt__get __silt__has__value "$2" "$3" || return 1
-  __silt__OUT="$__silt__has__out"
+
   if [ -n "$__silt__has__value" ]; then
     __silt__ANSWER=true
   else
     __silt__ANSWER=false
   fi
+
+  __silt__OUT="$__silt__has__out"
   __silt__answer
 }

@@ -1,7 +1,8 @@
 #!/bin/sh
 
 : <<'MODULE'
-Reading a path one segment at a time: .a, .a[2], .[0], ."quoted" and ["quoted"].
+Reading a path one segment at a time: .a, .a[2], .[0], ."quoted" and
+["quoted"].
 MODULE
 
 : <<'FUN'
@@ -18,28 +19,21 @@ FUN
 __silt__next_segment() {
   __silt__PATH="${__silt__PATH#.}"
   __silt__PATH_DONE=false
+
   case "$__silt__PATH" in
-    '')
-      __silt__PATH_DONE=true
-      ;;
-    '"'*)
-      __silt__quoted_segment "$__silt__PATH" || return 1
-      ;;
-    '["'*)
-      __silt__quoted_segment "${__silt__PATH#\[}" || return 1
-      __silt__PATH="${__silt__PATH#\]}"
-      ;;
-    \[*)
-      __silt__SEGMENT="${__silt__PATH%%\]*}"
-      __silt__SEGMENT="${__silt__SEGMENT#\[}"
-      __silt__PATH="${__silt__PATH#*\]}"
-      ;;
-    *)
-      __silt__next_segment__name="${__silt__PATH%%[.\[]*}"
-      __silt__PATH="${__silt__PATH#"$__silt__next_segment__name"}"
-      silt__wrap __silt__SEGMENT "$__silt__next_segment__name"
-      ;;
+    '') __silt__segment_end ;;
+    "$__silt__QUOTE"*) __silt__quoted_segment "$__silt__PATH" ;;
+    "[$__silt__QUOTE"*) __silt__bracketed_segment ;;
+    \[*) __silt__index_segment ;;
+    *) __silt__name_segment ;;
   esac
+}
+
+: <<'FUN'
+Marks the path read to its end.
+FUN
+__silt__segment_end() {
+  __silt__PATH_DONE=true
 }
 
 : <<'FUN'
@@ -53,7 +47,36 @@ args:
   $1  The path from its opening quote
 FUN
 __silt__quoted_segment() {
-  __silt__quoted_literal "$1" '"' || return 1
+  __silt__quoted_literal "$1" "$__silt__QUOTE" || return 1
   __silt__SEGMENT="$__silt__LITERAL"
   __silt__PATH="$__silt__REST"
+}
+
+: <<'FUN'
+Reads a bracketed quoted key, ["a.b"], off the front of __silt__PATH into
+__silt__SEGMENT, and leaves the path after the closing bracket.
+FUN
+__silt__bracketed_segment() {
+  __silt__quoted_segment "${__silt__PATH#\[}" || return 1
+  __silt__PATH="${__silt__PATH#\]}"
+}
+
+: <<'FUN'
+Reads a bracketed index, [2], off the front of __silt__PATH into
+__silt__SEGMENT as bare digits, and leaves the path after the closing bracket.
+FUN
+__silt__index_segment() {
+  __silt__SEGMENT="${__silt__PATH%%\]*}"
+  __silt__SEGMENT="${__silt__SEGMENT#\[}"
+  __silt__PATH="${__silt__PATH#*\]}"
+}
+
+: <<'FUN'
+Reads a bare member name, up to the next dot or bracket, off the front of
+__silt__PATH into __silt__SEGMENT as the quoted literal a line's key spells.
+FUN
+__silt__name_segment() {
+  __silt__name_segment__name="${__silt__PATH%%[.\[]*}"
+  __silt__PATH="${__silt__PATH#"$__silt__name_segment__name"}"
+  silt__wrap __silt__SEGMENT "$__silt__name_segment__name"
 }
