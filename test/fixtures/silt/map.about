@@ -1,4 +1,4 @@
-This is the main fixture: a map with a bit of everything in it, and the same
-data lives in shell/silt/map.fixture.json so jq can be asked the same
-questions. The calls look values up by path, ask what type each one is,
-count the members, list the keys, and walk the members with each.
+The main fixture: a map with a bit of everything in it. The same data is in
+shell/silt/map.fixture.json, so every lookup here can be checked against jq.
+The calls look values up by path, ask what type each one is, count the
+members, list the keys, and walk the members with each.

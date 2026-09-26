@@ -1,3 +1,2 @@
-Input that is not SILT at all. Every SILT line starts with a depth and a
-dot, so a line without them is refused with a message that says so, whatever
-verb is asked.
+Input that is not SILT. Every SILT line starts with a depth and a dot. get
+and type both refuse a line without them and put the line in the error.

@@ -1,2 +1,2 @@
-A line whose quoted key opens but never closes. The reader refuses it and
-says which line, rather than treating the rest of the line as the key.
+A line whose quoted key opens but never closes. get refuses it and puts the
+line in the error, rather than taking the rest of the line as the key.
