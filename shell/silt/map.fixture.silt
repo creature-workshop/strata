@@ -1,0 +1,19 @@
+0."runner":str="bats"
+0."count":int=3
+0."ratio":float=-1.5e3
+0."clean":bool=true
+0."nothing":null
+0."empty":map
+0."none":list
+0."tests":map
+1."test/a.bats":map
+2."status":str="passed"
+2."reads":list
+3.0:str="lib/a.sh"
+3.1:str="test/a.bats"
+1."test/b.bats":map
+2."status":str="failed"
+2."reads":list
+0."a \"quoted\" key: with.dots":str="every mark a line is split on"
+0."text":str="a \"quote\", a \\ backslash,\na line\tand a tab"
+0."unicode":str="café 😀"
