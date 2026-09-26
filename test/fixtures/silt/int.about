@@ -1,1 +1,2 @@
-A number on a card: it has a kind and a value you can read, and nothing to
+A document that is just one integer. You can read its type and its value.
+There is nothing inside it to count, so asking for its length is refused.

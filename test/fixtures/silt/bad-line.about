@@ -1,1 +1,3 @@
-Every SILT line starts with a depth and a dot. A line without them is not
+Input that is not SILT at all. Every SILT line starts with a depth and a
+dot, so a line without them is refused with a message that says so, whatever
+verb is asked.

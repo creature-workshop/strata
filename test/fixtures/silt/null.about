@@ -1,1 +1,2 @@
-Null is a card that says nothing is here. It is still a card: its kind is
+A document that is just null. Its type is null, its length is zero, reading
+it as a string gives the word null, and a path into it is a miss.

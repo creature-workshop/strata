@@ -1,1 +1,4 @@
-A list is things in a row, so you ask for one by its place, counting from
+A list of two strings. You address a list by position, starting at zero, so
+the calls ask for the first and second elements, for one past the end (which
+is a miss, not an error), how many there are, and what the keys of a list
+look like (its indices).

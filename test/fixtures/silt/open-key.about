@@ -1,1 +1,2 @@
-A quoted label has to close with a quote and a colon. When it never does,
+A line whose quoted key opens but never closes. The reader refuses it and
+says which line, rather than treating the rest of the line as the key.

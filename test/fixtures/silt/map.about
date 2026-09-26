@@ -1,1 +1,4 @@
-A map is a box of labelled things. This document is the box the JSON twin
+This is the main fixture: a map with a bit of everything in it, and the same
+data lives in shell/silt/map.fixture.json so jq can be asked the same
+questions. The calls look values up by path, ask what type each one is,
+count the members, list the keys, and walk the members with each.

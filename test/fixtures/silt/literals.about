@@ -1,1 +1,6 @@
-A string travels in quotes with the awkward characters spelled out, the
+The string escaping. unwrap takes a JSON string literal (quotes and escapes
+included) and gives back the plain text; wrap does the reverse. The calls
+cover the ordinary escapes, a surrogate pair, control characters, and two
+things unwrap must refuse: input that is not a literal, and an escape JSON
+does not have. The roundtrip call wraps then unwraps and reports whether the
+text came back unchanged.
