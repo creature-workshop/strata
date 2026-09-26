@@ -12,8 +12,6 @@
 set -u
 
 main() {
-  export SILT_DIR="${1%/*}"
-  . "$1"
   DOC="$(cat "$2")"
   case "$3" in
     import) ;;
@@ -24,6 +22,20 @@ main() {
       exit 2
       ;;
   esac
+}
+
+# The library, the document and the mode are all required.
+require_usage() {
+  if [ "$#" -ne 3 ]; then
+    printf 'usage: silt-exercise.sh <api.sh> <document> import|verbs|timed\n' >&2
+    exit 2
+  fi
+}
+
+# Sources the reader, telling it where it lives for the shells that cannot tell.
+load_library() {
+  export SILT_DIR="${1%/*}"
+  . "$1"
 }
 
 # The callback each gets: it does nothing.

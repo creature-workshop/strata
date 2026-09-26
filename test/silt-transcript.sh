@@ -1,97 +1,138 @@
 #!/bin/sh
-# The transcript of one golden fixture for test/silt-reader.bats: every call
-# in the .calls file under a "## " line, its answer below it, and "!! <status>
-# <message>" when the verb refuses. Written in POSIX sh so the same goldens are
-# checked under every shell the bats case names.
+# Writes the transcript of one golden fileset for test/silt-goldens.bats:
+# every call in the .calls file under a "## " line, its answer below it, and
+# "!! <status> <message>" when the verb refuses. POSIX sh, so the same goldens
+# are checked under every shell the bats file names.
 #
 # Usage: <shell> test/silt-transcript.sh <api.sh> <calls> [<document>]
 #
-# A blank line or a # line in the .calls file is skipped. A call is a verb and
-# one argument. type, scalar, len and keys take the
-# document; get, string and has take it and a path; unwrap takes the literal;
-# wrap and roundtrip take text read through printf %b, so a line can spell a
-# newline or a control character; each takes an extra argument for its
-# callback, and each-until the key at which the callback returns 3.
+# A call is a verb and one argument; a blank line or a # line is skipped.
+# type, scalar, len and keys take the document; get, string and has take it
+# and a path; unwrap takes the literal; wrap and roundtrip take text read
+# through printf %b, so a line can spell a newline or a control character;
+# each takes an extra argument for its callback, and each-until the key at
+# which the callback returns 3.
 
 set -u
 
 main() {
-  export SILT_DIR="${1%/*}"
-  . "$1"
-  DOC=''
-  if [ -n "${3:-}" ]; then
-    DOC="$(cat "$3")"
-  fi
+  require_usage "$@"
+  load_library "$1"
+  DOCUMENT="$(read_document "${3:-}")"
   STDERR="${TMPDIR:-/tmp}/silt-transcript.$$"
   trap 'rm -f "$STDERR"' EXIT
-  while IFS= read -r __main__line; do
-    case "$__main__line" in
+
+  transcribe_calls < "$2"
+}
+
+# The library and the calls are required; the document is not.
+require_usage() {
+  if [ "$#" -lt 2 ]; then
+    printf 'usage: silt-transcript.sh <api.sh> <calls> [<document>]\n' >&2
+    exit 2
+  fi
+}
+
+# Sources the reader, telling it where it lives for the shells that cannot tell.
+load_library() {
+  export SILT_DIR="${1%/*}"
+  . "$1"
+}
+
+# The document's text, or nothing when no file was named.
+read_document() {
+  if [ -n "$1" ]; then
+    cat "$1"
+  fi
+}
+
+# One transcript block per call on stdin.
+transcribe_calls() {
+  while IFS= read -r __transcribe_calls__line; do
+    case "$__transcribe_calls__line" in
       '' | '#'*) continue ;;
     esac
-    __main__verb="${__main__line%% *}"
-    __main__argument="${__main__line#"$__main__verb"}"
-    printf '## %s\n' "$__main__line"
-    transcribe "$__main__verb" "${__main__argument# }"
-  done < "$2"
+    transcribe_call "$__transcribe_calls__line"
+  done
 }
 
-# Runs one call and reports it.
-transcribe() {
-  got=''
-  status=0
+# The call's line, then what the verb answered or why it refused.
+transcribe_call() {
+  ANSWER=''
+  STATUS=0
+
+  printf '## %s\n' "$1"
+  run_verb "${1%% *}" "$(argument_of "$1")"
+  report_answer
+}
+
+# The text after the verb and one space, or nothing.
+argument_of() {
+  __argument_of__rest="${1#"${1%% *}"}"
+  printf '%s' "${__argument_of__rest# }"
+}
+
+# Dispatches a verb to the reader, with the document where the verb takes one.
+run_verb() {
   case "$1" in
-    type | scalar | len | keys) "silt__$1" got "$DOC" 2>"$STDERR" || status=$? ;;
-    get | string | has) "silt__$1" got "$DOC" "$2" 2>"$STDERR" || status=$? ;;
-    unwrap) silt__unwrap got "$2" 2>"$STDERR" || status=$? ;;
-    wrap) wrap_text "$2" ;;
-    roundtrip) roundtrip_text "$2" ;;
-    each) silt__each note "$DOC" "$2" 2>"$STDERR" || status=$? ;;
-    each-until) silt__each until_key "$DOC" "$2" 2>"$STDERR" || status=$? ;;
-    *) status=127 ;;
+    type | scalar | len | keys) capture "silt__$1" ANSWER "$DOCUMENT" ;;
+    get | string | has) capture "silt__$1" ANSWER "$DOCUMENT" "$2" ;;
+    unwrap) capture silt__unwrap ANSWER "$2" ;;
+    wrap) capture silt__wrap ANSWER "$(unescape "$2")" ;;
+    roundtrip) roundtrip "$(unescape "$2")" ;;
+    each) capture silt__each note "$DOCUMENT" "$2" ;;
+    each-until) capture silt__each until_key "$DOCUMENT" "$2" ;;
+    *) STATUS=127 ;;
   esac
-  report
 }
 
-# The answer, then the refusal's status and message when there is one.
-report() {
-  if [ "$status" -eq 0 ]; then
-    printf '%s\n' "$got"
+# Runs a command, keeping its status in STATUS and its stderr in the scratch file.
+capture() {
+  "$@" 2>"$STDERR" || STATUS=$?
+}
+
+# Text spelled with printf escapes, as the characters it means.
+unescape() {
+  printf '%b' "$1"
+}
+
+# wrap then unwrap: the literal, then whether the text came back unchanged.
+roundtrip() {
+  capture silt__wrap LITERAL "$1"
+  capture silt__unwrap BACK "$LITERAL"
+  ANSWER="$LITERAL$__silt__NL$(identity_of "$1" "$BACK")"
+}
+
+# Whether two texts are the same, as a line of the transcript.
+identity_of() {
+  if [ "$1" = "$2" ]; then
+    printf 'identity: true'
+  else
+    printf 'identity: false'
+  fi
+}
+
+# The answer, and after a refusal its status and message.
+report_answer() {
+  if [ "$STATUS" -eq 0 ]; then
+    printf '%s\n' "$ANSWER"
     return
   fi
-  if [ -n "$got" ]; then
-    printf '%s\n' "$got"
-  fi
-  printf '!! %s %s\n' "$status" "$(cat "$STDERR" 2>/dev/null)"
-}
 
-# wrap over text spelled with printf escapes.
-wrap_text() {
-  __wrap_text__text="$(printf '%b' "$1")"
-  silt__wrap got "$__wrap_text__text" 2>"$STDERR" || status=$?
-}
-
-# wrap then unwrap over text spelled with printf escapes: the literal, then
-# whether the text came back unchanged.
-roundtrip_text() {
-  __roundtrip_text__text="$(printf '%b' "$1")"
-  silt__wrap __roundtrip_text__literal "$__roundtrip_text__text" 2>"$STDERR" || status=$?
-  silt__unwrap __roundtrip_text__back "$__roundtrip_text__literal" 2>"$STDERR" || status=$?
-  got="$__roundtrip_text__literal"
-  if [ "$__roundtrip_text__back" = "$__roundtrip_text__text" ]; then
-    got="$got${__silt__NL}identity: true"
-  else
-    got="$got${__silt__NL}identity: false"
+  if [ -n "$ANSWER" ]; then
+    printf '%s\n' "$ANSWER"
   fi
+  printf '!! %s %s\n' "$STATUS" "$(cat "$STDERR")"
 }
 
 # each's callback: the key, the extra argument when one came, and the value.
 note() {
-  got="$got${got:+$__silt__NL}$1${3:+ $3}: $2"
+  ANSWER="$ANSWER${ANSWER:+$__silt__NL}$1${3:+ $3}: $2"
 }
 
 # each's callback that stops the walk with status 3 at the key given.
 until_key() {
-  got="$got${got:+$__silt__NL}$1"
+  ANSWER="$ANSWER${ANSWER:+$__silt__NL}$1"
   [ "$1" != "$3" ] || return 3
 }
 

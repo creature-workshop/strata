@@ -1,28 +1,14 @@
 #!/usr/bin/env bats
 # shellcheck disable=SC2030,SC2031  # bats runs each case in a subshell of its own; a variable set in one is meant to stay there
-# The SILT reader (shell/silt/api.sh): a Strata document carried inline,
-# read in strict POSIX shell without a process.
-#
-# Most cases are golden fixtures under test/fixtures/silt/, one fileset each:
-# a <name>.name holding the case's name, which is the test's name in the log,
-# a <name>.about explaining it in plain words, printed when the case fails, a
-# <name>.calls listing verbs to run, one per line with the verb's one argument
-# after it, an optional <name>.silt holding the document they run against
-# (absent, the module's own <name>.fixture.silt), and a <name>.expected holding
-# the transcript test/silt-transcript.sh writes: each call under a "## " line,
-# its answer below it, or "!! " with the status and the message for a refusal.
-# Every fixture is registered as a test of its own under bash, dash and
-# /bin/sh, and diffs the transcripts, so a new case is a new fileset
-# and no new test code; UPDATE_GOLDENS=1 rewrites the .expected files from the
-# live answers under bash, to be read before they are committed. The remaining
-# cases are the properties a transcript cannot carry: the jq oracle over the
-# JSON twin, the answer variable's check, and the process and timing cases,
-# which run test/silt-exercise.sh under strace and under the clock.
+# The properties of the SILT reader (shell/silt/api.sh) that a golden
+# transcript cannot carry; the goldens themselves are test/silt-goldens.bats.
+# Here: the jq oracle over the fixture's JSON twin, the answer variable's
+# check, and the process and timing cases, which run test/silt-exercise.sh
+# under strace and under the clock.
 
 bats_require_minimum_version 1.5.0
 
 REPO="$(cd "${BATS_TEST_DIRNAME}/.." && pwd)"
-FIXTURES="$BATS_TEST_DIRNAME/fixtures/silt"
 
 load "${SHELLOPS_DIR:-$REPO/shell/.ops}/test/lib/bats-support/load.bash"
 load "${SHELLOPS_DIR:-$REPO/shell/.ops}/test/lib/bats-assert/load.bash"
@@ -34,16 +20,6 @@ setup() {
   MAP="$(cat "$REPO/shell/silt/map.fixture.silt")"
   MAP_JSON="$REPO/shell/silt/map.fixture.json"
   NL=$'\n'
-}
-
-# The document a golden fixture's calls run against: <name>.silt beside the
-# calls, else the module's own <name>.fixture.silt, else nothing.
-fixture_doc() {
-  if [ -f "$FIXTURES/$1.silt" ]; then
-    printf '%s' "$FIXTURES/$1.silt"
-  elif [ -f "$REPO/shell/silt/$1.fixture.silt" ]; then
-    printf '%s' "$REPO/shell/silt/$1.fixture.silt"
-  fi
 }
 
 # A SILT list document of str or int leaves, as the JSON array it spells:
@@ -66,45 +42,31 @@ wide_map() {
   printf '%s' "$doc"
 }
 
-# One golden fixture under one shell: the transcript of its calls against its
-# .expected, rewritten first when UPDATE_GOLDENS=1 and the shell is bash.
-golden_case() {
-  local name="$1" shell="$2" actual
-  actual="$("$shell" "$REPO/test/silt-transcript.sh" "$REPO/shell/silt/api.sh" "$FIXTURES/$name.calls" "$(fixture_doc "$name")")"
-  if [ "${UPDATE_GOLDENS:-}" = 1 ] && [ "$shell" = bash ]; then
-    printf '%s\n' "$actual" > "$FIXTURES/$name.expected"
-  fi
-  if ! diff "$FIXTURES/$name.expected" - <<< "$actual"; then
-    echo "## $(cat "$FIXTURES/$name.name") ($name, under $shell): the transcript differs from $name.expected"
-    cat "$FIXTURES/$name.about"
-    false
-  fi
+# Asserts silt__string answers a path as jq -r does over the JSON twin.
+assert_string_like_jq() {
+  local path="$1" got
+  silt__string got "$MAP" "$path"
+  assert_equal "$got" "$(jq -r "$path" "$MAP_JSON")"
 }
 
-# Registers every fixture as a test under each shell, named for the case.
-register_golden_cases() {
-  local calls name shell
-  for calls in "$FIXTURES"/*.calls; do
-    name="$(basename "$calls" .calls)"
-    for shell in bash dash sh; do
-      bats_test_function --description "golden under $shell: $(cat "$FIXTURES/$name.name")" -- golden_case "$name" "$shell"
-    done
-  done
+@test "the twin: string answers a path as jq -r does" {
+  assert_string_like_jq '.tests["test/a.bats"].reads[1]'
+  assert_string_like_jq '."a \"quoted\" key: with.dots"'
+  assert_string_like_jq .text
+  assert_string_like_jq .unicode
 }
 
-register_golden_cases
+@test "the twin: len and keys answer as jq length and keys_unsorted do" {
+  silt__len got "$MAP"
+  assert_equal "$got" "$(jq length "$MAP_JSON")"
 
-@test "the twin: string, len, keys and unwrap answer as jq does over the fixture's JSON" {
-  silt__string got "$MAP" '.tests["test/a.bats"].reads[1]'
-  assert_equal "$got" "$(jq -r '.tests["test/a.bats"].reads[1]' "$MAP_JSON")"
-  silt__string got "$MAP" '."a \"quoted\" key: with.dots"'
-  assert_equal "$got" "$(jq -r '."a \"quoted\" key: with.dots"' "$MAP_JSON")"
-  silt__string got "$MAP" .text; assert_equal "$got" "$(jq -r .text "$MAP_JSON")"
-  silt__string got "$MAP" .unicode; assert_equal "$got" "$(jq -r .unicode "$MAP_JSON")"
-  silt__len got "$MAP"; assert_equal "$got" "$(jq length "$MAP_JSON")"
   silt__keys got "$MAP"
   assert_equal "$(list_as_json "$got" | jq -c .)" "$(jq -c keys_unsorted "$MAP_JSON")"
-  silt__unwrap got '"\/\b\f"'; assert_equal "$got" "$(jq -rn '"\/\b\f"')"
+}
+
+@test "the twin: unwrap decodes the escapes jq -r does" {
+  silt__unwrap got '"\/\b\f"'
+  assert_equal "$got" "$(jq -rn '"\/\b\f"')"
 }
 
 @test "the answer variable is checked before anything is evaluated through it" {
