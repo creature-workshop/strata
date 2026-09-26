@@ -1,7 +1,21 @@
 {
   "include": [
     "shell/silt/api.sh",
-    "test/silt-transcript.sh"
+    "shell/silt/constants.sh",
+    "shell/silt/answer.sh",
+    "shell/silt/parse.sh",
+    "shell/silt/text.sh",
+    "shell/silt/path.sh",
+    "shell/silt/type.sh",
+    "shell/silt/get.sh",
+    "shell/silt/scalar.sh",
+    "shell/silt/string.sh",
+    "shell/silt/has.sh",
+    "shell/silt/len.sh",
+    "shell/silt/keys.sh",
+    "shell/silt/each.sh",
+    "test/silt-transcript.sh",
+    "test/silt-exercise.sh"
   ],
   "exclude": [
     "shell/.ops"
