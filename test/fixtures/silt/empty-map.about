@@ -1,0 +1,3 @@
+A map with nothing in it. Its type is still map, its length is zero, its keys
+are an empty list, and getting it back gives the same one-line document.
+Asking for it as a scalar is refused, because a map is not a scalar.

@@ -1,0 +1,2 @@
+A document that is just one string, with no key. It has a type, a value, and
+a length in characters. It has no keys, so asking for them is refused.

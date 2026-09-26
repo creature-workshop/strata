@@ -1,0 +1,36 @@
+type
+string .runner
+string .tests."test/a.bats".status
+string .tests["test/a.bats"].reads[1]
+string .count
+string .ratio
+string .clean
+string .nothing
+string .tests
+string .missing
+string ."a \"quoted\" key: with.dots"
+string .text
+string .unicode
+get .runner
+get .tests."test/a.bats".reads
+get .tests."test/b.bats"
+get .empty
+get .none
+get .nothing
+get
+get .
+get .missing
+get .tests."test/c.bats"
+get .tests."test/a.bats".reads[7]
+get .runner.deeper
+get .tests
+has .runner
+has .nothing
+has .none
+has .missing
+scalar
+len
+keys
+each
+each tag
+each-until count

@@ -1,0 +1,2 @@
+A line whose quoted key opens but never closes. get refuses it and puts the
+line in the error, rather than taking the rest of the line as the key.

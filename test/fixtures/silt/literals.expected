@@ -1,0 +1,28 @@
+## unwrap "lib/a.sh"
+lib/a.sh
+## unwrap "a \"b\"\nc"
+a "b"
+c
+## unwrap "\/\b\f"
+/
+## unwrap "caf\u00e9 \ud83d\ude00"
+café 😀
+## unwrap "\u0041 \u00e9 \u20ac \ud83d\ude00"
+A é € 😀
+## unwrap bats
+!! 1 silt: not a string literal: bats
+## unwrap "a\qb"
+!! 1 silt: not a JSON escape: \qb
+## wrap plain
+"plain"
+## wrap
+""
+## wrap a "quote" and a \ backslash
+"a \"quote\" and a \\ backslash"
+## wrap café 😀
+"café 😀"
+## wrap a "quote", a \\ backslash,\na line\tand a tab, \r\b\f and \0001
+"a \"quote\", a \\ backslash,\na line\tand a tab, \r\b\f and \u0001"
+## roundtrip café 😀 with "quotes" and \\ and\nlines
+"café 😀 with \"quotes\" and \\ and\nlines"
+identity: true

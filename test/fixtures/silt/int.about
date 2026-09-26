@@ -1,0 +1,2 @@
+A document that is just one integer. You can read its type and its value.
+There is nothing inside it to count, so asking for its length is refused.

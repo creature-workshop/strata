@@ -1,0 +1,2 @@
+Input that is not SILT. Every SILT line starts with a depth and a dot. get
+and type both refuse a line without them and put the line in the error.

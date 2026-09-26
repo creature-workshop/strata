@@ -1,0 +1,13 @@
+unwrap "lib/a.sh"
+unwrap "a \"b\"\nc"
+unwrap "\/\b\f"
+unwrap "caf\u00e9 \ud83d\ude00"
+unwrap "\u0041 \u00e9 \u20ac \ud83d\ude00"
+unwrap bats
+unwrap "a\qb"
+wrap plain
+wrap
+wrap a "quote" and a \ backslash
+wrap café 😀
+wrap a "quote", a \\ backslash,\na line\tand a tab, \r\b\f and \0001
+roundtrip café 😀 with "quotes" and \\ and\nlines

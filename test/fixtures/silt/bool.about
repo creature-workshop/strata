@@ -1,0 +1,2 @@
+A document that is just the boolean true. You can read its type and its
+value. A boolean has no length and no keys, so both of those are refused.

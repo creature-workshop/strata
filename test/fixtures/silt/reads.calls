@@ -1,0 +1,11 @@
+type
+len
+keys
+get .[0]
+get [1]
+get .[7]
+has .[1]
+string .[0]
+scalar
+get
+each

@@ -1,0 +1,5 @@
+type
+scalar
+len
+string
+has .x

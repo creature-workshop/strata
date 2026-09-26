@@ -1,0 +1,10 @@
+## type
+bool
+## scalar
+true
+## string
+true
+## len
+!! 1 silt: bool has no length
+## keys
+!! 1 silt: bool has no keys

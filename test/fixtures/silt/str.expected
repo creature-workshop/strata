@@ -1,0 +1,14 @@
+## type
+str
+## scalar
+"bats"
+## len
+4
+## string
+bats
+## get
+0.:str="bats"
+## has .x
+false
+## keys
+!! 1 silt: str has no keys

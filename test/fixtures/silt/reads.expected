@@ -1,0 +1,25 @@
+## type
+list
+## len
+2
+## keys
+0.0:int=0
+0.1:int=1
+## get .[0]
+0.:str="lib/a.sh"
+## get [1]
+0.:str="test/a.bats"
+## get .[7]
+
+## has .[1]
+true
+## string .[0]
+lib/a.sh
+## scalar
+!! 1 silt: not a scalar document, its first line: 0.0:str="lib/a.sh"
+## get
+0.0:str="lib/a.sh"
+0.1:str="test/a.bats"
+## each
+0: 0.:str="lib/a.sh"
+1: 0.:str="test/a.bats"
