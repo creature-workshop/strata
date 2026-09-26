@@ -1,0 +1,5 @@
+# What shellops itself waives, since the runner reads the repository's own rc:
+# a source it cannot follow (1090, 1091), a variable a verb assigns through
+# eval (2154), the @-sigil (3033), a function a trap or a plugin reaches
+# (2317).
+disable=SC1090,SC1091,SC2154,SC3033,SC2317

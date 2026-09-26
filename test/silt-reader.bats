@@ -1,4 +1,5 @@
 #!/usr/bin/env bats
+# shellcheck disable=SC2030,SC2031  # bats runs each case in a subshell of its own; a variable set in one is meant to stay there
 # The SILT reader (shell/silt/api.sh): a Strata document carried inline,
 # read in strict POSIX shell without a process. Every case that has a JSON
 # twin checks the shell's answer against jq over that twin, the oracle while
@@ -229,12 +230,14 @@ wide_map() {
 }
 
 @test "dash: the reader runs on the CI image's sh and answers as under bash" {
+  # shellcheck disable=SC2016  # the program is dash's to expand, not this shell's
   run dash -c '. "$1/shell/silt/api.sh"; doc="$(cat "$1/shell/silt/map.fixture.silt")"; silt__string r "$doc" ".tests[\"test/a.bats\"].reads[1]"; silt__len n "$doc"; silt__keys k "$doc"; printf "%s|%s|%s\n" "$r" "$n" "$(printf "%s" "$k" | wc -l)"' dash "$REPO"
   assert_success
   assert_output "test/a.bats|$(jq length "$MAP_JSON")|$(( $(jq length "$MAP_JSON") - 1 ))"
 }
 
 @test "dash: unwrap and wrap agree with jq there too" {
+  # shellcheck disable=SC2016  # the program is dash's to expand, not this shell's
   run dash -c '. "$1/shell/silt/api.sh"; silt__unwrap t "$2"; silt__wrap w "$t"; printf "%s\n%s\n" "$t" "$w"' dash "$REPO" "$(jq -c .unicode "$MAP_JSON")"
   assert_success
   assert_line --index 0 "$(jq -r .unicode "$MAP_JSON")"
@@ -245,7 +248,9 @@ wide_map() {
   command -v strace >/dev/null || skip "strace is not installed"
   doc="$(wide_map 4000)"
   printf '%s' "$doc" > "$BATS_TEST_TMPDIR/wide.silt"
+  # shellcheck disable=SC2016  # the programs are dash's to expand, not this shell's
   import_only='. "$1/shell/silt/api.sh"; d="$(cat "$2")"'
+  # shellcheck disable=SC2016
   verbs='. "$1/shell/silt/api.sh"; d="$(cat "$2")"; silt__type t "$d"; silt__get g "$d" ".key3999"; silt__string s "$d" ".key7"; silt__has h "$d" ".key1"; silt__len n "$d"; silt__keys k "$d"; cb() { :; }; silt__each cb "$d" extra'
   strace -f -qq -e trace=clone,clone3,fork,vfork,execve -o "$BATS_TEST_TMPDIR/import.trace" dash -c "$import_only" dash "$REPO" "$BATS_TEST_TMPDIR/wide.silt"
   strace -f -qq -e trace=clone,clone3,fork,vfork,execve -o "$BATS_TEST_TMPDIR/verbs.trace" dash -c "$verbs" dash "$REPO" "$BATS_TEST_TMPDIR/wide.silt"
@@ -258,6 +263,7 @@ wide_map() {
   doc="$(wide_map 4000)"
   printf '%s' "$doc" > "$BATS_TEST_TMPDIR/wide.silt"
   # Outside bats's own process, whose DEBUG trap prices every command.
+  # shellcheck disable=SC2016  # the program is each shell's to expand, not this one's
   timed='. "$1/shell/silt/api.sh"; d="$(cat "$2")"; s=$(date +%s%N); silt__get g "$d" .key3999; silt__len n "$d"; cb() { :; }; silt__each cb "$d"; e=$(date +%s%N); printf "%s|%s|%s\n" "$g" "$n" $(( (e - s) / 1000000 ))'
   for shell in dash bash; do
     run "$shell" -c "$timed" "$shell" "$REPO" "$BATS_TEST_TMPDIR/wide.silt"
