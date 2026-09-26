@@ -6,7 +6,9 @@
 #
 # Usage: <shell> test/silt-transcript.sh <api.sh> <calls> [<document>]
 #
-# A call is a verb and one argument. type, scalar, len and keys take the
+# A .calls file opens with its name and a plain explanation as # lines, which
+# the transcript repeats so the .expected reads on its own; a blank line or a
+# # line anywhere is passed through. A call is a verb and one argument. type, scalar, len and keys take the
 # document; get, string and has take it and a path; unwrap takes the literal;
 # wrap and roundtrip take text read through printf %b, so a line can spell a
 # newline or a control character; each takes an extra argument for its
@@ -23,6 +25,12 @@ main() {
   STDERR="${TMPDIR:-/tmp}/silt-transcript.$$"
   trap 'rm -f "$STDERR"' EXIT
   while IFS= read -r __main__line; do
+    case "$__main__line" in
+      '' | '#'*)
+        printf '%s\n' "$__main__line"
+        continue
+        ;;
+    esac
     __main__verb="${__main__line%% *}"
     __main__argument="${__main__line#"$__main__verb"}"
     printf '## %s\n' "$__main__line"

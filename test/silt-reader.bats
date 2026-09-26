@@ -4,6 +4,7 @@
 # read in strict POSIX shell without a process.
 #
 # Most cases are golden fixtures under test/fixtures/silt/: a <name>.calls
+# opening with the case's name and a plain explanation as # lines and then
 # listing verbs to run, one per line with the verb's one argument after it, an
 # optional <name>.silt holding the document they run against (absent, the
 # module's own <name>.fixture.silt), and a <name>.expected holding the

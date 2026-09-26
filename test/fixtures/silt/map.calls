@@ -1,3 +1,10 @@
+# The map: every reader verb over the shared document
+#
+# A map is a box of labelled things. This document is the box the JSON twin
+# beside the library also spells, so we can ask jq the same questions. We ask
+# for things by their label, ask what kind of thing each one is, count them,
+# list the labels, and walk them one by one.
+
 type
 string .runner
 string .tests."test/a.bats".status

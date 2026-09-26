@@ -1,3 +1,8 @@
+# Not a line: a document that is not SILT
+#
+# Every SILT line starts with a depth and a dot. A line without them is not
+# a document, and every verb refuses it by name instead of guessing.
+
 ## get .a
 !! 1 silt: not a SILT line: not a line
 ## type

@@ -1,3 +1,8 @@
+# One string: a document that is a single word
+#
+# A document can be one thing with no label, like one word on a card. It has
+# a kind, a value and a length in letters, and no labels to list.
+
 type
 scalar
 len
