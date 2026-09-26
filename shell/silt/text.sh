@@ -180,30 +180,43 @@ args:
 PUB_FUN
 silt__wrap() {
   __silt__out "$1" || return 1
-  __silt__wrap__rest="$2"
-  __silt__ANSWER="$__silt__QUOTE"
-
-  while :; do
-    __silt__wrap__head="${__silt__wrap__rest%%[\\\"[:cntrl:]]*}"
-
-    if [ "$__silt__wrap__head" = "$__silt__wrap__rest" ]; then
-      break
-    fi
-
-    __silt__ANSWER="$__silt__ANSWER$__silt__wrap__head"
-    __silt__wrap__rest="${__silt__wrap__rest#"$__silt__wrap__head"}"
-
-    __silt__wrap__char="${__silt__wrap__rest%"${__silt__wrap__rest#?}"}"
-    __silt__wrap__rest="${__silt__wrap__rest#?}"
-    __silt__escape "$__silt__wrap__char"
-  done
-
-  __silt__ANSWER="$__silt__ANSWER$__silt__wrap__rest$__silt__QUOTE"
+  __silt__wrap_literal "$2"
+  __silt__ANSWER="$__silt__LITERAL"
   __silt__answer
 }
 
 : <<'FUN'
-Appends the JSON escape of one character to __silt__ANSWER.
+Builds in __silt__LITERAL the JSON string literal that spells <text>, for
+silt__wrap and for the writers, which spell keys and parts while a document
+of their own is building in __silt__ANSWER.
+
+args:
+  $1  The text
+FUN
+__silt__wrap_literal() {
+  __silt__wrap_literal__rest="$1"
+  __silt__LITERAL="$__silt__QUOTE"
+
+  while :; do
+    __silt__wrap_literal__head="${__silt__wrap_literal__rest%%[\\\"[:cntrl:]]*}"
+
+    if [ "$__silt__wrap_literal__head" = "$__silt__wrap_literal__rest" ]; then
+      break
+    fi
+
+    __silt__LITERAL="$__silt__LITERAL$__silt__wrap_literal__head"
+    __silt__wrap_literal__rest="${__silt__wrap_literal__rest#"$__silt__wrap_literal__head"}"
+
+    __silt__wrap_literal__char="${__silt__wrap_literal__rest%"${__silt__wrap_literal__rest#?}"}"
+    __silt__wrap_literal__rest="${__silt__wrap_literal__rest#?}"
+    __silt__escape "$__silt__wrap_literal__char"
+  done
+
+  __silt__LITERAL="$__silt__LITERAL$__silt__wrap_literal__rest$__silt__QUOTE"
+}
+
+: <<'FUN'
+Appends the JSON escape of one character to __silt__LITERAL.
 
 args:
   $1  The character: a quote, a backslash or a control character
@@ -228,7 +241,7 @@ args:
   $1  The letter or character after the backslash
 FUN
 __silt__escape_as() {
-  __silt__ANSWER="$__silt__ANSWER$__silt__BACKSLASH$1"
+  __silt__LITERAL="$__silt__LITERAL$__silt__BACKSLASH$1"
 }
 
 : <<'FUN'
@@ -239,5 +252,5 @@ args:
   $1  The character
 FUN
 __silt__escape_hex() {
-  __silt__ANSWER="$__silt__ANSWER$(printf '\\u%04x' "'$1")"
+  __silt__LITERAL="$__silt__LITERAL$(printf '\\u%04x' "'$1")"
 }
