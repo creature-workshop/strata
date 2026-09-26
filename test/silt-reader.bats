@@ -1,15 +1,25 @@
 #!/usr/bin/env bats
 # shellcheck disable=SC2030,SC2031  # bats runs each case in a subshell of its own; a variable set in one is meant to stay there
 # The SILT reader (shell/silt/api.sh): a Strata document carried inline,
-# read in strict POSIX shell without a process. Every case that has a JSON
-# twin checks the shell's answer against jq over that twin, the oracle while
-# jq lasts; the dash cases prove the library runs on the CI image's sh; the
-# strace case proves a verb starts nothing; the timing case keeps the
-# quadratic idioms out.
+# read in strict POSIX shell without a process.
+#
+# Most cases are golden fixtures under test/fixtures/silt/: a <name>.calls
+# listing verbs to run, one per line with the verb's one argument after it, an
+# optional <name>.silt holding the document they run against (absent, the
+# module's own <name>.fixture.silt), and a <name>.expected holding the
+# transcript: each call under a "## " line, its answer below it, or "!! " with
+# the status and the message for a refusal. The first test runs every
+# fixture and diffs the transcripts, so a new case is one more line in a
+# .calls file and its block in .expected; UPDATE_GOLDENS=1 rewrites the
+# .expected files from the live answers, to be read before they are committed.
+# The remaining cases cover what a transcript cannot: the jq oracle over the
+# JSON twin, the each callback, text the shell has to build, the answer
+# variable's check, dash, strace and time.
 
 bats_require_minimum_version 1.5.0
 
 REPO="$(cd "${BATS_TEST_DIRNAME}/.." && pwd)"
+FIXTURES="$BATS_TEST_DIRNAME/fixtures/silt"
 
 load "${SHELLOPS_DIR:-$REPO/shell/.ops}/test/lib/bats-support/load.bash"
 load "${SHELLOPS_DIR:-$REPO/shell/.ops}/test/lib/bats-assert/load.bash"
@@ -20,6 +30,46 @@ setup() {
   MAP="$(cat "$REPO/shell/silt/map.fixture.silt")"
   MAP_JSON="$REPO/shell/silt/map.fixture.json"
   NL=$'\n'
+}
+
+# The document a golden fixture's calls run against: <name>.silt beside the
+# calls, else the module's own <name>.fixture.silt, else nothing.
+fixture_doc() {
+  if [ -f "$FIXTURES/$1.silt" ]; then
+    cat "$FIXTURES/$1.silt"
+  elif [ -f "$REPO/shell/silt/$1.fixture.silt" ]; then
+    cat "$REPO/shell/silt/$1.fixture.silt"
+  fi
+}
+
+# One call transcribed: the verb's answer, or "!! <status> <message>" when it
+# refuses. unwrap and wrap take the argument alone; type, scalar, len and keys
+# the document alone; the rest the document and the argument.
+transcribe() {
+  local verb="$1" doc="$2" argument="$3" got='' status=0
+  case "$verb" in
+    unwrap | wrap) "silt__$verb" got "$argument" 2>"$BATS_TEST_TMPDIR/stderr" || status=$? ;;
+    type | scalar | len | keys) "silt__$verb" got "$doc" 2>"$BATS_TEST_TMPDIR/stderr" || status=$? ;;
+    *) "silt__$verb" got "$doc" "$argument" 2>"$BATS_TEST_TMPDIR/stderr" || status=$? ;;
+  esac
+  if [ "$status" -eq 0 ]; then
+    printf '%s\n' "$got"
+  else
+    printf '!! %s %s\n' "$status" "$(cat "$BATS_TEST_TMPDIR/stderr")"
+  fi
+}
+
+# The transcript of a fixture: every call in its .calls, each under its line.
+transcript() {
+  local doc line verb argument
+  doc="$(fixture_doc "$1")"
+  while IFS= read -r line; do
+    verb="${line%% *}"
+    argument="${line#"$verb"}"
+    argument="${argument# }"
+    printf '## %s\n' "$line"
+    transcribe "$verb" "$doc" "$argument"
+  done < "$FIXTURES/$1.calls"
 }
 
 # A SILT list document of str or int leaves, as the JSON array it spells:
@@ -42,98 +92,33 @@ wide_map() {
   printf '%s' "$doc"
 }
 
-@test "type: a map by its first key, a list by its first index, a scalar by its one line" {
-  silt__type kind "$MAP"; assert_equal "$kind" map
-  silt__type kind '0.0:int=1'; assert_equal "$kind" list
-  silt__type kind '0.:str="x"'; assert_equal "$kind" str
-  silt__type kind '0.:null'; assert_equal "$kind" null
-  silt__type kind '0.:map'; assert_equal "$kind" map
+@test "every golden fixture: the transcript of its calls matches" {
+  failed=''
+  for calls in "$FIXTURES"/*.calls; do
+    name="$(basename "$calls" .calls)"
+    actual="$(transcript "$name")"
+    if [ "${UPDATE_GOLDENS:-}" = 1 ]; then
+      printf '%s\n' "$actual" > "$FIXTURES/$name.expected"
+    fi
+    if ! diff "$FIXTURES/$name.expected" - <<< "$actual"; then
+      echo "## transcript mismatch for fixture: $name"
+      failed="$failed $name"
+    fi
+  done
+  [ -z "$failed" ] || fail "mismatched fixtures:$failed"
 }
 
-@test "string: a str at a path unquoted, as jq -r reads it" {
-  silt__string got "$MAP" .runner
-  assert_equal "$got" "$(jq -r .runner "$MAP_JSON")"
-  silt__string got "$MAP" '.tests."test/a.bats".status'
-  assert_equal "$got" "$(jq -r '.tests."test/a.bats".status' "$MAP_JSON")"
+@test "the twin: string, len, keys and unwrap answer as jq does over the fixture's JSON" {
   silt__string got "$MAP" '.tests["test/a.bats"].reads[1]'
   assert_equal "$got" "$(jq -r '.tests["test/a.bats"].reads[1]' "$MAP_JSON")"
-}
-
-@test "string: the other scalars as their spelling, null as null, a collection and an absent path as nothing" {
-  silt__string got "$MAP" .count; assert_equal "$got" "$(jq -r .count "$MAP_JSON")"
-  silt__string got "$MAP" .ratio; assert_equal "$got" "-1.5e3"
-  silt__string got "$MAP" .clean; assert_equal "$got" true
-  silt__string got "$MAP" .nothing; assert_equal "$got" null
-  silt__string got "$MAP" .tests; assert_equal "$got" ""
-  silt__string got "$MAP" .missing; assert_equal "$got" ""
-}
-
-@test "get: a leaf is one keyless line, a collection its members at depth 0, an empty one its line" {
-  silt__get got "$MAP" .runner
-  assert_equal "$got" '0.:str="bats"'
-  silt__get got "$MAP" '.tests."test/a.bats".reads'
-  assert_equal "$got" "0.0:str=\"lib/a.sh\"${NL}0.1:str=\"test/a.bats\""
-  silt__get got "$MAP" '.tests."test/b.bats"'
-  assert_equal "$got" "0.\"status\":str=\"failed\"${NL}0.\"reads\":list"
-  silt__get got "$MAP" .empty; assert_equal "$got" '0.:map'
-  silt__get got "$MAP" .none; assert_equal "$got" '0.:list'
-  silt__get got "$MAP" .nothing; assert_equal "$got" '0.:null'
-}
-
-@test "get: the empty path is the document, and a path nothing holds is the empty string" {
-  silt__get got "$MAP" ''; assert_equal "$got" "$MAP"
-  silt__get got "$MAP" .; assert_equal "$got" "$MAP"
-  silt__get got "$MAP" .missing; assert_equal "$got" ""
-  silt__get got "$MAP" '.tests."test/c.bats"'; assert_equal "$got" ""
-  silt__get got "$MAP" '.tests."test/a.bats".reads[7]'; assert_equal "$got" ""
-  silt__get got "$MAP" .runner.deeper; assert_equal "$got" ""
-}
-
-@test "get: a subtree's depths are lowered so its own root is 0, and a sibling's children never leak in" {
-  silt__get got "$MAP" .tests
-  assert_equal "$(printf '%s\n' "$got" | head -1)" '0."test/a.bats":map'
-  assert_equal "$(printf '%s\n' "$got" | wc -l)" 8
-  silt__get again "$got" '."test/a.bats".reads[0]'
-  assert_equal "$again" '0.:str="lib/a.sh"'
-}
-
-@test "has: true for a value held, a null included, false for a path nothing holds" {
-  silt__has got "$MAP" .runner; assert_equal "$got" true
-  silt__has got "$MAP" .nothing; assert_equal "$got" true
-  silt__has got "$MAP" .none; assert_equal "$got" true
-  silt__has got "$MAP" .missing; assert_equal "$got" false
-}
-
-@test "scalar: the value text of a scalar document, and a refusal for anything wider" {
-  silt__scalar got '0.:str="bats"'; assert_equal "$got" '"bats"'
-  silt__scalar got '0.:int=3'; assert_equal "$got" 3
-  silt__scalar got '0.:null'; assert_equal "$got" ""
-  run silt__scalar got "$MAP"
-  assert_failure
-  assert_output --partial "not a scalar document"
-}
-
-@test "len: members of a map or a list, characters of a str, 0 for a null, as jq length" {
+  silt__string got "$MAP" '."a \"quoted\" key: with.dots"'
+  assert_equal "$got" "$(jq -r '."a \"quoted\" key: with.dots"' "$MAP_JSON")"
+  silt__string got "$MAP" .text; assert_equal "$got" "$(jq -r .text "$MAP_JSON")"
+  silt__string got "$MAP" .unicode; assert_equal "$got" "$(jq -r .unicode "$MAP_JSON")"
   silt__len got "$MAP"; assert_equal "$got" "$(jq length "$MAP_JSON")"
-  silt__get reads "$MAP" '.tests."test/a.bats".reads'
-  silt__len got "$reads"; assert_equal "$got" 2
-  silt__get runner "$MAP" .runner
-  silt__len got "$runner"; assert_equal "$got" "$(jq '.runner | length' "$MAP_JSON")"
-  silt__len got '0.:null'; assert_equal "$got" 0
-  silt__len got '0.:map'; assert_equal "$got" 0
-  run silt__len got '0.:bool=true'
-  assert_failure
-}
-
-@test "keys: a map's as str leaves in their order, a list's as int leaves, as jq keys_unsorted" {
   silt__keys got "$MAP"
   assert_equal "$(list_as_json "$got" | jq -c .)" "$(jq -c keys_unsorted "$MAP_JSON")"
-  silt__get reads "$MAP" '.tests."test/a.bats".reads'
-  silt__keys got "$reads"
-  assert_equal "$(list_as_json "$got" | jq -c .)" '[0,1]'
-  silt__keys got '0.:map'; assert_equal "$got" '0.:list'
-  run silt__keys got '0.:int=1'
-  assert_failure
+  silt__unwrap got '"\/\b\f"'; assert_equal "$got" "$(jq -rn '"\/\b\f"')"
 }
 
 @test "each: the callback sees every member's key as text and its value as a document, in order" {
@@ -165,35 +150,6 @@ wide_map() {
   assert_equal "$seen" '0:0.:str="lib/a.sh" 1:0.:str="test/a.bats" '
 }
 
-@test "a quoted key carries every mark a line is split on, and a quoted path segment reaches it" {
-  silt__string got "$MAP" '."a \"quoted\" key: with.dots"'
-  assert_equal "$got" "$(jq -r '."a \"quoted\" key: with.dots"' "$MAP_JSON")"
-  silt__keys keys "$MAP"
-  assert_equal "$(list_as_json "$keys" | jq -r '.[8]')" 'a "quoted" key: with.dots'
-}
-
-@test "unwrap: every JSON escape, a surrogate pair included, decodes as jq -r does" {
-  silt__get text "$MAP" .text
-  silt__scalar literal "$text"
-  silt__unwrap got "$literal"
-  assert_equal "$got" "$(jq -r .text "$MAP_JSON")"
-  silt__get unicode "$MAP" .unicode
-  silt__scalar literal "$unicode"
-  silt__unwrap got "$literal"
-  assert_equal "$got" "$(jq -r .unicode "$MAP_JSON")"
-  silt__unwrap got '"\/\b\f"'
-  assert_equal "$got" "$(jq -rn '"\/\b\f"')"
-}
-
-@test "unwrap: refuses what is not a string literal or holds an escape JSON lacks" {
-  run silt__unwrap got 'bats'
-  assert_failure
-  assert_output --partial "not a string literal"
-  run silt__unwrap got '"a\qb"'
-  assert_failure
-  assert_output --partial "not a JSON escape"
-}
-
 @test "wrap: the literal jq writes for the same text, control characters included" {
   text="a \"quote\", a \\ backslash,${NL}a line$(printf '\t')and a tab, $(printf '\r\b\f') and $(printf '\001')"
   silt__wrap got "$text"
@@ -218,15 +174,6 @@ wide_map() {
   assert_output --partial "not a variable name"
   run silt__type '1abc' "$MAP"
   assert_failure
-}
-
-@test "a line without a depth, or a quoted key that never closes, is refused by name" {
-  run silt__get got 'not a line' .a
-  assert_failure
-  assert_output --partial "not a SILT line"
-  run silt__get got '0."open:str="x"' .open
-  assert_failure
-  assert_output --partial "never closes"
 }
 
 @test "dash: the reader runs on the CI image's sh and answers as under bash" {

@@ -1,0 +1,7 @@
+type
+scalar
+len
+string
+get
+has .x
+keys

@@ -1,0 +1,122 @@
+## type
+map
+## string .runner
+bats
+## string .tests."test/a.bats".status
+passed
+## string .tests["test/a.bats"].reads[1]
+test/a.bats
+## string .count
+3
+## string .ratio
+-1.5e3
+## string .clean
+true
+## string .nothing
+null
+## string .tests
+
+## string .missing
+
+## string ."a \"quoted\" key: with.dots"
+every mark a line is split on
+## string .text
+a "quote", a \ backslash,
+a line	and a tab
+## string .unicode
+café 😀
+## get .runner
+0.:str="bats"
+## get .tests."test/a.bats".reads
+0.0:str="lib/a.sh"
+0.1:str="test/a.bats"
+## get .tests."test/b.bats"
+0."status":str="failed"
+0."reads":list
+## get .empty
+0.:map
+## get .none
+0.:list
+## get .nothing
+0.:null
+## get
+0."runner":str="bats"
+0."count":int=3
+0."ratio":float=-1.5e3
+0."clean":bool=true
+0."nothing":null
+0."empty":map
+0."none":list
+0."tests":map
+1."test/a.bats":map
+2."status":str="passed"
+2."reads":list
+3.0:str="lib/a.sh"
+3.1:str="test/a.bats"
+1."test/b.bats":map
+2."status":str="failed"
+2."reads":list
+0."a \"quoted\" key: with.dots":str="every mark a line is split on"
+0."text":str="a \"quote\", a \\ backslash,\na line\tand a tab"
+0."unicode":str="café 😀"
+## get .
+0."runner":str="bats"
+0."count":int=3
+0."ratio":float=-1.5e3
+0."clean":bool=true
+0."nothing":null
+0."empty":map
+0."none":list
+0."tests":map
+1."test/a.bats":map
+2."status":str="passed"
+2."reads":list
+3.0:str="lib/a.sh"
+3.1:str="test/a.bats"
+1."test/b.bats":map
+2."status":str="failed"
+2."reads":list
+0."a \"quoted\" key: with.dots":str="every mark a line is split on"
+0."text":str="a \"quote\", a \\ backslash,\na line\tand a tab"
+0."unicode":str="café 😀"
+## get .missing
+
+## get .tests."test/c.bats"
+
+## get .tests."test/a.bats".reads[7]
+
+## get .runner.deeper
+
+## get .tests
+0."test/a.bats":map
+1."status":str="passed"
+1."reads":list
+2.0:str="lib/a.sh"
+2.1:str="test/a.bats"
+0."test/b.bats":map
+1."status":str="failed"
+1."reads":list
+## has .runner
+true
+## has .nothing
+true
+## has .none
+true
+## has .missing
+false
+## scalar
+!! 1 silt: not a scalar document, its first line: 0."runner":str="bats"
+## len
+11
+## keys
+0.0:str="runner"
+0.1:str="count"
+0.2:str="ratio"
+0.3:str="clean"
+0.4:str="nothing"
+0.5:str="empty"
+0.6:str="none"
+0.7:str="tests"
+0.8:str="a \"quoted\" key: with.dots"
+0.9:str="text"
+0.10:str="unicode"

@@ -1,0 +1,21 @@
+## unwrap "lib/a.sh"
+lib/a.sh
+## unwrap "a \"b\"\nc"
+a "b"
+c
+## unwrap "\/\b\f"
+/
+## unwrap "café 😀"
+café 😀
+## unwrap bats
+!! 1 silt: not a string literal: bats
+## unwrap "a\qb"
+!! 1 silt: not a JSON escape: \qb
+## wrap plain
+"plain"
+## wrap
+""
+## wrap a "quote" and a \ backslash
+"a \"quote\" and a \\ backslash"
+## wrap café 😀
+"café 😀"

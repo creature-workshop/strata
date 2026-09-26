@@ -1,0 +1,10 @@
+unwrap "lib/a.sh"
+unwrap "a \"b\"\nc"
+unwrap "\/\b\f"
+unwrap "café 😀"
+unwrap bats
+unwrap "a\qb"
+wrap plain
+wrap
+wrap a "quote" and a \ backslash
+wrap café 😀
