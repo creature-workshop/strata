@@ -43,25 +43,36 @@ names this directory where the shell cannot tell (dash), bash needs nothing.
 MODULE
 
 : <<'FUN'
-Sets __silt__DIR to the directory api.sh sits in: SILT_DIR when set, the
-directory of BASH_SOURCE under bash, the directory of $0 otherwise, and
-refuses when parse.sh is not there.
+Sets __silt__DIR to the directory api.sh sits in, and refuses when parse.sh
+is not there.
 FUN
 __silt__home() {
-  __silt__home__source="${SILT_DIR:-}"
-  if [ -z "$__silt__home__source" ]; then
-    # shellcheck disable=SC3028  # read only where bash set it, empty elsewhere
-    __silt__home__source="${BASH_SOURCE:-$0}"
-    __silt__home__source="${__silt__home__source%/*}"
-  fi
-  case "$__silt__home__source" in
-    '' | *.sh) __silt__home__source=. ;;
-  esac
-  if [ ! -f "$__silt__home__source/parse.sh" ]; then
-    printf 'silt: %s holds no parse.sh; set SILT_DIR to the directory of api.sh\n' "$__silt__home__source" >&2
+  __silt__guess_home
+
+  if [ ! -f "$__silt__DIR/parse.sh" ]; then
+    printf 'silt: %s holds no parse.sh; set SILT_DIR to the directory of api.sh\n' "$__silt__DIR" >&2
     return 1
   fi
-  __silt__DIR="$__silt__home__source"
+}
+
+: <<'FUN'
+Sets __silt__DIR to the best guess at api.sh's directory: SILT_DIR when set;
+otherwise the directory of the file being sourced, which bash names in
+BASH_SOURCE and other shells only as $0, and "." when that has no directory.
+FUN
+__silt__guess_home() {
+  if [ -n "${SILT_DIR:-}" ]; then
+    __silt__DIR="$SILT_DIR"
+    return
+  fi
+
+  # shellcheck disable=SC3028  # read only where bash set it, empty elsewhere
+  __silt__DIR="${BASH_SOURCE:-$0}"
+
+  case "$__silt__DIR" in
+    */*) __silt__DIR="${__silt__DIR%/*}" ;;
+    *) __silt__DIR=. ;;
+  esac
 }
 
 __silt__home || return 1
