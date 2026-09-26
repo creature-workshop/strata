@@ -1,9 +1,3 @@
-# A list: two strings in a row
-#
-# A list is things in a row, so you ask for one by its place, counting from
-# zero. Here we ask for the first and the second, for one past the end, how
-# many there are, and what the places are called.
-
 ## type
 list
 ## len

@@ -3,19 +3,20 @@
 # The SILT reader (shell/silt/api.sh): a Strata document carried inline,
 # read in strict POSIX shell without a process.
 #
-# Most cases are golden fixtures under test/fixtures/silt/: a <name>.calls
-# opening with the case's name and a plain explanation as # lines and then
-# listing verbs to run, one per line with the verb's one argument after it, an
-# optional <name>.silt holding the document they run against (absent, the
-# module's own <name>.fixture.silt), and a <name>.expected holding the
-# transcript test/silt-transcript.sh writes: each call under a "## " line, its
-# answer below it, or "!! " with the status and the message for a refusal. The
-# first case runs every fixture under bash and under dash, the CI image's sh,
-# and diffs the transcripts, so a new case is one more line in a .calls file
-# and its block in .expected; UPDATE_GOLDENS=1 rewrites the .expected files
-# from the live answers under bash, to be read before they are committed. The
-# remaining cases are the properties a transcript cannot carry: the jq oracle
-# over the JSON twin, the answer variable's check, strace and time.
+# Most cases are golden fixtures under test/fixtures/silt/, one fileset each:
+# a <name>.name holding the case's name, which is the test's name in the log,
+# a <name>.about explaining it in plain words, printed when the case fails, a
+# <name>.calls listing verbs to run, one per line with the verb's one argument
+# after it, an optional <name>.silt holding the document they run against
+# (absent, the module's own <name>.fixture.silt), and a <name>.expected holding
+# the transcript test/silt-transcript.sh writes: each call under a "## " line,
+# its answer below it, or "!! " with the status and the message for a refusal.
+# Every fixture is registered as a test of its own under bash and under dash,
+# the CI image's sh, and diffs the transcripts, so a new case is a new fileset
+# and no new test code; UPDATE_GOLDENS=1 rewrites the .expected files from the
+# live answers under bash, to be read before they are committed. The remaining
+# cases are the properties a transcript cannot carry: the jq oracle over the
+# JSON twin, the answer variable's check, strace and time.
 
 bats_require_minimum_version 1.5.0
 
@@ -63,23 +64,33 @@ wide_map() {
   printf '%s' "$doc"
 }
 
-@test "every golden fixture: the transcript of its calls matches, under bash and under dash" {
-  failed=''
+# One golden fixture under one shell: the transcript of its calls against its
+# .expected, rewritten first when UPDATE_GOLDENS=1 and the shell is bash.
+golden_case() {
+  local name="$1" shell="$2" actual
+  actual="$("$shell" "$REPO/test/silt-transcript.sh" "$REPO/shell/silt/api.sh" "$FIXTURES/$name.calls" "$(fixture_doc "$name")")"
+  if [ "${UPDATE_GOLDENS:-}" = 1 ] && [ "$shell" = bash ]; then
+    printf '%s\n' "$actual" > "$FIXTURES/$name.expected"
+  fi
+  if ! diff "$FIXTURES/$name.expected" - <<< "$actual"; then
+    echo "## $(cat "$FIXTURES/$name.name") ($name, under $shell): the transcript differs from $name.expected"
+    cat "$FIXTURES/$name.about"
+    false
+  fi
+}
+
+# Registers every fixture as a test under each shell, named for the case.
+register_golden_cases() {
+  local calls name shell
   for calls in "$FIXTURES"/*.calls; do
     name="$(basename "$calls" .calls)"
     for shell in bash dash; do
-      actual="$("$shell" "$REPO/test/silt-transcript.sh" "$REPO/shell/silt/api.sh" "$calls" "$(fixture_doc "$name")")"
-      if [ "${UPDATE_GOLDENS:-}" = 1 ] && [ "$shell" = bash ]; then
-        printf '%s\n' "$actual" > "$FIXTURES/$name.expected"
-      fi
-      if ! diff "$FIXTURES/$name.expected" - <<< "$actual"; then
-        echo "## transcript mismatch for fixture: $name under $shell"
-        failed="$failed $name@$shell"
-      fi
+      bats_test_function --description "golden under $shell: $(cat "$FIXTURES/$name.name")" -- golden_case "$name" "$shell"
     done
   done
-  [ -z "$failed" ] || fail "mismatched fixtures:$failed"
 }
+
+register_golden_cases
 
 @test "the twin: string, len, keys and unwrap answer as jq does over the fixture's JSON" {
   silt__string got "$MAP" '.tests["test/a.bats"].reads[1]'

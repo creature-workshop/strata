@@ -1,8 +1,3 @@
-# An empty map: a box with nothing in it
-#
-# A box with nothing inside is still a box: its kind is map, it holds zero
-# things, its labels are an empty list, and it is not a single card.
-
 type
 len
 keys

@@ -1,7 +1,2 @@
-# An unclosed key: a quote that never ends
-#
-# A quoted label has to close with a quote and a colon. When it never does,
-# the reader says so rather than reading on to the end of the line.
-
 ## get .open
 !! 1 silt: a quoted literal never closes: "open:str="x"

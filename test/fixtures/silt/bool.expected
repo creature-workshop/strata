@@ -1,8 +1,3 @@
-# One truth value: a document that is true
-#
-# A yes-or-no card. You can read it and name its kind, but a yes has no
-# length and no labels, so those questions are refused.
-
 ## type
 bool
 ## scalar

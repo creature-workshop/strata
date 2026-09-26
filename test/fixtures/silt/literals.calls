@@ -1,9 +1,3 @@
-# Literals: text into quotes and back
-#
-# A string travels in quotes with the awkward characters spelled out, the
-# way JSON does it. unwrap turns the spelled form back into text, wrap
-# spells text out, and a round trip has to give back exactly what went in.
-
 unwrap "lib/a.sh"
 unwrap "a \"b\"\nc"
 unwrap "\/\b\f"
