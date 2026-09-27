@@ -78,5 +78,6 @@ FUN
 __silt__name_segment() {
   __silt__name_segment__name="${__silt__PATH%%[.\[]*}"
   __silt__PATH="${__silt__PATH#"$__silt__name_segment__name"}"
-  silt__wrap __silt__SEGMENT "$__silt__name_segment__name"
+  __silt__wrap_literal "$__silt__name_segment__name"
+  __silt__SEGMENT="$__silt__LITERAL"
 }

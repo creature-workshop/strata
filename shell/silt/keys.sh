@@ -20,34 +20,31 @@ silt__keys() {
   __silt__out "$1" || return 1
   __silt__keys__out="$__silt__OUT"
 
-  __silt__keys__kind=''
-  silt__type __silt__keys__kind "$2" || return 1
-  __silt__has_members "$__silt__keys__kind" keys || return 1
+  __silt__KIND=''
+  silt__type __silt__KIND "$2" || return 1
+  __silt__has_members "$__silt__KIND" keys || return 1
 
   __silt__ANSWER=''
   __silt__INDEX=0
+  __silt__walk "$2" __silt__keys_line || return 1
 
-  __silt__keys__ifs="$IFS"
-  IFS="$__silt__NL"
-  set -f
-  # shellcheck disable=SC2086
-  set -- $2
-  set +f
-  IFS="$__silt__keys__ifs"
-
-  for __silt__keys__line do
-    case "$__silt__keys__line" in
-      0.:*) break ;;
-      0.*) __silt__emit_key "$__silt__keys__line" "$__silt__keys__kind" || return 1 ;;
-    esac
-  done
-
-  if [ -z "$__silt__ANSWER" ]; then
-    __silt__ANSWER='0.:list'
-  fi
-
+  __silt__answer_list
   __silt__OUT="$__silt__keys__out"
   __silt__answer
+}
+
+: <<'FUN'
+Handles one line of the walk: a member's own line adds its key, a deeper
+line is passed over, and the empty collection's one line ends the walk.
+
+args:
+  $1  The line
+FUN
+__silt__keys_line() {
+  case "$1" in
+    0.:*) __silt__STOP=true ;;
+    0.*) __silt__emit_key "$1" ;;
+  esac
 }
 
 : <<'FUN'
@@ -71,16 +68,15 @@ __silt__has_members() {
 : <<'FUN'
 Appends one member's key to the answer as its next element, counting
 __silt__INDEX up: a str leaf holding a map's key literal, an int leaf holding
-a list's index.
+a list's index, by the kind in __silt__KIND.
 
 args:
   $1  The member's line
-  $2  The document's kind, map or list
 FUN
 __silt__emit_key() {
   __silt__parse "$1" || return 1
 
-  case "$2" in
+  case "$__silt__KIND" in
     map) __silt__emit "0.$__silt__INDEX:str=$__silt__KEY" ;;
     *) __silt__emit "0.$__silt__INDEX:int=$__silt__KEY" ;;
   esac
