@@ -178,7 +178,8 @@ function scalar_calls(i) {
 }
 
 # The calls over a path whose value is a collection: the value as JSON, its
-# length, the verbs over each, and for a map its keys.
+# length, the verbs over each, and for a map its keys and the root merged
+# with it, for a list its unique values and its intersection with itself.
 function collection_calls(i) {
   print "as s" i " get @d " SILT[i]
   print "to_json @s" i " => getpath(" JQ[i] ") | tojson"
@@ -188,6 +189,18 @@ function collection_calls(i) {
   if (TYPE[i] == "object") {
     print "as k" i " keys @s" i
     print "join @k" i " , => getpath(" JQ[i] ") | keys | join(\",\")"
+  }
+  if (TYPE[i] == "object" && root == "object") {
+    print "as m" i " merge @d $s" i
+    print "to_json @m" i " => . + getpath(" JQ[i] ") | tojson"
+  }
+  if (TYPE[i] == "array") {
+    print "as u" i " unique @s" i
+    print "to_json @u" i " => getpath(" JQ[i] ") | reduce .[] as $x ([]; if any(.[]; . == $x) then . else . + [$x] end) | tojson"
+    print "as i" i " intersect @s" i " $s" i
+    print "to_json @i" i " => getpath(" JQ[i] ") | tojson"
+    print "as e" i " difference @s" i " $s" i
+    print "to_json @e" i " => [] | tojson"
   }
 }
 

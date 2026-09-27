@@ -1,0 +1,95 @@
+## type
+list
+## unique
+0.0:int=1
+0.1:map
+1."x":int=1
+1."y":int=2
+0.2:str="a"
+0.3:list
+1.0:int=9
+0.4:null
+## as other arr 0.:int=1 0.:str="a"
+0.0:int=1
+0.1:str="a"
+## difference $other
+0.0:map
+1."x":int=1
+1."y":int=2
+0.1:map
+1."y":int=2
+1."x":int=1
+0.2:list
+1.0:int=9
+0.3:list
+1.0:int=9
+0.4:null
+0.5:null
+## intersect $other
+0.0:int=1
+0.1:int=1
+0.2:str="a"
+## difference $other
+0.0:map
+1."x":int=1
+1."y":int=2
+0.1:map
+1."y":int=2
+1."x":int=1
+0.2:list
+1.0:int=9
+0.3:list
+1.0:int=9
+0.4:null
+0.5:null
+## as none arr
+0.:list
+## intersect $none
+0.:list
+## difference $none
+0.0:int=1
+0.1:map
+1."x":int=1
+1."y":int=2
+0.2:int=1
+0.3:map
+1."y":int=2
+1."x":int=1
+0.4:str="a"
+0.5:list
+1.0:int=9
+0.6:list
+1.0:int=9
+0.7:null
+0.8:null
+## unique @none
+0.:list
+## as m1 obj a 0.:int=1 b 0.:int=2 c 0.:int=3
+0."a":int=1
+0."b":int=2
+0."c":int=3
+## as m2 obj b 0.:str="two" d 0.:int=4
+0."b":str="two"
+0."d":int=4
+## merge @m1 $m2
+0."a":int=1
+0."b":str="two"
+0."c":int=3
+0."d":int=4
+## merge @m2 $m1
+0."b":int=2
+0."d":int=4
+0."a":int=1
+0."c":int=3
+## as empty obj
+0.:map
+## merge @m1 $empty
+0."a":int=1
+0."b":int=2
+0."c":int=3
+## merge @empty $empty
+0.:map
+## merge $m1
+!! 1 ERROR: silt: merge takes a map, not a list
+## unique @m1
+!! 1 ERROR: silt: unique takes a list, not a map

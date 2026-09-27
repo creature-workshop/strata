@@ -49,6 +49,10 @@ to the awk tier, which answers the same call the same way.
   silt__is_true   whether a document is the bool true
   silt__is_false  whether a document is the bool false
   silt__is_zero   whether a document is the int 0
+  silt__unique    a list with its repeated values dropped
+  silt__difference the elements of a list another does not hold
+  silt__intersect the elements of a list another holds too
+  silt__merge     one map laid over another, one level deep
   silt__from_json the JSON on stdin as a document
   silt__to_json   a document as one line of JSON
   silt__from_yaml the YAML on stdin as a document
@@ -135,6 +139,10 @@ __silt__home || return 1
 . "$__silt__DIR/join.sh"
 . "$__silt__DIR/split.sh"
 . "$__silt__DIR/canon.sh"
+. "$__silt__DIR/unique.sh"
+. "$__silt__DIR/difference.sh"
+. "$__silt__DIR/intersect.sh"
+. "$__silt__DIR/merge.sh"
 . "$__silt__DIR/translate.sh"
 . "$__silt__DIR/callback.sh"
 . "$__silt__DIR/gather.sh"
