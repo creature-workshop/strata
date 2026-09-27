@@ -27,6 +27,7 @@ registers:
                          whatever the walks its callbacks ran
   __silt__HANDED_OUT     What the awk program printed, when it did
   __silt__IFS            The field separator held aside during a split
+  __silt__IFS_WAS_SET    "true" when the caller had IFS set before the split
   __silt__WALK_DOCUMENT  The document, kept for the hand-off once the split
                          has taken the positional parameters
   __silt__WALK_PROGRAM   The awk program the verb named, if any
@@ -64,7 +65,8 @@ its own set --, since positional parameters are a frame's own, and calls
 __silt__split_over after it.
 FUN
 __silt__split_lines() {
-  __silt__IFS="$IFS"
+  __silt__IFS_WAS_SET="${IFS+true}"
+  __silt__IFS="${IFS-}"
   IFS="$__silt__NL"
   set -f
 }
@@ -74,7 +76,24 @@ Gives the shell back its field splitting and globbing after a split.
 FUN
 __silt__split_over() {
   set +f
-  IFS="$__silt__IFS"
+  __silt__give_back_ifs "$__silt__IFS_WAS_SET" "$__silt__IFS"
+}
+
+: <<'FUN'
+Puts the caller's IFS back the way it was before a split. A caller that had
+IFS unset gets it unset again, which is how a shell splits on its default
+characters. Setting it to the empty string there would turn splitting off.
+
+args:
+  $1  "true" when IFS was set before the split, empty when it was unset
+  $2  What IFS held, when it was set
+FUN
+__silt__give_back_ifs() {
+  if [ "$1" = true ]; then
+    IFS="$2"
+  else
+    unset IFS
+  fi
 }
 
 : <<'FUN'
