@@ -51,7 +51,8 @@ function is_schema(node) {
 
 # Follows a reference written in full: its document before the "#" and
 # its fragment after. <seen> holds the fragments followed at this place in
-# the value, a newline before and after each.
+# the value, each between "\n<" and ">\n", so the empty fragment, the
+# schema's root, is met only where it was followed.
 function follow_ref(ref, value, path, seen, __at, __fragment, __target) {
   __at = index(ref, "#")
   __fragment = (__at > 0) ? substr(ref, __at + 1) : ""
@@ -64,10 +65,10 @@ function follow_ref(ref, value, path, seen, __at, __fragment, __target) {
   __target = pointed_at(__fragment)
   if (!is_schema(__target)) {
     fail(path, "$ref '" ref "' does not resolve to a schema")
-  } else if (index(seen, "\n" __fragment "\n") > 0) {
+  } else if (index(seen, "\n<" __fragment ">\n") > 0) {
     fail(path, "circular $ref '" ref "'")
   } else {
-    validate(__target, value, path, seen "\n" __fragment "\n")
+    validate(__target, value, path, seen "\n<" __fragment ">\n")
   }
 }
 
