@@ -19,6 +19,10 @@ registers:
                          rides last in this walk's positional parameters and
                          is given back when this walk ends
   __silt__STOP           Set true by a callback to end the walk early
+  __silt__WALK_DOCUMENT  The document, kept for the hand-off once the split
+                         has taken the positional parameters
+  __silt__WALK_PROGRAM   The awk program the verb named, if any
+  __silt__WALK_STATUS    The status the walk ends with
 
 args:
   $1  The document
@@ -37,14 +41,14 @@ __silt__walk() {
   set +f
   IFS="$__silt__walk__ifs"
 
-  if [ "$#" -gt "$((__silt__THRESHOLD + 1))" ] && [ -n "$__silt__walk__program" ]; then
-    __silt__hand_off "$__silt__walk__document" "$__silt__walk__program" || __silt__walk__status=$?
+  if [ "$#" -gt "$((__silt__THRESHOLD + 1))" ] && [ -n "$__silt__WALK_PROGRAM" ]; then
+    __silt__hand_off "$__silt__WALK_DOCUMENT" "$__silt__WALK_PROGRAM" || __silt__WALK_STATUS=$?
   else
-    __silt__walk_lines "$@" || __silt__walk__status=$?
+    __silt__walk_lines "$@" || __silt__WALK_STATUS=$?
   fi
 
   __silt__walk_done "$#" "$@"
-  return "$__silt__walk__status"
+  return "$__silt__WALK_STATUS"
 }
 
 : <<'FUN'
@@ -55,9 +59,9 @@ args:
   $1  The document
 FUN
 __silt__start_walk() {
-  __silt__walk__document="$1"
-  __silt__walk__program="${__silt__AWK-}"
-  __silt__walk__status=0
+  __silt__WALK_DOCUMENT="$1"
+  __silt__WALK_PROGRAM="${__silt__AWK-}"
+  __silt__WALK_STATUS=0
   __silt__AWK=''
   __silt__STOP=false
   __silt__HANDED=false
