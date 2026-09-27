@@ -1,2 +1,2 @@
 ## get .open
-!! 1 silt: a quoted literal never closes: "open:str="x"
+!! 1 ERROR: silt: a quoted literal never closes: "open:str="x"

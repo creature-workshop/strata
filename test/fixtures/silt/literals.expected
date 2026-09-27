@@ -10,9 +10,9 @@ café 😀
 ## unwrap "\u0041 \u00e9 \u20ac \ud83d\ude00"
 A é € 😀
 ## unwrap bats
-!! 1 silt: not a string literal: bats
+!! 1 ERROR: silt: not a string literal: bats
 ## unwrap "a\qb"
-!! 1 silt: not a JSON escape: \qb
+!! 1 ERROR: silt: not a JSON escape: \qb
 ## wrap plain
 "plain"
 ## wrap

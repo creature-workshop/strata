@@ -5,6 +5,6 @@ true
 ## string
 true
 ## len
-!! 1 silt: bool has no length
+!! 1 ERROR: silt: bool has no length
 ## keys
-!! 1 silt: bool has no keys
+!! 1 ERROR: silt: bool has no keys

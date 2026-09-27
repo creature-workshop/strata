@@ -1,19 +1,19 @@
 #!/bin/sh
 
 : <<'MODULE'
-How a verb reports: a failure on stderr, the answer variable checked and
-assigned, a document built one line at a time.
+How a verb reports: a failure, the answer variable checked and assigned, a
+document built one line at a time.
 MODULE
 
 : <<'FUN'
-Reports a failure of this library on stderr and returns 1, so a caller under
-set -e stops and one without it reads the status.
+Reports a failure of this library and returns 1, so a caller under set -e
+stops and one without it reads the status.
 
 args:
   $1  What went wrong, one line
 FUN
 __silt__fail() {
-  printf 'silt: %s\n' "$1" >&2
+  error "silt: $1"
   return 1
 }
 

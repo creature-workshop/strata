@@ -7,4 +7,6 @@ per line, as a language an interpreter reads and a format data is stored in.
   grammar (ADR.2) to the name (ADR.31).
 - `shell/silt/` holds SILT, structured inline live text: a document carried
   between shell functions without its id column, read in strict POSIX shell
-  without starting a process. `shell/.ops` vendors shellops for its tests.
+  without starting a process. It reports through `shell/.logs`, the
+  shell-logs submodule, its one dependency at run time; `shell/.ops` vendors
+  shellops for its tests.

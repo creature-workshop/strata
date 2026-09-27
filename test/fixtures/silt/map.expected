@@ -105,7 +105,7 @@ true
 ## has .missing
 false
 ## scalar
-!! 1 silt: not a scalar document, its first line: 0."runner":str="bats"
+!! 1 ERROR: silt: not a scalar document, its first line: 0."runner":str="bats"
 ## len
 11
 ## keys
