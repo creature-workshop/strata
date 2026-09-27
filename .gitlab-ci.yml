@@ -13,9 +13,10 @@
 # SILT library first, with the bats the vendored shellops carries.
 # `silt-fuzz` runs test/silt-fuzz.sh over a few hundred seeds against jq and
 # yq on a pipeline schedule, or by hand from the web, never on a merge
-# request; its tools come from ops.lock through cli/install, and the seeds
-# start at the hour, so every night draws new values and a failure names its
-# seed.
+# request; the workflow lets those two sources through for it, and the other
+# jobs gate themselves. Its tools come from ops.lock through cli/install, and
+# the seeds start at the hour, so every night draws new values and a failure
+# names its seed.
 
 include:
   - component: $CI_SERVER_FQDN/ksoft/creatures/forge--code-review-hygiene@0.19.1
@@ -32,6 +33,8 @@ workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web"
 
 stages:
   - governance
