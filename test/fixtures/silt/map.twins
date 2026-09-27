@@ -28,3 +28,5 @@ join @canonical_keys , => keys | join(",")
 as canonical_reads get @canonical .tests
 as canonical_reads_keys keys @canonical_reads
 join @canonical_reads_keys , => .tests | keys | join(",")
+as canonical_tests get @canonical .tests
+to_json @canonical_tests => .tests | walk(if type == "object" then to_entries | sort_by(.key) | from_entries else . end) | tojson

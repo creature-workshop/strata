@@ -42,6 +42,10 @@ tier, which answers the same call the same way.
   silt__split     text cut on a separator, as a list of str
   silt__canon     the document with every map in canonical order
   silt__equals    whether two documents are the same value
+  silt__from_json the JSON on stdin as a document
+  silt__to_json   a document as one line of JSON
+  silt__from_yaml the YAML on stdin as a document
+  silt__to_yaml   a document as YAML in block style
 
 A path names members from the top: ".a.b" the member b of the member a,
 ".a[2]" the third element of the list a, ".[0]" the first element of a list
@@ -118,3 +122,4 @@ __silt__home || return 1
 . "$__silt__DIR/join.sh"
 . "$__silt__DIR/split.sh"
 . "$__silt__DIR/canon.sh"
+. "$__silt__DIR/translate.sh"

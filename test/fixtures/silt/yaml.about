@@ -1,0 +1,12 @@
+from_yaml reads the YAML a config or a pipeline file is written in: block
+mappings and sequences, plain and quoted scalars, literal and folded blocks,
+flow collections on one line, and comments. It reads awkward.yaml to the
+same SILT as from_json reads its JSON twin, awkward-value.json. to_yaml
+writes the value back in block style, quoting only the strings a reader
+would take for something else, and what it writes reads back as the same
+value and writes the same again. A plain scalar is a null, a bool or a
+number only when YAML's core schema reads it as one, and a number spelled
+outside ADR.20's patterns, 0x1F or .5, becomes the map that keeps its
+spelling. What the reader leaves out it refuses, naming the line: an anchor,
+a merge key, a second document, a tab in the indentation, a line out of
+place, and an escape YAML has no name for.

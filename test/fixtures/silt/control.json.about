@@ -1,0 +1,1 @@
+A JSON string holding a raw tab, which JSON's grammar forbids and from_json refuses, naming the line.

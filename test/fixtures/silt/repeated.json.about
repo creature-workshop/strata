@@ -1,0 +1,1 @@
+A JSON object with the same key twice, which from_json refuses, naming the key.

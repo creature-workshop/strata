@@ -1,2 +1,4 @@
 ## get .open
 !! 1 ERROR: silt: a quoted literal never closes: "open:str="x"
+## to_json
+!! 1 ERROR: silt: a quoted literal never closes: "open:str="x"

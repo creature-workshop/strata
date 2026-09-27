@@ -2,3 +2,5 @@
 !! 1 ERROR: silt: not a SILT line: not a line
 ## type
 !! 1 ERROR: silt: not a SILT line: not a line
+## to_json
+!! 1 ERROR: silt: not a SILT line: not a line

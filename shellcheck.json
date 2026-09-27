@@ -23,6 +23,7 @@
     "shell/silt/str.sh",
     "shell/silt/string.sh",
     "shell/silt/text.sh",
+    "shell/silt/translate.sh",
     "shell/silt/type.sh",
     "shell/silt/walk.sh",
     "test/silt-exercise.sh",

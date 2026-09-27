@@ -14,3 +14,5 @@ as l2 arr 0.:int=1 $r
 equals @l1 $l2
 canon @l1
 equals @l1 $l1
+to_json
+to_yaml

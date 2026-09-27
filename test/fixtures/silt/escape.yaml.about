@@ -1,0 +1,1 @@
+A double-quoted scalar with a backslash before a letter YAML gives no meaning, which the reader refuses, naming the line.

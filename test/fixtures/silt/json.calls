@@ -1,0 +1,10 @@
+as j from_json awkward.json
+to_json @j
+type @j
+get @j .suites.unit.tests
+as s from_json scalar.json
+to_json @s
+from_json repeated.json
+from_json open.json
+from_json wide.json
+from_json control.json

@@ -8,11 +8,12 @@
 # Usage: <shell> test/silt-transcript.sh <api.sh> <calls> [<document>]
 #
 # A call is a verb and one argument; a blank line or a # line is skipped.
-# type, scalar, len and keys take the document; get, string and has take it
-# and a path; unwrap takes the literal; wrap and transcript__roundtrip take text read
-# through printf %b, so a line can spell a newline or a control character;
-# each takes an extra argument for its callback, and each-until the key at
-# which the callback returns 3. A call written "as <name> <call>" keeps its
+# type, scalar, len, keys, canon, to_json and to_yaml take the document; get,
+# string and has take it and a path; from_json and from_yaml take a file
+# beside the calls file and read it on stdin; unwrap takes the literal; wrap
+# and transcript__roundtrip take text read through printf %b, so a line can
+# spell a newline or a control character; each takes an extra argument for
+# its callback, and each-until the key at which the callback returns 3. A call written "as <name> <call>" keeps its
 # answer in a register, "@<name>" in place of the document makes a call read
 # that register, and a writer's words may name one as "$<name>": obj, arr
 # and split take their words alone; push, set, concat, join and equals take
@@ -23,6 +24,7 @@ set -u
 main() {
   transcript__require_usage "$@"
   transcript__load_library "$1"
+  CALLS_DIR="${2%/*}"
   DOCUMENT="$(transcript__read_document "${3:-}")"
   STDERR="${TMPDIR:-/tmp}/silt-transcript.$$"
   trap 'rm -f "$STDERR"' EXIT
@@ -142,8 +144,9 @@ transcript__run_writer() {
 # Dispatches a reader verb, with the document where the verb takes one.
 transcript__run_verb() {
   case "$1" in
-    type | scalar | len | keys | canon) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
+    type | scalar | len | keys | canon | to_json | to_yaml) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
     get | string | has) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
+    from_json | from_yaml) transcript__capture "silt__$1" ANSWER < "$CALLS_DIR/$2" ;;
     unwrap) transcript__capture silt__unwrap ANSWER "$2" ;;
     wrap) transcript__capture silt__wrap ANSWER "$(transcript__unescape "$2")" ;;
     str) transcript__capture silt__str ANSWER "$(transcript__unescape "$2")" ;;

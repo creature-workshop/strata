@@ -1,0 +1,3 @@
+A line sits at most one level deeper than the line above it, so a jump from
+depth 0 to depth 2 is out of place in the tree, and to_json refuses it
+naming the line. to_yaml refuses the same line.

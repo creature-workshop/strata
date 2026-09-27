@@ -34,3 +34,5 @@ keys
 each
 each tag
 each-until count
+to_json
+to_yaml
