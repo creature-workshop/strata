@@ -15,9 +15,10 @@ path nothing holds, which no document is.
                                                               1."reads":list
                                                               2.0:str="lib/a.sh"'
 
-The walk keeps four registers: __silt__WANT, the depth the next segment sits
-at; __silt__FOUND, whether the value's line was reached, and __silt__AT, its
-depth; __silt__DONE, whether the rest of the document can be skipped.
+registers:
+  __silt__WANT   The depth the next segment should be at
+  __silt__FOUND  Whether the value's own line has been reached
+  __silt__AT     The depth of the value's own line
 
 args:
   $1  The name of the variable to answer in
@@ -33,35 +34,8 @@ silt__get() {
 
   if [ "$__silt__PATH_DONE" = true ]; then
     __silt__ANSWER="$2"
-    __silt__OUT="$__silt__get__out"
-    __silt__answer
-    return
-  fi
-
-  __silt__WANT=0
-  __silt__FOUND=false
-  __silt__DONE=false
-  __silt__ANSWER=''
-
-  __silt__get__ifs="$IFS"
-  IFS="$__silt__NL"
-  set -f
-  # shellcheck disable=SC2086
-  set -- $2
-  set +f
-  IFS="$__silt__get__ifs"
-
-  for __silt__get__line do
-    __silt__parse "$__silt__get__line" || return 1
-    __silt__walk_line "$__silt__get__line" || return 1
-
-    if [ "$__silt__DONE" = true ]; then
-      break
-    fi
-  done
-
-  if [ "$__silt__FOUND" = false ]; then
-    __silt__ANSWER=''
+  else
+    __silt__find_in "$2" || return 1
   fi
 
   __silt__OUT="$__silt__get__out"
@@ -69,14 +43,35 @@ silt__get() {
 }
 
 : <<'FUN'
-Takes one parsed line of the walk: while the value is still being looked
-for, matches the line against the segment wanted; once found, collects the
-line as a member.
+Walks the document for the path already begun, and leaves the value in
+__silt__ANSWER, or nothing when no member is there.
 
 args:
-  $1  The line, as parsed into the registers
+  $1  The document
 FUN
-__silt__walk_line() {
+__silt__find_in() {
+  __silt__WANT=0
+  __silt__FOUND=false
+  __silt__ANSWER=''
+
+  __silt__walk "$1" __silt__find_line || return 1
+
+  if [ "$__silt__FOUND" = false ]; then
+    __silt__ANSWER=''
+  fi
+}
+
+: <<'FUN'
+Handles one line of the walk: until the value is found, the line is matched
+against the segment being looked for; after that, it is collected as a
+member of the value.
+
+args:
+  $1  The line
+FUN
+__silt__find_line() {
+  __silt__parse "$1" || return 1
+
   if [ "$__silt__FOUND" = true ]; then
     __silt__collect_member "$1"
   else
@@ -85,14 +80,15 @@ __silt__walk_line() {
 }
 
 : <<'FUN'
-Matches the parsed line against the segment wanted at the depth wanted. A
-line shallower than that ends the walk unfound; a line that is not the
-segment is skipped; the segment itself either ends the path, and is the
-value, or sends the walk one level down after the next segment.
+Matches the parsed line against the segment being looked for at the current
+depth. A line shallower than that depth ends the walk without a value. A
+line that is not the segment is skipped. The segment itself is the value
+when the path ends there, and otherwise sends the walk one level down after
+the next segment.
 FUN
 __silt__match_segment() {
   if [ "$__silt__DEPTH" -lt "$__silt__WANT" ]; then
-    __silt__DONE=true
+    __silt__STOP=true
     return
   fi
 
@@ -126,16 +122,16 @@ __silt__found_value() {
 }
 
 : <<'FUN'
-Collects a line after the value was found: a line no deeper than the value
-ends the walk; a deeper one is a member, re-depthed so the value's own
-members sit at 0, and the first member replaces the placeholder root.
+Collects a line after the value was found. A line no deeper than the value
+ends the walk. A deeper one is a member, moved up so the value's own
+members sit at depth 0, and the first member replaces the placeholder root.
 
 args:
-  $1  The line, as parsed into the registers
+  $1  The line
 FUN
 __silt__collect_member() {
   if [ "$__silt__DEPTH" -le "$__silt__AT" ]; then
-    __silt__DONE=true
+    __silt__STOP=true
     return
   fi
 

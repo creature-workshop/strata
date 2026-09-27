@@ -45,24 +45,22 @@ args:
   $1  The document
 FUN
 __silt__count_members() {
-  __silt__count_members__count=0
+  __silt__COUNT=0
+  __silt__walk "$1" __silt__count_line
+  __silt__ANSWER="$__silt__COUNT"
+}
 
-  __silt__count_members__ifs="$IFS"
-  IFS="$__silt__NL"
-  set -f
-  # shellcheck disable=SC2086
-  set -- $1
-  set +f
-  IFS="$__silt__count_members__ifs"
+: <<'FUN'
+Counts one line of the walk in __silt__COUNT when it is a member's own line.
 
-  for __silt__count_members__line do
-    case "$__silt__count_members__line" in
-      0.:*) ;;
-      0.*) __silt__count_members__count=$((__silt__count_members__count + 1)) ;;
-    esac
-  done
-
-  __silt__ANSWER="$__silt__count_members__count"
+args:
+  $1  The line
+FUN
+__silt__count_line() {
+  case "$1" in
+    0.:*) ;;
+    0.*) __silt__COUNT=$((__silt__COUNT + 1)) ;;
+  esac
 }
 
 : <<'FUN'

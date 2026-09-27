@@ -1,12 +1,12 @@
 #!/bin/sh
 
 : <<'MODULE'
-silt__concat: two lists, one after the other.
+silt__concat: joins two lists end to end.
 MODULE
 
 : <<'PUB_FUN'
-Answers the first list with the second's elements after it, re-indexed to
-continue the first's count.
+Appends the second list's elements to the first, renumbering them to carry
+on from the first list's count.
 
   silt__concat doc '0.0:str="a"' '0.0:str="b"'   ->  doc='0.0:str="a"
                                                           0.1:str="b"'
@@ -20,72 +20,30 @@ silt__concat() {
   __silt__out "$1" || return 1
   __silt__concat__out="$__silt__OUT"
 
-  __silt__both_lists "$2" "$3" || return 1
+  __silt__require_list "$2" concat || return 1
+  __silt__require_list "$3" concat || return 1
+  __silt__continue_list "$2"
+  __silt__walk "$3" __silt__append_list_line || return 1
 
-  __silt__count_members "$2"
-  __silt__INDEX="$__silt__ANSWER"
-  __silt__ANSWER="$2"
-  if [ "$__silt__INDEX" -eq 0 ]; then
-    __silt__ANSWER=''
-  fi
-
-  __silt__append_list "$3" || return 1
-
-  if [ -z "$__silt__ANSWER" ]; then
-    __silt__ANSWER='0.:list'
-  fi
-
+  __silt__answer_list
   __silt__OUT="$__silt__concat__out"
   __silt__answer
 }
 
 : <<'FUN'
-Refuses either document when it is not a list.
+Appends one line of the second list: an element's own line with its index
+moved on by __silt__INDEX, a deeper line as it is, and the empty list's line
+not at all.
 
 args:
-  $1  The first document
-  $2  The second document
+  $1  The line
 FUN
-__silt__both_lists() {
-  __silt__both_lists__kind=''
-
-  silt__type __silt__both_lists__kind "$1" || return 1
-  if [ "$__silt__both_lists__kind" != list ]; then
-    __silt__fail "concat of a $__silt__both_lists__kind, not a list"
-    return 1
-  fi
-
-  silt__type __silt__both_lists__kind "$2" || return 1
-  if [ "$__silt__both_lists__kind" != list ]; then
-    __silt__fail "concat with a $__silt__both_lists__kind, not a list"
-    return 1
-  fi
-}
-
-: <<'FUN'
-Appends a list's lines to the answer, each element's index moved on by
-__silt__INDEX and its deeper lines kept as they are; the empty list adds
-nothing.
-
-args:
-  $1  The list
-FUN
-__silt__append_list() {
-  __silt__append_list__ifs="$IFS"
-  IFS="$__silt__NL"
-  set -f
-  # shellcheck disable=SC2086
-  set -- $1
-  set +f
-  IFS="$__silt__append_list__ifs"
-
-  for __silt__append_list__line do
-    case "$__silt__append_list__line" in
-      0.:*) ;;
-      0.*) __silt__append_element "$__silt__append_list__line" ;;
-      *) __silt__emit "$__silt__append_list__line" ;;
-    esac
-  done
+__silt__append_list_line() {
+  case "$1" in
+    0.:*) ;;
+    0.*) __silt__append_element "$1" ;;
+    *) __silt__emit "$1" ;;
+  esac
 }
 
 : <<'FUN'

@@ -43,8 +43,6 @@ split a,,b ,
 split one\ntwo
 split a::b ::
 split
-collect 0.:int=1\n\036\n0."x":map\n1."z":null\n\036
-collect
 set @r .x 0.:int=1
 set @c .runner.deeper 0.:int=1
 set @l .[7] 0.:int=1

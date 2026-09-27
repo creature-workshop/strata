@@ -1,7 +1,6 @@
 Building documents in the shell. str makes a string, obj a map from key and
 document pairs, arr a list; push appends to a list, set puts a document at a
 path (replacing what was there, or adding it, creating parents on the way);
-concat joins two lists, join makes text from a list, split makes a list
-from text, and collect makes a list from documents separated by a record
-separator line. The calls keep results in registers and read them back
-with the reader verbs, and end with the refusals each writer makes.
+concat joins two lists, join makes text from a list, and split makes a
+list from text. The calls keep results in registers and read them back with
+the reader verbs, and end with the refusals each writer makes.

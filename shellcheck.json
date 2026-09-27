@@ -3,7 +3,6 @@
     "shell/silt/answer.sh",
     "shell/silt/api.sh",
     "shell/silt/arr.sh",
-    "shell/silt/collect.sh",
     "shell/silt/concat.sh",
     "shell/silt/constants.sh",
     "shell/silt/each.sh",
@@ -24,6 +23,7 @@
     "shell/silt/string.sh",
     "shell/silt/text.sh",
     "shell/silt/type.sh",
+    "shell/silt/walk.sh",
     "test/silt-exercise.sh",
     "test/silt-transcript.sh"
   ],

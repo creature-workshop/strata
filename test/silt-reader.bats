@@ -1,11 +1,11 @@
 #!/usr/bin/env bats
 # shellcheck disable=SC2030,SC2031  # bats runs each case in a subshell of its own; a variable set in one is meant to stay there
-# The properties of the SILT reader (shell/silt/api.sh) that a golden
-# transcript cannot carry; the goldens themselves are test/silt-goldens.bats.
-# Here: the jq oracle over the fixture's JSON twin, the answer variable's
-# check, the process and timing cases, which run test/silt-exercise.sh under
-# strace and under the clock, and the coverage gate, test/silt-coverage.sh,
-# which reads bash's trace of the goldens.
+# The properties of the SILT library (shell/silt/) that neither a golden
+# transcript (test/silt-goldens.bats) nor a jq twin (test/silt-twins.bats)
+# can carry: the answer variable's check, the process and timing cases, which
+# run test/silt-exercise.sh under strace and under the clock, the coverage
+# gate, test/silt-coverage.sh, which reads bash's trace of the goldens, and
+# the shape check, test/silt-shape.sh.
 
 bats_require_minimum_version 1.5.0
 
@@ -23,17 +23,6 @@ setup() {
   NL=$'\n'
 }
 
-# A SILT list document of str or int leaves, as the JSON array it spells:
-# each leaf's value is already a JSON literal, so the array is the values
-# joined by commas.
-list_as_json() {
-  local line values=''
-  while IFS= read -r line; do
-    values="$values${values:+,}${line#*=}"
-  done <<< "$1"
-  printf '[%s]' "$values"
-}
-
 # A map document of N string leaves, for the timing and the strace cases.
 wide_map() {
   local i doc=''
@@ -41,49 +30,6 @@ wide_map() {
     doc="$doc${doc:+$NL}0.\"key$i\":str=\"value number $i\""
   done
   printf '%s' "$doc"
-}
-
-# Asserts silt__string answers a path as jq -r does over the JSON twin.
-assert_string_like_jq() {
-  local path="$1" got
-  silt__string got "$MAP" "$path"
-  assert_equal "$got" "$(jq -r "$path" "$MAP_JSON")"
-}
-
-@test "the twin: string answers a path as jq -r does" {
-  assert_string_like_jq '.tests["test/a.bats"].reads[1]'
-  assert_string_like_jq '."a \"quoted\" key: with.dots"'
-  assert_string_like_jq .text
-  assert_string_like_jq .unicode
-}
-
-@test "the twin: len and keys answer as jq length and keys_unsorted do" {
-  silt__len got "$MAP"
-  assert_equal "$got" "$(jq length "$MAP_JSON")"
-
-  silt__keys got "$MAP"
-  assert_equal "$(list_as_json "$got" | jq -c .)" "$(jq -c keys_unsorted "$MAP_JSON")"
-}
-
-@test "the twin: unwrap decodes the escapes jq -r does" {
-  silt__unwrap got '"\/\b\f"'
-  assert_equal "$got" "$(jq -rn '"\/\b\f"')"
-}
-
-@test "the twin: obj, set, split and join build what jq builds" {
-  silt__str runner bats
-  silt__obj doc runner "$runner" count '0.:int=3'
-  silt__set doc "$doc" .tests.reads '0.0:str="lib/a.sh"'
-
-  silt__string got "$doc" '.tests.reads[0]'
-  assert_equal "$got" "$(jq -rn '{runner: "bats", count: 3, tests: {reads: ["lib/a.sh"]}} | .tests.reads[0]')"
-
-  silt__keys keys "$doc"
-  assert_equal "$(list_as_json "$keys" | jq -c .)" "$(jq -cn '{runner: 1, count: 1, tests: 1} | keys_unsorted')"
-
-  silt__split parts 'a,b,c' ','
-  silt__join text "$parts" ' - '
-  assert_equal "$text" "$(jq -rn '"a,b,c" | split(",") | join(" - ")')"
 }
 
 @test "the answer variable is checked before anything is evaluated through it" {
@@ -121,6 +67,12 @@ process_starts() {
 
 @test "coverage: the goldens enter every function in shell/silt and run at least 95% of its lines" {
   run bash "$REPO/test/silt-coverage.sh"
+  echo "$output"
+  assert_success
+}
+
+@test "shape: no function under shell/silt runs past 60 lines or nests past two levels" {
+  run bash "$REPO/test/silt-shape.sh"
   echo "$output"
   assert_success
 }

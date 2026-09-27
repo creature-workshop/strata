@@ -1,26 +1,32 @@
 #!/bin/sh
 
 : <<'MODULE'
-silt__set: a document placed at a path, in place of what was there.
+silt__set: puts a document at a path.
 MODULE
 
 : <<'PUB_FUN'
-Answers the document with <value> at <path>: the member there is replaced,
-subtree and all, and a member that was not there is added at the end of its
-parent, with any missing parents on the way created as maps, or as lists
-where the next segment is an index. The empty path answers <value> itself.
-Refuses a document that is not a map or a list, a path that runs through a
-scalar, and an index that is not there, since push is what grows a list.
+Puts a value at a path. If a member is already there, it is replaced along
+with everything under it. If not, the value is added at the end of its
+parent, and any missing parents on the way are created: a map, or a list
+when the next path segment is an index. An empty path answers the value
+itself.
+
+Refuses when the document is not a map or a list, when the path runs through
+a scalar, or when the path names a list index that does not exist; push is
+what grows a list.
 
   silt__set doc '0."a":int=1' .b '0.:int=2'      ->  doc='0."a":int=1
                                                           0."b":int=2'
   silt__set doc '0."a":int=1' .a.b '0.:int=2'    ->  refused: not a collection at "a"
 
-The walk keeps __silt__WANT, the depth the next segment sits at; __silt__DONE,
-whether the value is placed; __silt__AT with __silt__SKIPPING, the depth of
-the member being replaced while its old lines are dropped; and
-__silt__PARENT_KIND with __silt__PARENT_EMPTY, what the collection the next
-segment is looked for in is, and whether it has a member yet.
+registers:
+  __silt__NEW           The value
+  __silt__WANT          The depth the next segment should be at
+  __silt__DONE          Whether the value has been placed
+  __silt__AT            The depth of the member being replaced
+  __silt__SKIPPING      Whether the old lines of that member are being dropped
+  __silt__PARENT_KIND   What kind of collection the next segment is looked for in
+  __silt__PARENT_EMPTY  Whether that collection has a member yet
 
 args:
   $1  The name of the variable to answer in
@@ -38,36 +44,8 @@ silt__set() {
 
   if [ "$__silt__PATH_DONE" = true ]; then
     __silt__ANSWER="$__silt__NEW"
-    __silt__OUT="$__silt__set__out"
-    __silt__answer
-    return
-  fi
-
-  __silt__set__kind=''
-  silt__type __silt__set__kind "$2" || return 1
-  __silt__has_members "$__silt__set__kind" members || return 1
-
-  __silt__WANT=0
-  __silt__DONE=false
-  __silt__SKIPPING=false
-  __silt__PARENT_KIND="$__silt__set__kind"
-  __silt__PARENT_EMPTY=true
-  __silt__ANSWER=''
-
-  __silt__set__ifs="$IFS"
-  IFS="$__silt__NL"
-  set -f
-  # shellcheck disable=SC2086
-  set -- $2
-  set +f
-  IFS="$__silt__set__ifs"
-
-  for __silt__set__line do
-    __silt__place_line "$__silt__set__line" || return 1
-  done
-
-  if [ "$__silt__DONE" = false ]; then
-    __silt__place_new || return 1
+  else
+    __silt__place_in "$2" || return 1
   fi
 
   __silt__OUT="$__silt__set__out"
@@ -75,9 +53,55 @@ silt__set() {
 }
 
 : <<'FUN'
-Takes one line of the walk: the empty root's own line is dropped, a line of
-the member being replaced is dropped, and until the value is placed a line
-is matched against the segment wanted; after that it is kept as it is.
+Places the value in a collection at the path already begun: walks the
+document once, and adds the value at the end when the walk did not place it.
+
+args:
+  $1  The document, a map or a list
+FUN
+__silt__place_in() {
+  __silt__require_collection "$1" || return 1
+  __silt__start_placing
+
+  __silt__walk "$1" __silt__place_line || return 1
+
+  if [ "$__silt__DONE" = false ]; then
+    __silt__place_new || return 1
+  fi
+}
+
+: <<'FUN'
+Refuses a document that is not a map or a list, and records its kind in
+__silt__PARENT_KIND for the walk.
+
+args:
+  $1  The document
+FUN
+__silt__require_collection() {
+  __silt__require_collection__kind=''
+  silt__type __silt__require_collection__kind "$1" || return 1
+  __silt__has_members "$__silt__require_collection__kind" members || return 1
+
+  __silt__PARENT_KIND="$__silt__require_collection__kind"
+}
+
+: <<'FUN'
+Sets the walk's registers to the root: the first segment is looked for at
+depth 0, nothing is placed or being dropped yet, and the answer is empty.
+FUN
+__silt__start_placing() {
+  __silt__WANT=0
+  __silt__DONE=false
+  __silt__SKIPPING=false
+  __silt__PARENT_EMPTY=true
+  __silt__ANSWER=''
+}
+
+: <<'FUN'
+Handles one line of the walk. The empty root's own line is dropped. Lines of
+the member being replaced are dropped. Until the value is placed, each line
+is checked against the segment being looked for; after that, lines are
+copied through.
 
 args:
   $1  The line
@@ -105,10 +129,11 @@ __silt__place_line() {
 }
 
 : <<'FUN'
-Matches the parsed line against the segment wanted at the depth wanted. A
-line shallower than that closes the parent, so the value goes in before it;
-a line that is not the segment is kept; the segment itself is replaced when
-it ends the path, or descended into when it does not.
+Checks a parsed line against the segment being looked for at the current
+depth. A line shallower than that depth means the parent has ended, so the
+value goes in before it. A line that does not match is copied through. A
+matching line is replaced when the path ends there, and descended into when
+it does not.
 
 args:
   $1  The line
@@ -141,11 +166,11 @@ __silt__place_match() {
 }
 
 : <<'FUN'
-Places the value under the matched key, in place of the member there, and
-marks the member's old lines for dropping.
+Puts the value in place of the matched member and marks the member's old
+lines to be dropped.
 
 args:
-  $1  The key, as the line spells it
+  $1  The key, as the line writes it
 FUN
 __silt__place_replace() {
   __silt__nest "$1" "$__silt__NEW" "$__silt__WANT" || return 1
@@ -155,13 +180,13 @@ __silt__place_replace() {
 }
 
 : <<'FUN'
-Keeps the matched line and sends the walk one level down after the next
-segment; refuses when the member is a scalar, since a path cannot run
+Copies the matched line through and moves the walk one level down, to the
+next segment. Refuses when the member is a scalar, because a path cannot go
 through one.
 
 args:
   $1  The line
-  $2  The key, as the line spells it
+  $2  The key, as the line writes it
 FUN
 __silt__place_descend() {
   if [ "$__silt__LEAF" = true ] || [ "$__silt__TYPE" = null ]; then
@@ -176,11 +201,10 @@ __silt__place_descend() {
 }
 
 : <<'FUN'
-Places the value as a new member at the depth wanted, under the segment
-wanted, creating each further segment on the way as a map, or as a list
-when the segment after it is an index. A key must suit its parent: a name
-under a map, an index under a list, and an index only as element 0 of a
-list with no element yet, since push is what grows a list.
+Adds the value as a new member at the current depth, creating any missing
+parents on the way: a map, or a list when the next segment is an index. A
+new key has to fit its parent: a name under a map, an index under a list,
+and an index only as element 0 of a list that has nothing in it yet.
 FUN
 __silt__place_new() {
   __silt__place_new__depth="$__silt__WANT"
@@ -196,25 +220,50 @@ __silt__place_new() {
       return
     fi
 
-    case "$__silt__SEGMENT" in
-      [0-9]*)
-        __silt__emit "$__silt__place_new__depth.$__silt__place_new__key:list"
-        __silt__PARENT_KIND=list
-        ;;
-      *)
-        __silt__emit "$__silt__place_new__depth.$__silt__place_new__key:map"
-        __silt__PARENT_KIND=map
-        ;;
-    esac
-    __silt__PARENT_EMPTY=true
+    __silt__place_parent "$__silt__place_new__key" "$__silt__place_new__depth"
     __silt__place_new__depth=$((__silt__place_new__depth + 1))
   done
 }
 
 : <<'FUN'
-Refuses a new key that does not suit the parent in __silt__PARENT_KIND: a
-name under a list, an index under a map, or an index other than element 0
-of a list with no element yet.
+Creates a missing parent on the way to the value: a list when the segment
+after it, now in __silt__SEGMENT, is an index, a map otherwise.
+
+args:
+  $1  The parent's key, as the line writes it
+  $2  The parent's depth
+FUN
+__silt__place_parent() {
+  __silt__segment_is_index "$__silt__SEGMENT"
+
+  if [ "$__silt__IS_INDEX" = true ]; then
+    __silt__emit "$2.$1:list"
+    __silt__PARENT_KIND=list
+  else
+    __silt__emit "$2.$1:map"
+    __silt__PARENT_KIND=map
+  fi
+  __silt__PARENT_EMPTY=true
+}
+
+: <<'FUN'
+Sets __silt__IS_INDEX to true when a segment is an index, bare digits, and
+to false when it is a quoted name.
+
+args:
+  $1  The segment, as a line writes a key
+FUN
+__silt__segment_is_index() {
+  case "$1" in
+    "$__silt__QUOTE"*) __silt__IS_INDEX=false ;;
+    *) __silt__IS_INDEX=true ;;
+  esac
+}
+
+: <<'FUN'
+Refuses a new key that does not fit its parent: a name under a list, an
+index under a map, or an index other than 0 in a list with nothing in it
+yet.
 
 args:
   $1  The key about to be added

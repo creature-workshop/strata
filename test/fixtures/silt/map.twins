@@ -1,0 +1,24 @@
+string .runner => .runner
+string .tests."test/a.bats".status => .tests."test/a.bats".status
+string .tests["test/a.bats"].reads[1] => .tests["test/a.bats"].reads[1]
+string ."a \"quoted\" key: with.dots" => ."a \"quoted\" key: with.dots"
+string .text => .text
+string .unicode => .unicode
+string .count => .count
+string .nothing => .nothing
+len => length
+has .runner => has("runner")
+has .missing => has("missing")
+as k keys
+join @k , => keys_unsorted | join(",")
+as reads get .tests."test/a.bats".reads
+len @reads => .tests["test/a.bats"].reads | length
+join @reads \040+\040 => .tests["test/a.bats"].reads | join(" + ")
+as r str bats
+as built obj runner $r count 0.:int=3
+string @built .runner => null | {runner: "bats", count: 3} | .runner
+as grown set @built .tests.reads $reads
+string @grown .tests.reads[0] => null | {runner: "bats", count: 3, tests: {reads: ["lib/a.sh", "test/a.bats"]}} | .tests.reads[0]
+as parts split a,b,c ,
+join @parts \040-\040 => null | "a,b,c" | split(",") | join(" - ")
+unwrap "\/\b\f" => null | "\/\b\f"

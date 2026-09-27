@@ -14,9 +14,12 @@ that returns non-zero, returning its status.
   total=0
   silt__each count_reads "$tests"
 
-The walk keeps the member being gathered in __silt__MEMBER_KEY and
-__silt__MEMBER, with __silt__OPEN saying one is, and __silt__DONE saying the
-rest of the document can be skipped.
+registers:
+  __silt__CALLBACK    The callback
+  __silt__EXTRAS      The tail of its argument list, reading the extras by name
+  __silt__MEMBER_KEY  The key of the member being gathered
+  __silt__MEMBER      The value of the member being gathered
+  __silt__OPEN        Whether a member is being gathered
 
 args:
   $1  The callback
@@ -36,32 +39,15 @@ silt__each() {
   __silt__MEMBER_KEY=''
   __silt__MEMBER=''
   __silt__OPEN=false
-  __silt__DONE=false
-
-  __silt__each__ifs="$IFS"
-  IFS="$__silt__NL"
-  set -f
-  # shellcheck disable=SC2086
-  set -- $__silt__each__doc
-  set +f
-  IFS="$__silt__each__ifs"
-
-  for __silt__each__line do
-    __silt__parse "$__silt__each__line" || return 1
-    __silt__gather_line "$__silt__each__line" || return $?
-
-    if [ "$__silt__DONE" = true ]; then
-      break
-    fi
-  done
+  __silt__walk "$__silt__each__doc" __silt__each_line || return $?
 
   __silt__deliver_member
 }
 
 : <<'FUN'
 Holds the extra arguments by name and spells, in __silt__EXTRAS, the tail
-of the callback's argument list that reads them back, so the split can take
-the positional parameters and no value is ever re-read as shell.
+of the callback's argument list that reads them back, so no value is ever
+re-read as shell.
 
 args:
   $@  The extra arguments
@@ -78,14 +64,16 @@ __silt__hold_extras() {
 }
 
 : <<'FUN'
-Takes one parsed line of the walk: a depth-0 line opens a member, a deeper
-one belongs to the member open. Returns the callback's status when it stops
+Handles one line of the walk: a depth-0 line opens a member, a deeper one
+belongs to the member open. Returns the callback's status when it stops
 the walk.
 
 args:
-  $1  The line, as parsed into the registers
+  $1  The line
 FUN
-__silt__gather_line() {
+__silt__each_line() {
+  __silt__parse "$1" || return 1
+
   if [ "$__silt__DEPTH" -eq 0 ]; then
     __silt__open_member
   else
@@ -104,7 +92,7 @@ __silt__open_member() {
 
   case "$__silt__KEY" in
     '')
-      __silt__DONE=true
+      __silt__STOP=true
       return 0
       ;;
     "$__silt__QUOTE"*) silt__unwrap __silt__MEMBER_KEY "$__silt__KEY" || return 1 ;;
@@ -121,11 +109,11 @@ __silt__open_member() {
 }
 
 : <<'FUN'
-Adds a deeper line to the member open, re-depthed so the member's own
-members sit at 0; the first one replaces the placeholder root.
+Adds a deeper line to the member open, moved up so the member's own members
+sit at depth 0; the first one replaces the placeholder root.
 
 args:
-  $1  The line, as parsed into the registers
+  $1  The line
 FUN
 __silt__extend_member() {
   case "$__silt__MEMBER" in

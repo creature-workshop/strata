@@ -1,22 +1,22 @@
 #!/bin/sh
 
 : <<'MODULE'
-silt__split: text cut on a separator, as a list of str.
+silt__split: makes a list of str from text.
 MODULE
 
 : <<'PUB_FUN'
-Answers the list of the parts of <text> between each <separator>, each a
-str, empty parts left out; with no separator, the lines of the text.
+Cuts text on a separator and builds a list of str from the parts. Empty
+parts are dropped. Without a separator the text is cut on newlines.
 
   silt__split doc 'a,b' ','   ->  doc='0.0:str="a"
                                        0.1:str="b"'
 
-A separator of one character, a newline included, is cut in one expansion;
-a longer one is cut part by part.
+A one-character separator, a newline included, is cut in one field split. A
+longer separator is cut part by part from the front.
 
 args:
   $1  The name of the variable to answer in
-  $2  The text; nothing when omitted
+  $2  The text; empty when omitted
   $3  The separator; a newline when omitted or empty
 PUB_FUN
 silt__split() {
@@ -33,17 +33,14 @@ silt__split() {
     __silt__split_on_text "${2-}" "$__silt__split__separator" || return 1
   fi
 
-  if [ -z "$__silt__ANSWER" ]; then
-    __silt__ANSWER='0.:list'
-  fi
-
+  __silt__answer_list
   __silt__OUT="$__silt__split__out"
   __silt__answer
 }
 
 : <<'FUN'
-Cuts the text on a one-character separator with the field split, and
-appends each non-empty part as a str element.
+Cuts the text on a one-character separator with a field split, and appends
+each non-empty part as a str element.
 
 args:
   $1  The text
@@ -87,7 +84,7 @@ __silt__split_on_text() {
 }
 
 : <<'FUN'
-Appends one part as the next str element, unless it is empty.
+Appends one part as the next str element. An empty part is skipped.
 
 args:
   $1  The part

@@ -1,12 +1,12 @@
 #!/bin/sh
 
 : <<'MODULE'
-silt__str: a str document from text.
+silt__str: builds a str document from text.
 MODULE
 
 : <<'PUB_FUN'
-Answers the scalar document that holds <text> as a str, wrapped as JSON
-spells it.
+Builds a str document from text, quoted and escaped the way JSON writes a
+string.
 
   silt__str doc 'lib/a.sh'   ->  doc='0.:str="lib/a.sh"'
 

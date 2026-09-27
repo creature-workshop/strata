@@ -54,6 +54,7 @@ bats
 2.0:str="bats"
 2.1:int=2
 2.2:null
+4."b":str="bats"
 ## keys @c4
 0.0:str="runner"
 0.1:str="count"
@@ -62,6 +63,7 @@ bats
 0.0:str="bats"
 0.1:int=2
 0.2:null
+2."b":str="bats"
 ## as c5 set @c4 .tests.a[1] 0.:int=9
 0."runner":str="bats"
 0."count":int=3
@@ -70,6 +72,7 @@ bats
 2.0:str="bats"
 2.1:int=9
 2.2:null
+4."b":str="bats"
 ## string @c5 .tests.a[1]
 9
 ## as c6 set @c4 .tests.a 0.:null
@@ -100,7 +103,7 @@ bats
 0.1:map
 1."runner":str="bats"
 1."count":int=3
-0.2:null
+1.2:null
 ## string @l3 .[1].runner
 bats
 ## join @l ,
@@ -139,13 +142,6 @@ a "quoted" key: with.dots
 0.1:str="b"
 ## split
 0.:list
-## collect 0.:int=1\n\036\n0."x":map\n1."z":null\n\036
-0.0:int=1
-0.1:map
-1."x":map
-2."z":null
-## collect
-0.:list
 ## set @r .x 0.:int=1
 !! 1 silt: str has no members
 ## set @c .runner.deeper 0.:int=1
@@ -153,11 +149,11 @@ a "quoted" key: with.dots
 ## set @l .[7] 0.:int=1
 !! 1 silt: no element 7 to set; push appends to a list
 ## push @c 0.:int=1
-!! 1 silt: push onto a map, not a list
+!! 1 silt: push takes a list, not a map
 ## concat @l $c
-!! 1 silt: concat with a map, not a list
+!! 1 silt: concat takes a list, not a map
 ## concat @c $l
-!! 1 silt: concat of a map, not a list
+!! 1 silt: concat takes a list, not a map
 ## join @l2 ,
 !! 1 silt: join of a list holding a collection
 ## push @el
