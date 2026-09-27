@@ -20,9 +20,8 @@ shell/.ops       shellops: the lint, the bats libraries, a test's oracle,
                  the hat, the lints and the test job
 ```
 
-Two repositories that depend on each other can stop each other. A break in
-shellops that reached the code a caller of SILT runs would break shellops'
-own foundation, and neither could be mended first.
+Two repositories that depend on each other can stop each other, and
+neither can be mended first.
 
 ## Decision
 
@@ -33,39 +32,39 @@ it, and **dev-time** when only a test, a lint or a pipeline does.
   `shell/silt/` MUST read `shell/.ops`, `SHELLOPS_DIR` or any file of
   shellops, and the same holds for every later implementation.
 - A run-time dependency MUST itself take nothing at run time from shellops
-  or the catalog. Another one is added by an ADR that supersedes this
-  line.
+  or the catalog. Another is added by an ADR that supersedes this line.
 - At dev time strata MAY take from shellops what checks it or reports on
-  it: a lint, a test library, an oracle a test holds an answer to, a client
-  a report is filed through, an installer of tools.
+  it: a lint, a test library, an oracle, a client a report is filed
+  through, an installer of tools.
 - It MAY include a catalog member that governs a merge request or runs a
   lint or a test. It MUST NOT include one that builds, releases or
   publishes what a caller runs, until an ADR says how strata is released.
 - Every dependency is taken at a pin: a submodule at a commit, a catalog
   member at an exact version, never a branch or a range. A pin moves in a
-  merge request of its own, whose pipeline is the check that strata still
-  passes under it.
+  merge request of its own.
 - strata carries its own tests: the cases, their expected answers and the
-  scripts that run them live in `ksoft/strata`. An oracle from shellops is
-  a second opinion on an answer, never the only record of it.
+  scripts that run them. An oracle from shellops is a second opinion on an
+  answer, never the only record of it.
 
 ## Consequences
 
-No cycle runs at run time. shellops reads strata, strata reads shell-logs,
-and shell-logs reads neither.
+No cycle runs at run time: shellops reads strata, strata reads shell-logs,
+and shell-logs reads neither. A break in shellops or the catalog cannot
+reach a caller of strata.
 
-The cycle at dev time is held open by the pins. A broken shellops or
-catalog stops strata only when strata moves a pin onto it, and that merge
-request fails where it can be seen and left unmerged.
+It can still stop strata's pipeline, and with it every landing. A pin
+holds the files it names and nothing under them: a catalog member runs the
+vendored shellops' own scripts, so the two pins are one and move together,
+and the job beneath them floats, on an image named by tag, packages at
+whatever the day's index holds, and test libraries fetched from another
+forge. The runner's awk differing from a workstation's is that float
+already met.
 
-A lint rule or a catalog fix reaches strata a pin later than it lands. The
-house lint already runs ahead of the vendored pin, through a catalog member
-at its own version, so the two pins move apart and each is its own merge
-request.
+So the dev-time line limits the dependency and does not end it. What is
+left is accepted until the image and the tools are pinned too, which is
+work of its own.
 
-`test/silt-validate.sh` holds `silt__validate` to shellops' jq validator.
-Once shellops validates through strata that oracle is strata itself, so
-the cases' expected answers are written into strata before then.
+Nothing checks the run-time rule yet; a test that loads SILT with shellops
+absent is its implementation.
 
-A Rust implementation's crates are a dependency of another kind, and take
-an ADR of their own.
+A Rust implementation's crates take an ADR of their own.
