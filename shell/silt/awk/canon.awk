@@ -2,94 +2,47 @@
 # Canonical order is RFC 8785's, the keys compared by their UTF-16 code
 # units, so a map built in call order and the same map built in another
 # come out the same bytes. Lists keep their order, and every line keeps its
-# text. The whole document is read first, since a member's children sit
-# below it and a map's order is not known until its last member.
+# text. The whole document is read first, since a map's order is not known
+# until its last member; each line then gets one sort key made of its
+# ancestors' keys and its own, and one sort of all the lines by that key is
+# the canonical document.
 
-# Reads a line into LINE and its depth into AT.
-function take(line) {
+# Reads a line, and gives it its sort key: the key of the line it sits
+# under, then a slash, then its own. A named member's own key is its
+# decoded key as UTF-16 code units; a list element's is its index, padded
+# so numbers order as numbers. The slash orders before every key character,
+# so a line sorts right after its parent and its siblings sort by key.
+function take(line, __depth, __own) {
   LINES++
   LINE[LINES] = line
-  AT[LINES] = substr(line, 1, index(line, ".") - 1) + 0
-}
+  ORDER[LINES] = LINES
 
-# Prints the lines under the parent at index <of>, whose depth is <depth>:
-# the parent's direct children in canonical order when they are named, in
-# their own order otherwise, each followed by what sits under it. The
-# children ride in an array of this call's own, since the call recurses.
-function print_children(of, depth, __child, __count, __i, __at) {
-  __count = children(of, depth, __child)
-
-  if (__count > 0 && is_name(key_of(__child[1]))) {
-    sort_children(__child, __count)
+  parse(line)
+  __depth = DEPTH
+  if (is_name(KEY)) {
+    __own = "n" utf16_key(unwrap(KEY))
+  } else {
+    __own = sprintf("i%012d", KEY)
   }
 
-  for (__i = 1; __i <= __count; __i++) {
-    __at = __child[__i]
-    print LINE[__at]
-    print_children(__at, depth + 1)
-  }
-}
-
-# Fills <into>[1..count] with the indices of the lines directly under the
-# line at <of>, whose depth is <depth>: the lines one deeper, up to the
-# first line no deeper than the parent. Returns the count. The virtual root
-# is index 0 at depth -1.
-function children(of, depth, into, __count, __i) {
-  __count = 0
-
-  for (__i = of + 1; __i <= LINES; __i++) {
-    if (AT[__i] <= depth) {
-      break
-    }
-    if (AT[__i] == depth + 1) {
-      into[++__count] = __i
-    }
-  }
-
-  return __count
-}
-
-# Orders <child>[1..count] by their keys' UTF-16 code units, an insertion
-# sort over the sort keys, since a map's member count is small.
-function sort_children(child, count, __i, __j, __at, __key) {
-  for (__i = 1; __i <= count; __i++) {
-    SORT_KEY[child[__i]] = utf16_key(unwrap(key_of(child[__i])))
-  }
-
-  for (__i = 2; __i <= count; __i++) {
-    __at = child[__i]
-    __key = SORT_KEY[__at]
-    __j = __i - 1
-    while (__j >= 1 && SORT_KEY[child[__j]] > __key) {
-      child[__j + 1] = child[__j]
-      __j--
-    }
-    child[__j + 1] = __at
-  }
-}
-
-# The key of the line at <at>, as the line writes it.
-function key_of(at) {
-  parse(LINE[at])
-
-  return KEY
+  SORT_KEY[LINES] = (__depth > 0 ? KEY_AT[__depth - 1] : "") "/" __own
+  KEY_AT[__depth] = SORT_KEY[LINES]
 }
 
 # The text as a string of its UTF-16 code units, each as four hex digits, so
 # a plain string comparison orders two keys as RFC 8785 does.
-function utf16_key(text, __key, __i, __code, __width) {
+function utf16_key(text, __key, __i, __code) {
   __key = ""
   __i = 1
 
   while (__i <= length(text)) {
     __code = code_point(text, __i)
-    __width = CODE_WIDTH
     if (__code >= 65536) {
       __key = __key sprintf("%04x%04x", 55296 + int((__code - 65536) / 1024), 56320 + (__code - 65536) % 1024)
     } else {
       __key = __key sprintf("%04x", __code)
     }
-    __i = __i + __width
+    __i = __i + CODE_WIDTH
   }
 
   return __key
@@ -122,7 +75,48 @@ function tail_bits(text, at) {
   return ORD[substr(text, at, 1)] - 128
 }
 
-# Keeps every line for END, where the order is known.
+# Orders ORDER[1..LINES] by SORT_KEY, a bottom-up merge sort: runs of one,
+# then two, then four, merged pairwise until one run is left. Stable, so a
+# key a map holds twice keeps the two in their order.
+function sort_lines(__width, __left) {
+  for (__width = 1; __width < LINES; __width = __width * 2) {
+    for (__left = 1; __left <= LINES; __left = __left + 2 * __width) {
+      merge_runs(__left, least(__left + __width, LINES + 1), least(__left + 2 * __width, LINES + 1))
+    }
+    copy_back()
+  }
+}
+
+# Merges the run ORDER[left..middle-1] with ORDER[middle..end-1] into
+# MERGED[left..end-1], taking the left on a tie.
+function merge_runs(left, middle, end, __i, __j, __k) {
+  __i = left
+  __j = middle
+
+  for (__k = left; __k < end; __k++) {
+    if (__i < middle && (__j >= end || SORT_KEY[ORDER[__i]] <= SORT_KEY[ORDER[__j]])) {
+      MERGED[__k] = ORDER[__i]
+      __i++
+    } else {
+      MERGED[__k] = ORDER[__j]
+      __j++
+    }
+  }
+}
+
+# Makes the merged runs the order for the next pass.
+function copy_back(__k) {
+  for (__k = 1; __k <= LINES; __k++) {
+    ORDER[__k] = MERGED[__k]
+  }
+}
+
+# The smaller of two numbers.
+function least(a, b) {
+  return a < b ? a : b
+}
+
+# Keeps every line, with its sort key, for END.
 function main() {
   take($0)
 }
@@ -135,7 +129,10 @@ BEGIN {
 }
 
 END {
-  print_children(0, -1)
+  sort_lines()
+  for (ORD_I = 1; ORD_I <= LINES; ORD_I++) {
+    print LINE[ORDER[ORD_I]]
+  }
 }
 
 { main() }
