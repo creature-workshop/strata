@@ -37,8 +37,8 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__unwrap    a JSON string literal to text
   silt__wrap      text to a JSON string literal
   silt__str       a str document from text
-  silt__time      a time document from a date-time carrying an offset
-  silt__now       a time document from the clock
+  silt__time      a time document from a date-time string with a UTC offset
+  silt__now       a time document for the current time
   silt__obj       a map from key and document pairs
   silt__arr       a list from documents
   silt__push      documents appended to a list
@@ -55,7 +55,7 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__difference the elements of a list another does not hold
   silt__intersect the elements of a list another holds too
   silt__merge     one map laid over another, one level deep
-  silt__validate  the errors a document meets against a JSON Schema
+  silt__validate  the validation errors of a document against a JSON Schema
   silt__from_json the JSON on stdin as a document
   silt__to_json   a document as one line of JSON
   silt__from_yaml the YAML on stdin as a document

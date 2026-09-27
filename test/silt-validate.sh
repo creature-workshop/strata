@@ -1,16 +1,23 @@
 #!/usr/bin/env bash
-# Holds silt__validate to shellops' validator, lib/structs/jsonschema.jq,
-# which is the contract it matches: over every case of a cases file, a JSON
-# list of {name, schema, value}, the errors silt__validate answers must be
-# the lines the jq validator reports, in its order. Prints each case that
-# differs, with both answers, and fails when any does. silt__validate tells
-# a map in a message with its keys in canonical order, however the document
-# wrote them, and jq tells it as it read it, so the jq validator is handed
-# the schema and the value with their keys sorted. SHELLOPS_DIR names
-# the shellops whose validator is the oracle, the vendored one when not set.
+# Compares silt__validate with the shellops jq validator
+# (lib/structs/jsonschema.jq), which defines the behaviour silt__validate
+# must match.
 #
-# Usage: test/silt-validate.sh [<cases>]; test/fixtures/silt/validate/cases/cases.json
-# when none is given
+# The cases file is a JSON list of {name, schema, value}. For every case,
+# both validators must report the same errors in the same order. The script
+# prints each case where they differ, with both results, and exits non-zero
+# if there are any.
+#
+# silt__validate shows a map in an error with its keys sorted. jq shows a
+# map's keys in the order it read them. So the script sorts the keys of the
+# schema and the value before it hands them to the jq validator.
+#
+# SHELLOPS_DIR sets which shellops checkout provides the jq validator. The
+# default is the vendored submodule.
+#
+# Usage: test/silt-validate.sh [<cases file>]
+#
+# The default cases file is test/fixtures/silt/validate/cases/cases.json.
 
 set -uo pipefail
 
@@ -34,7 +41,7 @@ main() {
   report "$count" "$failed"
 }
 
-# The jq validator has to be where SHELLOPS_DIR or the submodule puts it.
+# Exits with a usage error if the jq validator cannot be found.
 require_oracle() {
   if [ ! -f "$STRUCTS/jsonschema.jq" ]; then
     printf 'silt-validate: no validator at %s; set SHELLOPS_DIR or run git submodule update --init\n' "$STRUCTS/jsonschema.jq" >&2
@@ -42,7 +49,7 @@ require_oracle() {
   fi
 }
 
-# One case: both validators' errors over its schema and its value.
+# Runs one case through both validators and compares the results.
 check_case() {
   local schema value ours theirs
   schema="$(jq -c ".[$1].schema" "$CASES")"
@@ -56,12 +63,13 @@ check_case() {
   fi
 }
 
-# A JSON text with every map's keys sorted.
+# Prints a JSON text with the keys of every map sorted.
 sorted() {
   jq -S -c . <<< "$1"
 }
 
-# The errors silt__validate answers, one per line, or its refusal.
+# Prints the errors from silt__validate, one per line. If silt__validate
+# fails, prints its error message instead.
 errors_of_silt() {
   local schema value errors text=''
   silt__from_json schema <<< "$1" || return 1
@@ -71,8 +79,9 @@ errors_of_silt() {
   printf '%s' "$text"
 }
 
-# The errors the jq validator reports, one per line. The value goes in on
-# stdin and as $data, since a validator reads it from one or the other.
+# Prints the errors from the jq validator, one per line. The value is
+# passed both on stdin and as $data, because different versions of the
+# validator read it from different places.
 errors_of_jq() {
   printf '%s' "$2" \
     | jq \
@@ -83,13 +92,13 @@ errors_of_jq() {
       2>&1
 }
 
-# The verdict: how many cases agreed, or which differed.
+# Prints the result and exits non-zero if any case differed.
 report() {
   if [ -n "$2" ]; then
-    printf 'silt-validate: cases that differ from the jq validator, by index:%s\n' "$2" >&2
+    printf 'silt-validate: FAILED. These cases (by index) differ from the jq validator:%s\n' "$2" >&2
     exit 1
   fi
-  printf 'validate: %s cases answer as the jq validator does\n' "$1"
+  printf 'silt-validate: passed. All %s cases match the jq validator.\n' "$1"
 }
 
 main "$@"

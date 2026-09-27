@@ -1,2 +1,3 @@
-A YAML map with the same instant quoted and plain. Read back, both are
-strings: YAML has a timestamp, but nothing says a key takes a time.
+A YAML map with the same time written twice, once in quotes and once
+without. Reading it gives two strings. SILT does not convert YAML
+timestamps to times.

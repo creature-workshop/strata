@@ -1,13 +1,14 @@
-# What a node of a tree is as a JSON value: the name JSON gives its type,
-# its text as one line of JSON, the text by which two values are the same
-# value, and what a message says of it. Loaded after schema/tree.awk.
+# Functions that read a tree node as a JSON value: its JSON type name, its
+# JSON text, a key for comparing two values, and the text used for it in
+# error messages. Load after schema/tree.awk.
 #
-#   json_type(n)   int=3                 ->  number
-#   json_text(n)   0."a":int=1           ->  {"a":1}
-#   said(n)        str="x"               ->  x
-#   identity(n)    float=1.0, or int=1   ->  1
+#   json_type(n)        int=3                 ->  number
+#   json_text(n)        0."a":int=1           ->  {"a":1}
+#   message_text(n)     str="x"               ->  x
+#   comparison_key(n)   float=1.0, or int=1   ->  1
 
-# The name JSON gives the node's type.
+# Returns the JSON type name of a node: object, array, string, boolean,
+# null or number.
 function json_type(node) {
   if (TYPE_OF[node] == "map") {
     return "object"
@@ -28,23 +29,24 @@ function json_type(node) {
   return "number"
 }
 
-# Whether the node is a number, an int or a float.
+# Returns 1 if the node is an int or a float.
 function is_number(node) {
   return TYPE_OF[node] == "int" || TYPE_OF[node] == "float"
 }
 
-# The number a node spells.
+# Returns the numeric value of a number node.
 function number_of(node) {
   return VALUE_OF[node] + 0
 }
 
-# The text a str node holds, its escapes decoded.
+# Returns the text of a string node, with escape sequences decoded.
 function text_of(node) {
   return unwrap(VALUE_OF[node])
 }
 
-# The members of a map as JSON writes them, with each value spelled by
-# json_text, or by identity when <exact> is 0.
+# Returns a map node as JSON text. If exact is 1, numbers are written as
+# they appear in the document. If exact is 0, they are normalised (see
+# number_text).
 function members_text(node, exact, __i, __out, __child) {
   __out = ""
 
@@ -56,8 +58,8 @@ function members_text(node, exact, __i, __out, __child) {
   return "{" __out "}"
 }
 
-# The elements of a list as JSON writes them, spelled as members_text
-# spells a map's.
+# Returns a list node as JSON text. The exact argument works as it does in
+# members_text.
 function elements_text(node, exact, __i, __out) {
   __out = ""
 
@@ -68,8 +70,9 @@ function elements_text(node, exact, __i, __out) {
   return "[" __out "]"
 }
 
-# A number's text: as its line writes it when <exact> is 1, and otherwise
-# as the number it stands for, so 1 and 1.0 are one text.
+# Returns the text of a number node. If exact is 1, this is the text as
+# written in the document. If exact is 0, the number is normalised, so that
+# 1 and 1.0 produce the same text.
 function number_text(node, exact) {
   if (exact) {
     return VALUE_OF[node]
@@ -78,7 +81,8 @@ function number_text(node, exact) {
   return sprintf("%.17g", number_of(node))
 }
 
-# The node as one line of JSON, a number spelled as number_text says.
+# Returns any node as one line of JSON text. The exact argument works as it
+# does in members_text.
 function value_text(node, exact) {
   if (TYPE_OF[node] == "map") {
     return members_text(node, exact)
@@ -99,20 +103,23 @@ function value_text(node, exact) {
   return VALUE_OF[node]
 }
 
-# The node as one line of JSON, every number as written.
+# Returns a node as one line of JSON text, with numbers as written in the
+# document.
 function json_text(node) {
   return value_text(node, 1)
 }
 
-# The text two nodes share exactly when they are the same value: a map in
-# the order of its keys, and a number by what it stands for.
-function identity(node) {
+# Returns a string that is the same for two nodes exactly when they are
+# equal as JSON values. Map keys are in sorted order and numbers are
+# normalised, so {"a":1,"b":2} equals {"b":2,"a":1}, and 1 equals 1.0.
+function comparison_key(node) {
   return value_text(node, 0)
 }
 
-# What a message says of a node: a string's own text, and any other value
-# as JSON.
-function said(node) {
+# Returns the text used for a node in an error message: the text of a
+# string without quotes, and JSON text for any other value. This matches how
+# the jq validator formats values.
+function message_text(node) {
   if (TYPE_OF[node] == "str") {
     return text_of(node)
   }
@@ -120,9 +127,9 @@ function said(node) {
   return json_text(node)
 }
 
-# How many characters the text holds, a character of several bytes counted
-# once whether awk reads bytes or characters.
-function chars(text, __i, __count, __byte) {
+# Returns the number of characters in the text. A multi-byte UTF-8 character
+# counts as one, whether this awk counts bytes or characters.
+function character_count(text, __i, __count, __byte) {
   __count = 0
 
   for (__i = 1; __i <= length(text); __i++) {

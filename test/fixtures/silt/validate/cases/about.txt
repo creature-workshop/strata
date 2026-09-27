@@ -1,3 +1,4 @@
-A list of schemas, each with a value and a name. test/silt-validate.sh
-checks that silt__validate and the jq validator of shellops report the
-same errors over every one. No call of the fileset reads it.
+A list of cases, each with a name, a schema and a value.
+test/silt-validate.sh checks that silt__validate and the shellops jq
+validator report the same errors for every case. The golden test in this
+directory does not use this file.

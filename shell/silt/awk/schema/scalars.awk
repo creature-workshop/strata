@@ -1,12 +1,14 @@
-# The keywords that read the value by itself: type, enum and const over any
-# value, minLength, maxLength and pattern over a string, and minimum,
-# maximum, exclusiveMinimum, exclusiveMaximum and multipleOf over a number.
-# Loaded after schema/keywords.awk and schema/patterns.awk.
+# Keywords that check a single value: type, enum and const for any value;
+# minLength, maxLength and pattern for strings; and minimum, maximum,
+# exclusiveMinimum, exclusiveMaximum and multipleOf for numbers.
 #
-#   {"type":"string"} over 3   ->  $: expected string, got number
+# The error messages match the jq validator's messages exactly. Load after
+# schema/keywords.awk and schema/patterns.awk.
+#
+#   {"type":"string"} with the value 3   ->  $: expected string, got number
 
-# Whether the value is of the type named: by JSON's name for it, and an
-# integer a number with no fraction.
+# Returns 1 if the value has the named JSON type. The type "integer" matches
+# any number that has no fractional part, including 2.0.
 function is_of_type(value, name) {
   if (name == json_type(value)) {
     return 1
@@ -15,15 +17,15 @@ function is_of_type(value, name) {
   return name == "integer" && is_number(value) && number_of(value) == int(number_of(value))
 }
 
-# Whether the value is of a type the keyword allows, one name or a list of
-# them.
+# Returns 1 if the value matches the operand of the type keyword, which is
+# either one type name or a list of type names.
 function type_allowed(types, value, __i) {
   if (TYPE_OF[types] != "list") {
-    return is_of_type(value, said(types))
+    return is_of_type(value, message_text(types))
   }
 
   for (__i = 0; __i < COUNT[types]; __i++) {
-    if (is_of_type(value, said(CHILD_AT[types, __i]))) {
+    if (is_of_type(value, message_text(CHILD_AT[types, __i]))) {
       return 1
     }
   }
@@ -31,17 +33,17 @@ function type_allowed(types, value, __i) {
   return 0
 }
 
-# type: the value is of the type, or of one of the types.
+# Handles the type keyword.
 function check_type(schema, value, path) {
   if (has(schema, "type") && !type_allowed(member(schema, "type"), value)) {
-    fail(path, "expected " said(member(schema, "type")) ", got " json_type(value))
+    add_error(path, "expected " message_text(member(schema, "type")) ", got " json_type(value))
   }
 }
 
-# Whether a list holds a value the same as the one given.
-function holds(list, value, __i) {
+# Returns 1 if the list contains a value equal to the given value.
+function list_contains(list, value, __i) {
   for (__i = 0; __i < COUNT[list]; __i++) {
-    if (identity(CHILD_AT[list, __i]) == identity(value)) {
+    if (comparison_key(CHILD_AT[list, __i]) == comparison_key(value)) {
       return 1
     }
   }
@@ -49,45 +51,45 @@ function holds(list, value, __i) {
   return 0
 }
 
-# enum: the value is one of those listed.
+# Handles the enum keyword: the value must equal one of the listed values.
 function check_enum(schema, value, path, __allowed) {
   if (!has(schema, "enum")) {
     return
   }
 
-  __allowed = collection_under(schema, "enum", "list")
-  if (!holds(__allowed, value)) {
-    fail(path, "value " said(value) " is not in enum " json_text(__allowed))
+  __allowed = collection_operand(schema, "enum", "list")
+  if (!list_contains(__allowed, value)) {
+    add_error(path, "value " message_text(value) " is not in enum " json_text(__allowed))
   }
 }
 
-# const: the value is the one given.
+# Handles the const keyword: the value must equal the given value.
 function check_const(schema, value, path) {
-  if (has(schema, "const") && identity(member(schema, "const")) != identity(value)) {
-    fail(path, "value " said(value) " does not equal const " said(member(schema, "const")))
+  if (has(schema, "const") && comparison_key(member(schema, "const")) != comparison_key(value)) {
+    add_error(path, "value " message_text(value) " does not equal const " message_text(member(schema, "const")))
   }
 }
 
-# minLength and maxLength: the string's length in characters is within them.
+# Handles minLength and maxLength. Length is counted in characters.
 function check_length(schema, value, path, __length) {
-  __length = chars(text_of(value))
+  __length = character_count(text_of(value))
 
-  if (has(schema, "minLength") && __length < number_under(schema, "minLength")) {
-    fail(path, "string length " __length " is below minLength " said(member(schema, "minLength")))
+  if (has(schema, "minLength") && __length < number_operand(schema, "minLength")) {
+    add_error(path, "string length " __length " is below minLength " message_text(member(schema, "minLength")))
   }
-  if (has(schema, "maxLength") && __length > number_under(schema, "maxLength")) {
-    fail(path, "string length " __length " exceeds maxLength " said(member(schema, "maxLength")))
+  if (has(schema, "maxLength") && __length > number_operand(schema, "maxLength")) {
+    add_error(path, "string length " __length " exceeds maxLength " message_text(member(schema, "maxLength")))
   }
 }
 
-# pattern: the string holds a match of it.
+# Handles the pattern keyword: the string must contain a match.
 function check_pattern(schema, value, path) {
-  if (has(schema, "pattern") && !matches(text_of(value), text_under(schema, "pattern"))) {
-    fail(path, "string \"" text_of(value) "\" does not match pattern " text_under(schema, "pattern"))
+  if (has(schema, "pattern") && !matches(text_of(value), string_operand(schema, "pattern"))) {
+    add_error(path, "string \"" text_of(value) "\" does not match pattern " string_operand(schema, "pattern"))
   }
 }
 
-# The keywords over a string, skipped for any other value.
+# Runs the string keywords. Does nothing if the value is not a string.
 function check_string(schema, value, path) {
   if (TYPE_OF[value] != "str") {
     return
@@ -97,43 +99,44 @@ function check_string(schema, value, path) {
   check_pattern(schema, value, path)
 }
 
-# minimum and maximum: the number is within them, either bound allowed.
+# Handles minimum and maximum. A value equal to the bound is valid.
 function check_bounds(schema, value, path) {
-  if (has(schema, "minimum") && number_of(value) < number_under(schema, "minimum")) {
-    fail(path, "value " said(value) " is below minimum " said(member(schema, "minimum")))
+  if (has(schema, "minimum") && number_of(value) < number_operand(schema, "minimum")) {
+    add_error(path, "value " message_text(value) " is below minimum " message_text(member(schema, "minimum")))
   }
-  if (has(schema, "maximum") && number_of(value) > number_under(schema, "maximum")) {
-    fail(path, "value " said(value) " exceeds maximum " said(member(schema, "maximum")))
+  if (has(schema, "maximum") && number_of(value) > number_operand(schema, "maximum")) {
+    add_error(path, "value " message_text(value) " exceeds maximum " message_text(member(schema, "maximum")))
   }
 }
 
-# exclusiveMinimum and exclusiveMaximum: the number is between them, neither
-# bound allowed.
+# Handles exclusiveMinimum and exclusiveMaximum. A value equal to the bound
+# is not valid.
 function check_exclusive_bounds(schema, value, path) {
-  if (has(schema, "exclusiveMinimum") && number_of(value) <= number_under(schema, "exclusiveMinimum")) {
-    fail(path, "value " said(value) " is not above exclusiveMinimum " said(member(schema, "exclusiveMinimum")))
+  if (has(schema, "exclusiveMinimum") && number_of(value) <= number_operand(schema, "exclusiveMinimum")) {
+    add_error(path, "value " message_text(value) " is not above exclusiveMinimum " message_text(member(schema, "exclusiveMinimum")))
   }
-  if (has(schema, "exclusiveMaximum") && number_of(value) >= number_under(schema, "exclusiveMaximum")) {
-    fail(path, "value " said(value) " is not below exclusiveMaximum " said(member(schema, "exclusiveMaximum")))
+  if (has(schema, "exclusiveMaximum") && number_of(value) >= number_operand(schema, "exclusiveMaximum")) {
+    add_error(path, "value " message_text(value) " is not below exclusiveMaximum " message_text(member(schema, "exclusiveMaximum")))
   }
 }
 
-# multipleOf: the number divides by it with nothing left over.
+# Handles multipleOf: the value divided by the operand must be a whole
+# number. Exits with an error if the operand is 0.
 function check_multiple(schema, value, path, __quotient) {
   if (!has(schema, "multipleOf")) {
     return
   }
-  if (number_under(schema, "multipleOf") == 0) {
-    refuse("a schema's multipleOf takes a number other than 0")
+  if (number_operand(schema, "multipleOf") == 0) {
+    refuse("schema error: multipleOf must not be 0")
   }
 
-  __quotient = number_of(value) / number_under(schema, "multipleOf")
+  __quotient = number_of(value) / number_operand(schema, "multipleOf")
   if (__quotient != int(__quotient)) {
-    fail(path, "value " said(value) " is not a multiple of " said(member(schema, "multipleOf")))
+    add_error(path, "value " message_text(value) " is not a multiple of " message_text(member(schema, "multipleOf")))
   }
 }
 
-# The keywords over a number, skipped for any other value.
+# Runs the number keywords. Does nothing if the value is not a number.
 function check_number(schema, value, path) {
   if (!is_number(value)) {
     return

@@ -1,2 +1,3 @@
-A JSON Schema for a small manifest: two required fields, a pattern, a
-bound, a list whose items follow a $ref, and no other field allowed.
+A JSON Schema for a small manifest. It has two required fields, a
+pattern, a maximum, a list whose items use a $ref, and it allows no other
+fields.
