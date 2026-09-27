@@ -82,6 +82,7 @@ __silt__is_document() {
   case "$__silt__is_document__rest" in
     "$1") return 0 ;;
     .:* | ."$__silt__QUOTE"*) __silt__IS_DOCUMENT=true ;;
+    # structs-lint: allow -- a line's key can be a list index, which is digits; SILT sits beneath structs
     .[0-9]*) __silt__is_indexed "${__silt__is_document__rest#.}" ;;
   esac
 }
@@ -116,9 +117,12 @@ __silt__read_scalar() {
   case "$1" in
     true | false) __silt__ANSWER="0.:bool=$1" ;;
     null) __silt__ANSWER='0.:null' ;;
+    # structs-lint: allow -- the JSON text of an empty map, which this verb reads; SILT sits beneath structs
     '{}') __silt__ANSWER='0.:map' ;;
+    # structs-lint: allow -- the JSON text of an empty list, which this verb reads; SILT sits beneath structs
     '[]') __silt__ANSWER='0.:list' ;;
     "$__silt__QUOTE"*) __silt__read_plain_string "$1" ;;
+    # structs-lint: allow -- the first character of a JSON whole number; SILT sits beneath structs
     0 | [1-9]* | -[1-9]*) __silt__read_whole_number "$1" ;;
     *) return 1 ;;
   esac
@@ -133,6 +137,7 @@ args:
 FUN
 __silt__read_whole_number() {
   case "${1#-}" in
+    # structs-lint: allow -- the digits of a whole number, checked before it becomes an int; SILT sits beneath structs
     *[!0-9]*) return 1 ;;
   esac
   __silt__ANSWER="0.:int=$1"
@@ -170,6 +175,7 @@ args:
 FUN
 __silt__read_json() {
   case "$1" in
+    # structs-lint: allow -- the characters a JSON value can start with; SILT sits beneath structs
     '{'* | '['* | "$__silt__QUOTE"* | -* | [0-9]*) ;;
     *) return 1 ;;
   esac

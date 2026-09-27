@@ -57,6 +57,7 @@ args:
 FUN
 __silt__require_index() {
   case "$1" in
+    # structs-lint: allow -- an index is digits, checked before arithmetic; SILT sits beneath structs
     '' | *[!0-9]*)
       __silt__fail "$2 takes an index of 0 or more, not '$1'"
       return 1
