@@ -61,6 +61,7 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__difference the elements of a list another does not hold
   silt__intersect the elements of a list another holds too
   silt__merge     one map laid over another, one level deep
+  silt__references the other schema documents a schema refers to
   silt__validate  the validation errors of a document against a JSON Schema
   silt__read      the document a text spells, written as SILT or as JSON
   silt__to_line   a document written on one line

@@ -39,3 +39,13 @@ validate @three $zero
 as blob set @good .k 0.:blob=x
 validate @blob $s
 validate @good 3.0:int=1
+# A schema that refers to other schema documents
+as r from_json refers/refers.json
+as t from_json types/types.json
+references @r
+references @t
+as named obj org $org owner $loud
+validate @named $r types/types.json $t
+as planned set @named .plan 0.:int=1
+validate @planned $r types/types.json $t
+validate @named $r types/types.json

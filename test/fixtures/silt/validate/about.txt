@@ -5,3 +5,7 @@ if the document is valid.
 A time is validated as a string and inf as a map, because that is how they
 are written in JSON. An invalid schema, a pattern that awk cannot match,
 and a type that has no JSON equivalent are errors.
+
+A schema can refer to other schema documents. The test passes one of them
+and leaves one out, and a reference to the one left out is an error in the
+result.

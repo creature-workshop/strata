@@ -114,3 +114,36 @@
 !! 1 ERROR: silt: type cannot be represented in JSON: 0."k":blob=x
 ## validate @good 3.0:int=1
 !! 1 ERROR: silt: line is nested more than one level deeper than the line before it: 3.0:int=1
+## as r from_json refers/refers.json
+0."properties":map
+1."org":map
+2."$ref":str="types/types.json#/$defs/name"
+1."owner":map
+2."$ref":str="types/types.json#/$defs/name"
+1."plan":map
+2."$ref":str="plans.json"
+0."type":str="object"
+## as t from_json types/types.json
+0."$defs":map
+1."name":map
+2."pattern":str="^[a-z]+$"
+2."type":str="string"
+## references @r
+0.0:str="plans.json"
+0.1:str="types/types.json"
+## references @t
+0.:list
+## as named obj org $org owner $loud
+0."org":str="ksoft"
+0."owner":str="KSoft"
+## validate @named $r types/types.json $t
+0.0:str="$.owner: string \"KSoft\" does not match pattern ^[a-z]+$"
+## as planned set @named .plan 0.:int=1
+0."org":str="ksoft"
+0."owner":str="KSoft"
+0."plan":int=1
+## validate @planned $r types/types.json $t
+0.0:str="$.owner: string \"KSoft\" does not match pattern ^[a-z]+$"
+0.1:str="$.plan: unresolvable $ref 'plans.json'"
+## validate @named $r types/types.json
+!! 1 ERROR: silt: the schema document 'types/types.json' has a key and no document

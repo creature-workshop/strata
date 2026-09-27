@@ -1,6 +1,7 @@
-# Loads the two documents used in validation into trees. Document 1 is the
+# Loads the documents used in validation into trees. Document 1 is the
 # value, read from stdin. Document 2 is the schema, read from the file named
-# by SILT_SPILL.
+# by SILT_SPILL. Documents 3 and above are the other schema documents that
+# the schema refers to, read from the files that SILT_DOCUMENTS lists.
 #
 # Each document is sorted into canonical order before the tree is built, so
 # the members of a map are always visited in key order, whatever order they
@@ -109,14 +110,43 @@ function build_tree(doc, __k) {
   LINES = 0
 }
 
-# Reads the schema from the file named by SILT_SPILL and stores its lines
-# with order.awk.
-function read_schema_lines(__line) {
-  while ((getline __line < ENVIRON["SILT_SPILL"]) > 0) {
+# Reads a document from a file and stores its lines with order.awk.
+function read_lines(file, __line) {
+  while ((getline __line < file) > 0) {
     take(__line)
   }
 
-  close(ENVIRON["SILT_SPILL"])
+  close(file)
+}
+
+# Reads the schema from the file named by SILT_SPILL and stores its lines
+# with order.awk.
+function read_schema_lines() {
+  read_lines(ENVIRON["SILT_SPILL"])
+}
+
+# Builds the tree of every other schema document. SILT_DOCUMENTS lists
+# them, one line for a document's key and the next line for its file. The
+# documents are numbered from 3, after the value and the schema.
+#
+#   KEY_OF_DOC[doc]   the key of a document; empty for the schema itself
+#   DOC_BY_KEY[key]   the number of the document with that key
+#   DOCS              the number of the last document
+function build_other_documents(__line, __count, __i) {
+  DOCS = 2
+  KEY_OF_DOC[2] = ""
+  if (ENVIRON["SILT_DOCUMENTS"] == "") {
+    return
+  }
+
+  __count = split(ENVIRON["SILT_DOCUMENTS"], __line, "\n")
+  for (__i = 1; __i < __count; __i = __i + 2) {
+    DOCS++
+    KEY_OF_DOC[DOCS] = __line[__i]
+    DOC_BY_KEY[__line[__i]] = DOCS
+    read_lines(__line[__i + 1])
+    build_tree(DOCS)
+  }
 }
 
 # Returns 1 if the map or list has a child with the given key or index.

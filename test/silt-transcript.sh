@@ -8,7 +8,7 @@
 # Usage: <shell> test/silt-transcript.sh <api.sh> <calls> [<document>]
 #
 # A call is a verb and one argument; a blank line or a # line is skipped.
-# type, scalar, len, keys, canon, unique, is_true, is_false, is_zero,
+# type, scalar, len, keys, canon, unique, is_true, is_false, is_zero, references,
 # to_json, to_yaml, to_toml, first, last, sum, values and entries take the
 # document; slice takes it and two indices; line takes it and answers
 # whether to_line wrote it on one line and from_line read it back; to_line
@@ -181,7 +181,7 @@ transcript__run_with_callback() {
 # Dispatches a reader verb, with the document where the verb takes one.
 transcript__run_verb() {
   case "$1" in
-    type | scalar | len | keys | canon | unique | is_true | is_false | is_zero | to_json | to_yaml | to_toml) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
+    type | scalar | len | keys | canon | unique | is_true | is_false | is_zero | references | to_json | to_yaml | to_toml) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
     first | last | sum | values | entries) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
     slice) transcript__capture silt__slice ANSWER "$DOCUMENT_FOR_CALL" "${2%% *}" "${2#* }" ;;
     read) transcript__capture silt__read ANSWER "$(transcript__unescape "$2")" ;;
