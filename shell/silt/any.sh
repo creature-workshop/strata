@@ -40,7 +40,7 @@ __silt__any_members() {
   shift 2
 
   __silt__ANY=false
-  silt__each __silt__any_member "$__silt__any_members__doc" "$@"
+  silt__each "$__silt__any_members__doc" __silt__any_member "$@"
 }
 
 : <<'FUN'

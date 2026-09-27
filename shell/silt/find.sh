@@ -41,7 +41,7 @@ __silt__find_members() {
   shift 2
 
   __silt__HIT=''
-  silt__each __silt__find_member "$__silt__find_members__doc" "$@"
+  silt__each "$__silt__find_members__doc" __silt__find_member "$@"
 }
 
 : <<'FUN'

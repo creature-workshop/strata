@@ -46,7 +46,7 @@ __silt__filter_members() {
   shift 2
 
   __silt__start_collecting "$__silt__filter_members__doc" || return 1
-  silt__each __silt__filter_member "$__silt__filter_members__doc" "$@"
+  silt__each "$__silt__filter_members__doc" __silt__filter_member "$@"
 }
 
 : <<'FUN'

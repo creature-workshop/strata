@@ -5,7 +5,7 @@ silt__each: a callback per member, with its key and its value.
 MODULE
 
 : <<'PUB_FUN'
-Calls <callback> once for each member of a map or a list. The callback
+Calls a callback once for each member of a map or a list. The callback
 receives the member's key as text (a map's key unquoted, a list's index),
 the member's value as a document of its own, and then the extra arguments.
 Stops at the first call that returns non-zero, and returns that status.
@@ -15,7 +15,7 @@ it, so loops can be nested.
 
   count_reads() { silt__len n "$2"; total=$((total + n)); }
   total=0
-  silt__each count_reads "$tests"
+  silt__each "$tests" count_reads
 
 registers:
   __silt__LOOPS         How many loops are running, this one included
@@ -27,8 +27,8 @@ registers:
   __silt__OPEN          Whether a member is being read
 
 args:
-  $1  The callback
-  $2  The document
+  $1  The document
+  $2  The callback
   $@  Extra arguments the callback receives after the key and the value
 PUB_FUN
 silt__each() {
@@ -47,13 +47,13 @@ before it calls this function and down after it, whatever this function
 returns.
 
 args:
-  $1  The callback
-  $2  The document
+  $1  The document
+  $2  The callback
   $@  Extra arguments for the callback
 FUN
 __silt__run_each() {
-  eval "__silt__CALLBACK_$__silt__LOOPS=\$1"
-  __silt__run_each__doc="$2"
+  __silt__run_each__doc="$1"
+  eval "__silt__CALLBACK_$__silt__LOOPS=\$2"
   shift 2
 
   __silt__run_each__kind=''

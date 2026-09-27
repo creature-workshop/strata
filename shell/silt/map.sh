@@ -44,7 +44,7 @@ __silt__map_members() {
   shift 2
 
   __silt__start_collecting "$__silt__map_members__doc" || return 1
-  silt__each __silt__map_member "$__silt__map_members__doc" "$@"
+  silt__each "$__silt__map_members__doc" __silt__map_member "$@"
 }
 
 : <<'FUN'
