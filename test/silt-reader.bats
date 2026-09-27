@@ -4,8 +4,9 @@
 # transcript (test/silt-goldens.bats) nor a jq twin (test/silt-twins.bats)
 # can carry: the answer variable's check, the process and timing cases, which
 # run test/silt-exercise.sh under strace and under the clock, the coverage
-# gate, test/silt-coverage.sh, which reads bash's trace of the goldens, and
-# the shape check, test/silt-shape.sh.
+# gate, test/silt-coverage.sh, which reads bash's trace of the goldens, the
+# shape check, test/silt-shape.sh, and the run with shellops absent,
+# test/silt-alone.sh.
 
 bats_require_minimum_version 1.5.0
 
@@ -141,6 +142,12 @@ stub_date() {
   echo "$output"
   assert_success
   SILT_THRESHOLD=0 run bash "$REPO/test/silt-validate.sh"
+  echo "$output"
+  assert_success
+}
+
+@test "alone: every golden runs with shellops absent, and nothing under shell/silt names it (ADR.33@strata)" {
+  run bash "$REPO/test/silt-alone.sh"
   echo "$output"
   assert_success
 }

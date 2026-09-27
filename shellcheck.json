@@ -42,6 +42,7 @@
     "shell/silt/unique.sh",
     "shell/silt/validate.sh",
     "shell/silt/walk.sh",
+    "test/silt-alone.sh",
     "test/silt-exercise.sh",
     "test/silt-fuzz-report.sh",
     "test/silt-fuzz.sh",
