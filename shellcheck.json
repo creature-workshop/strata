@@ -48,7 +48,8 @@
     "test/silt-threshold.bench.sh",
     "test/silt-transcript.sh",
     "test/silt-twins.sh",
-    "test/silt-validate.sh"
+    "test/silt-validate.sh",
+    "test/silt-without-shellops.sh"
   ],
   "exclude": [
     "shell/.ops"
