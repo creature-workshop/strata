@@ -10,19 +10,7 @@
 //   node value.mjs 7  ->  {"a":[1,"x y"],"k.d":null}
 
 import fc from "fast-check";
-
-// Every spelling a reader or a writer of JSON, YAML or TOML can get wrong.
-const PIECES = [
-  "plain text", "yes", "null", "007", "1.5", "a: b", "- x", "tab\there",
-  "line\nbreak", "two\n\nbreaks", "quote \" and \\ backslash", "café", "😀",
-  "\u0001", "#hash", "~", "[flow]", "{a: 1}", "it's", "'single'", "0x1F", ".5",
-  "1e5", "true", "2026-09-20T18:11:50Z", "on", "No", "trailing ", "",
-];
-
-const KEYS = [
-  "a", "b", "key", "Key", "_", "with space", "k.d", "k[0]", "é", "☃", "007",
-  "on", "test/a.bats", "a \"q\"", "z", "y", "x", "null", "1", "",
-];
+import { KEYS, PIECES } from "./vocabulary.mjs";
 
 // Text with the characters taken out that jq escapes and JSON.stringify
 // leaves raw, or that no line can carry: NUL, DEL and the C1 controls.
