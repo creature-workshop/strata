@@ -47,13 +47,14 @@ args:
   $2  The separator, one character
 FUN
 __silt__split_on_character() {
-  __silt__split_on_character__ifs="$IFS"
+  __silt__split_on_character__ifs_was_set="${IFS+true}"
+  __silt__split_on_character__ifs="${IFS-}"
   IFS="$2"
   set -f
   # shellcheck disable=SC2086
   set -- $1
   set +f
-  IFS="$__silt__split_on_character__ifs"
+  __silt__give_back_ifs "$__silt__split_on_character__ifs_was_set" "$__silt__split_on_character__ifs"
 
   for __silt__split_on_character__part do
     __silt__append_part "$__silt__split_on_character__part" || return 1

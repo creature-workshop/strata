@@ -5,8 +5,9 @@
 # can carry: the answer variable's check, the process and timing cases, which
 # run test/silt-exercise.sh under strace and under the clock, the coverage
 # gate, test/silt-coverage.sh, which reads bash's trace of the goldens, the
-# shape check, test/silt-shape.sh, and the check that SILT works without
-# shellops, test/silt-without-shellops.sh.
+# shape check, test/silt-shape.sh, the check that SILT works without
+# shellops, test/silt-without-shellops.sh, and the check that it works for a
+# caller with IFS unset, test/silt-unset-ifs.sh.
 
 bats_require_minimum_version 1.5.0
 
@@ -150,6 +151,15 @@ stub_date() {
   run bash "$REPO/test/silt-without-shellops.sh"
   echo "$output"
   assert_success
+}
+
+@test "SILT works for a caller with IFS unset under set -u, and leaves IFS as it found it, under sh, dash and bash" {
+  local shell
+  for shell in sh dash bash; do
+    run "$shell" "$REPO/test/silt-unset-ifs.sh" "$REPO/shell/silt/api.sh"
+    echo "$shell: $output"
+    assert_success
+  done
 }
 
 @test "coverage: the goldens enter every function in shell/silt and run at least 95% of its lines" {
