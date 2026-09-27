@@ -3,8 +3,10 @@
 # (lib/structs/jsonschema.jq), which defines the behaviour silt__validate
 # must match.
 #
-# The cases file is a JSON list of {name, schema, value}. For every case,
-# both validators must report the same errors in the same order. The script
+# The cases file is a JSON list of {name, schema, value}. A case can also
+# have "docs": a map from a key to another schema document that the schema
+# refers to. For every case, both validators must report the same errors in
+# the same order. The script
 # prints each case where they differ, with both results, and exits non-zero
 # if there are any.
 #
@@ -51,14 +53,15 @@ require_oracle() {
 
 # Runs one case through both validators and compares the results.
 check_case() {
-  local schema value ours theirs
+  local schema value docs ours theirs
   schema="$(jq -c ".[$1].schema" "$CASES")"
   value="$(jq -c ".[$1].value" "$CASES")"
-  ours="$(errors_of_silt "$schema" "$value")"
-  theirs="$(errors_of_jq "$(sorted "$schema")" "$(sorted "$value")")"
+  docs="$(jq -S -c ".[$1].docs // {} | to_entries" "$CASES")"
+  ours="$(errors_of_silt "$schema" "$value" "$docs")"
+  theirs="$(errors_of_jq "$(sorted "$schema")" "$(sorted "$value")" "$docs")"
 
   if [ "$ours" != "$theirs" ]; then
-    printf '## %s\nschema: %s\nvalue:  %s\nsilt:\n%s\njq:\n%s\n' "$(jq -r ".[$1].name" "$CASES")" "$schema" "$value" "$ours" "$theirs"
+    printf '## %s\nschema: %s\ndocs:   %s\nvalue:  %s\nsilt:\n%s\njq:\n%s\n' "$(jq -r ".[$1].name" "$CASES")" "$schema" "$docs" "$value" "$ours" "$theirs"
     return 1
   fi
 }
@@ -71,12 +74,25 @@ sorted() {
 # Prints the errors from silt__validate, one per line. If silt__validate
 # fails, prints its error message instead.
 errors_of_silt() {
-  local schema value errors text=''
+  local schema value errors text='' documents=()
   silt__from_json schema <<< "$1" || return 1
   silt__from_json value <<< "$2" || return 1
-  silt__validate errors "$value" "$schema" 2>&1 || return 1
+  read_documents "$3" || return 1
+  silt__validate errors "$value" "$schema" "${documents[@]}" 2>&1 || return 1
   silt__join text "$errors" "$__silt__NL" || return 1
   printf '%s' "$text"
+}
+
+# Reads the other schema documents of a case into the caller's "documents"
+# array: for each one its key, and then the document as SILT.
+read_documents() {
+  local count index document
+  count="$(jq length <<< "$1")"
+
+  for ((index = 0; index < count; index++)); do
+    silt__from_json document <<< "$(jq -c ".[$index].value" <<< "$1")" || return 1
+    documents+=("$(jq -r ".[$index].key" <<< "$1")" "$document")
+  done
 }
 
 # Prints the errors from the jq validator, one per line. The value is
@@ -89,6 +105,7 @@ errors_of_jq() {
       -f "$STRUCTS/jsonschema.jq" \
       --argjson schema "$1" \
       --argjson data "$2" \
+      --argjson docs "$3" \
       2>&1
 }
 

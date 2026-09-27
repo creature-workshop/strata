@@ -215,6 +215,8 @@ __silt__tier() {
     SILT_TO="${__silt__TO-}" \
     SILT_KIND="${__silt__PARENT_KIND-}" \
     SILT_SPILL="${__silt__SPILL-}" \
+    SILT_DOCUMENTS="${__silt__DOCUMENTS-}" \
+    SILT_BASE="${__silt__BASE-}" \
     awk -f "$__silt__DIR/awk/lines.awk" "$@"
 }
 

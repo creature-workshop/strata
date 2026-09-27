@@ -1,0 +1,1 @@
+{"type":"object","properties":{"org":{"$ref":"types/types.json#/$defs/name"},"owner":{"$ref":"types/types.json#/$defs/name"},"plan":{"$ref":"plans.json"}}}

@@ -1,0 +1,2 @@
+A JSON Schema document with one definition, a name in lower-case letters.
+The schema in refers/refers.json refers to it by the key types/types.json.

@@ -1189,5 +1189,242 @@
       "pattern": "^a{,}b$"
     },
     "value": "a{,}b"
+  },
+  {
+    "name": "$ref: another document, by its key",
+    "schema": {
+      "properties": {
+        "a": {
+          "$ref": "types.json#/$defs/name"
+        }
+      }
+    },
+    "docs": {
+      "types.json": {
+        "$defs": {
+          "name": {
+            "type": "string",
+            "minLength": 3
+          }
+        }
+      }
+    },
+    "value": {
+      "a": "xy"
+    }
+  },
+  {
+    "name": "$ref: another document, whole",
+    "schema": {
+      "$ref": "number.json"
+    },
+    "docs": {
+      "number.json": {
+        "type": "number"
+      }
+    },
+    "value": "x"
+  },
+  {
+    "name": "$ref: another document, valid",
+    "schema": {
+      "$ref": "number.json"
+    },
+    "docs": {
+      "number.json": {
+        "type": "number"
+      }
+    },
+    "value": 3
+  },
+  {
+    "name": "$ref: a key relative to the document that contains the reference",
+    "schema": {
+      "$ref": "schemas/a.json"
+    },
+    "docs": {
+      "schemas/a.json": {
+        "$ref": "b.json"
+      },
+      "schemas/b.json": {
+        "type": "null"
+      }
+    },
+    "value": 1
+  },
+  {
+    "name": "$ref: a key with two dots",
+    "schema": {
+      "$ref": "schemas/deep/a.json"
+    },
+    "docs": {
+      "schemas/deep/a.json": {
+        "allOf": [
+          {
+            "$ref": "../b.json"
+          },
+          {
+            "$ref": "./c.json"
+          }
+        ]
+      },
+      "schemas/b.json": {
+        "minimum": 5
+      },
+      "schemas/deep/c.json": {
+        "maximum": 0
+      }
+    },
+    "value": 2
+  },
+  {
+    "name": "$ref: a pointer inside another document stays in that document",
+    "schema": {
+      "$ref": "types.json#/$defs/outer",
+      "$defs": {
+        "inner": {
+          "type": "string"
+        }
+      }
+    },
+    "docs": {
+      "types.json": {
+        "$defs": {
+          "outer": {
+            "$ref": "#/$defs/inner"
+          },
+          "inner": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "value": 1
+  },
+  {
+    "name": "$ref: another document, by its $id",
+    "schema": {
+      "$ref": "urn:types#/$defs/n"
+    },
+    "docs": {
+      "anything.json": {
+        "$id": "urn:types",
+        "$defs": {
+          "n": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "value": "x"
+  },
+  {
+    "name": "$ref: a document that was not supplied",
+    "schema": {
+      "$ref": "missing.json#/x"
+    },
+    "docs": {
+      "other.json": {}
+    },
+    "value": 1
+  },
+  {
+    "name": "$ref: a pointer that names nothing in another document",
+    "schema": {
+      "$ref": "types.json#/$defs/missing"
+    },
+    "docs": {
+      "types.json": {
+        "$defs": {}
+      }
+    },
+    "value": 1
+  },
+  {
+    "name": "$ref: a pointer that names no schema in another document",
+    "schema": {
+      "$ref": "types.json#/n"
+    },
+    "docs": {
+      "types.json": {
+        "n": 3
+      }
+    },
+    "value": 1
+  },
+  {
+    "name": "$ref: two documents that refer to each other at the same place",
+    "schema": {
+      "$ref": "a.json"
+    },
+    "docs": {
+      "a.json": {
+        "$ref": "b.json"
+      },
+      "b.json": {
+        "$ref": "a.json"
+      }
+    },
+    "value": 1
+  },
+  {
+    "name": "$ref: a recursive schema across two documents, over nested data",
+    "schema": {
+      "properties": {
+        "child": {
+          "$ref": "node.json"
+        }
+      }
+    },
+    "docs": {
+      "node.json": {
+        "type": "object",
+        "properties": {
+          "n": {
+            "type": "number"
+          },
+          "child": {
+            "$ref": "node.json"
+          }
+        }
+      }
+    },
+    "value": {
+      "child": {
+        "n": "x",
+        "child": {
+          "n": 1,
+          "child": []
+        }
+      }
+    }
+  },
+  {
+    "name": "$ref: the same pointer in two documents is not a circle",
+    "schema": {
+      "$ref": "a.json#/$defs/x",
+      "$defs": {
+        "x": {
+          "type": "string"
+        }
+      }
+    },
+    "docs": {
+      "a.json": {
+        "$defs": {
+          "x": {
+            "$ref": "b.json#/$defs/x"
+          }
+        }
+      },
+      "b.json": {
+        "$defs": {
+          "x": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    "value": 1
   }
 ]

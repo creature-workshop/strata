@@ -1,0 +1,3 @@
+A JSON Schema whose properties are defined in two other documents. One of
+them, types/types.json, is supplied in the test. The other, plans.json, is
+not.
