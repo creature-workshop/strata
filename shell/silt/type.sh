@@ -23,7 +23,7 @@ args:
 PUB_FUN
 silt__type() {
   if [ "$#" -ge 3 ]; then
-    __silt__type__at "$@"
+    __silt__type_at "$@"
     return
   fi
 
@@ -48,17 +48,17 @@ args:
   $2  The document
   $3  The path
 FUN
-__silt__type__at() {
+__silt__type_at() {
   __silt__out "$1" || return 1
-  __silt__type__at__out="$__silt__OUT"
+  __silt__type_at__out="$__silt__OUT"
 
-  __silt__type__at__value=''
-  silt__get __silt__type__at__value "$2" "$3" || return 1
-  if [ -z "$__silt__type__at__value" ]; then
+  __silt__type_at__value=''
+  silt__get __silt__type_at__value "$2" "$3" || return 1
+  if [ -z "$__silt__type_at__value" ]; then
     __silt__ANSWER=''
-    __silt__answer_in "$__silt__type__at__out"
+    __silt__answer_in "$__silt__type_at__out"
     return
   fi
 
-  silt__type "$__silt__type__at__out" "$__silt__type__at__value"
+  silt__type "$__silt__type_at__out" "$__silt__type_at__value"
 }

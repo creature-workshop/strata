@@ -52,7 +52,7 @@ silt__option_is() {
   __silt__wrap_literal "$3"
   __silt__option_is__held=''
   silt__get __silt__option_is__held "$2" ".$__silt__LITERAL" || return 1
-  __silt__option__matches "$__silt__option_is__held" "${4:-}" || return 1
+  __silt__option_matches "$__silt__option_is__held" "${4:-}" || return 1
 
   __silt__OUT="$__silt__option_is__out"
   __silt__answer
@@ -66,10 +66,10 @@ args:
   $1  The value silt__get answered, a document or nothing
   $2  The text to compare with
 FUN
-__silt__option__matches() {
-  __silt__option__matches__defined=''
-  silt__defined __silt__option__matches__defined "$1" || return 1
-  if [ "$__silt__option__matches__defined" = false ]; then
+__silt__option_matches() {
+  __silt__option_matches__defined=''
+  silt__defined __silt__option_matches__defined "$1" || return 1
+  if [ "$__silt__option_matches__defined" = false ]; then
     __silt__ANSWER=false
     return 0
   fi
