@@ -1,0 +1,1 @@
+A JSON Schema that requires a name, which is a string, and allows draft, which is a boolean.

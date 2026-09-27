@@ -40,3 +40,8 @@ The backslash, named so no line has to spell it doubled.
 CONST
 __silt__BACKSLASH=\\
 
+
+: <<'CONST'
+The three backticks that open and close a Markdown code fence.
+CONST
+__silt__FENCE='```'

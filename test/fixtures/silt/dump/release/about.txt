@@ -1,0 +1,1 @@
+A map with a str, a secret, a bool, a float, a null, a list that holds a map and a str, an empty map and an empty list.

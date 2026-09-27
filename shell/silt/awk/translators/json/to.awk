@@ -1,4 +1,7 @@
-# The SILT document on stdin as one line of JSON: silt__to_json. Each line
+# The SILT document on stdin as one line of JSON: silt__to_json. With
+# SILT_INDENT set to a number of spaces, the JSON is on several lines, each
+# member on its own line and indented by that many spaces for each level:
+# silt__dump. Each line
 # is written as it is read, a str's literal, a number's text and a key
 # copied as written, a time as a string, and a float JSON cannot spell, inf,
 # -inf or nan, as the map ADR.20 gives it; the collections a line leaves
@@ -12,6 +15,14 @@
 #   0."b":list
 #   1.0:int=1
 #   1.1:str="x"   ->  {"a":null,"b":[1,"x"]}
+#
+#   SILT_INDENT=2   ->  {
+#                         "a": null,
+#                         "b": [
+#                           1,
+#                           "x"
+#                         ]
+#                       }
 
 # Ends the run naming the line that cannot be written.
 function refuse_line(why) {
@@ -48,9 +59,26 @@ function check_place() {
   }
 }
 
-# Closes every collection deeper than the line.
+# Starts a new line for a value that sits <levels> collections deep, when
+# the JSON is written on several lines, and does nothing when it is not.
+function start_line(levels, __i) {
+  if (INDENT == "") {
+    return
+  }
+
+  printf "\n"
+  for (__i = 0; __i < levels * INDENT; __i++) {
+    printf " "
+  }
+}
+
+# Closes every collection deeper than the line. A collection that holds a
+# member closes on a line of its own.
 function close_behind() {
   while (OPEN > DEPTH) {
+    if (COUNT[OPEN] > 0) {
+      start_line(OPEN)
+    }
     printf "%s", (KIND[OPEN] == "map") ? "}" : "]"
     OPEN--
   }
@@ -67,6 +95,7 @@ function write_separator() {
     printf ","
   }
   COUNT[DEPTH]++
+  start_line(DEPTH + 1)
 }
 
 # Writes the member's key: under a map its literal as written, refused when
@@ -95,7 +124,7 @@ function write_map_key() {
   }
 
   HELD[SERIAL[DEPTH], unwrap(KEY)] = 1
-  printf "%s:", KEY
+  printf "%s:%s", KEY, (INDENT == "") ? "" : " "
 }
 
 # Refuses a list element whose key is a name, or an index that is not the
@@ -200,6 +229,7 @@ function main() {
 }
 
 BEGIN {
+  INDENT = ENVIRON["SILT_INDENT"]
   OPEN = 0
   KEYLESS = 0
   LAST_DEPTH = 0

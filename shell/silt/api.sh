@@ -89,6 +89,12 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__from_line a document read back from one line
   silt__from_json the JSON on stdin as a document
   silt__to_json   a document as one line of JSON
+  silt__dump      a document as JSON on several lines, for a person to read
+  silt__to_codeblock   that JSON inside a Markdown code fence
+  silt__from_codeblock the document in a text that may be inside a fence
+  silt__load      a JSON file as a document, checked against a schema file
+  silt__pick      a map with only the keys given
+  silt__without   a map without the keys given
   silt__from_yaml the YAML on stdin as a document
   silt__to_yaml   a document as YAML in block style
   silt__from_toml the TOML on stdin as a document
@@ -195,6 +201,9 @@ __silt__home || return 1
 . "$__silt__DIR/validate.sh"
 . "$__silt__DIR/translate.sh"
 . "$__silt__DIR/read.sh"
+. "$__silt__DIR/dump.sh"
+. "$__silt__DIR/load.sh"
+. "$__silt__DIR/pick.sh"
 . "$__silt__DIR/callback.sh"
 . "$__silt__DIR/gather.sh"
 . "$__silt__DIR/map.sh"

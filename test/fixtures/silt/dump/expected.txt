@@ -1,0 +1,189 @@
+## as release load release/release.json schema/release.schema.json
+0."name":str="1.2.0"
+0."token":str="secret"
+0."draft":bool=false
+0."ratio":float=1.5
+0."notes":null
+0."assets":list
+1.0:map
+2."file":str="a.tgz"
+2."sizes":list
+1.1:str="readme"
+0."meta":map
+0."tags":list
+## load unnamed/unnamed.json schema/release.schema.json
+!! 1 ERROR: silt: 'unnamed/unnamed.json' does not match its schema
+ERROR: silt:   $: missing required field 'name'
+ERROR: silt:   $.draft: expected boolean, got string
+## load broken/broken.json schema/release.schema.json
+!! 1 ERROR: silt: json line 1: not a JSON value: not 
+ERROR: silt: load could not read 'broken/broken.json' as JSON
+## load missing/missing.json schema/release.schema.json
+!! 1 ERROR: silt: load found no file at 'missing/missing.json'
+## load release/release.json missing/missing.schema.json
+!! 1 ERROR: silt: load found no file at 'missing/missing.schema.json'
+## dump @release
+{
+  "name": "1.2.0",
+  "token": "secret",
+  "draft": false,
+  "ratio": 1.5,
+  "notes": null,
+  "assets": [
+    {
+      "file": "a.tgz",
+      "sizes": []
+    },
+    "readme"
+  ],
+  "meta": {},
+  "tags": []
+}
+## dump --sort @release
+{
+  "assets": [
+    {
+      "file": "a.tgz",
+      "sizes": []
+    },
+    "readme"
+  ],
+  "draft": false,
+  "meta": {},
+  "name": "1.2.0",
+  "notes": null,
+  "ratio": 1.5,
+  "tags": [],
+  "token": "secret"
+}
+## as none obj
+0.:map
+## dump @none
+{}
+## as empty arr
+0.:list
+## dump @empty
+[]
+## as text str a "quoted" word
+0.:str="a \"quoted\" word"
+## dump @text
+"a \"quoted\" word"
+## as assets get @release .assets
+0.0:map
+1."file":str="a.tgz"
+1."sizes":list
+0.1:str="readme"
+## dump @assets
+[
+  {
+    "file": "a.tgz",
+    "sizes": []
+  },
+  "readme"
+]
+## as safe without @release token
+0."name":str="1.2.0"
+0."draft":bool=false
+0."ratio":float=1.5
+0."notes":null
+0."assets":list
+1.0:map
+2."file":str="a.tgz"
+2."sizes":list
+1.1:str="readme"
+0."meta":map
+0."tags":list
+## dump @safe
+{
+  "name": "1.2.0",
+  "draft": false,
+  "ratio": 1.5,
+  "notes": null,
+  "assets": [
+    {
+      "file": "a.tgz",
+      "sizes": []
+    },
+    "readme"
+  ],
+  "meta": {},
+  "tags": []
+}
+## as two pick @release name draft missing
+0."name":str="1.2.0"
+0."draft":bool=false
+## dump @two
+{
+  "name": "1.2.0",
+  "draft": false
+}
+## as all without @release
+0."name":str="1.2.0"
+0."token":str="secret"
+0."draft":bool=false
+0."ratio":float=1.5
+0."notes":null
+0."assets":list
+1.0:map
+2."file":str="a.tgz"
+2."sizes":list
+1.1:str="readme"
+0."meta":map
+0."tags":list
+## equals @release $all
+true
+## pick @release
+0.:map
+## pick @empty name
+!! 1 ERROR: silt: pick takes a map, not a list
+## without @text token
+!! 1 ERROR: silt: without takes a map, not a str
+## to_codeblock @two
+```json
+{
+  "name": "1.2.0",
+  "draft": false
+}
+```
+## to_codeblock-tag @two yaml
+```yaml
+{
+  "name": "1.2.0",
+  "draft": false
+}
+```
+## to_codeblock-tag @two
+```
+{
+  "name": "1.2.0",
+  "draft": false
+}
+```
+## to_codeblock @text
+```json
+"a \"quoted\" word"
+```
+## from_codeblock ```json\n{"a": [1, 2]}\n```
+0."a":list
+1.0:int=1
+1.1:int=2
+## from_codeblock \n  ```\n  {"a": [1, 2]}\n  ```  \n
+0."a":list
+1.0:int=1
+1.1:int=2
+## from_codeblock   {"a": [1, 2]}
+0."a":list
+1.0:int=1
+1.1:int=2
+## from_codeblock ```\n0."a":int=1\n```
+0."a":int=1
+## from_codeblock ```json extra\n1\n```
+!! 1 ERROR: silt: a code fence opens with a language tag or nothing, not 'json extra'
+## from_codeblock ```json\nnot a document\n```
+!! 1 ERROR: silt: the text inside the code fence is not a document
+## from_codeblock ```json {"a":1}```
+!! 1 ERROR: silt: the text is not a document, and not a document inside a code fence
+## from_codeblock words
+!! 1 ERROR: silt: the text is not a document, and not a document inside a code fence
+## from_codeblock
+!! 1 ERROR: silt: the text is not a document, and not a document inside a code fence
