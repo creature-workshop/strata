@@ -19,14 +19,17 @@ function add_member(line) {
   }
 }
 
+# Adds a member's text to the answer.
+function main() {
+  if (is_member($0)) {
+    add_member($0)
+  }
+}
+
 BEGIN {
   separator = ENVIRON["SILT_SEPARATOR"]
   first = 1
   out = ""
-}
-
-is_member($0) {
-  add_member($0)
 }
 
 END {
@@ -34,3 +37,5 @@ END {
     printf "%s\n", out
   }
 }
+
+{ main() }

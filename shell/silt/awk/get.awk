@@ -45,6 +45,23 @@ function collect_member(line) {
   print redepth(line, -at - 1)
 }
 
+# One line in the run's state: finished reads and skips, collecting takes
+# the line as a member of the value, seeking matches it against the segment
+# wanted.
+function main() {
+  if (state == "finished") {
+    return
+  }
+
+  parse($0)
+
+  if (state == "collecting") {
+    collect_member($0)
+  } else {
+    match_segment()
+  }
+}
+
 BEGIN {
   load_segments()
   want = 0
@@ -53,23 +70,10 @@ BEGIN {
   state = "seeking"
 }
 
-state == "finished" {
-  next
-}
-
-state == "collecting" {
-  parse($0)
-  collect_member($0)
-  next
-}
-
-{
-  parse($0)
-  match_segment()
-}
-
 END {
   if (root != "") {
     print root
   }
 }
+
+{ main() }

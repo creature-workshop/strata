@@ -1,11 +1,13 @@
 # The members' keys as a list document, str leaves for a map's key literals
 # and int leaves for a list's indices: silt__keys past the threshold.
 
-BEGIN {
-  at = 0
-}
+# Adds a member's key as the next element of the list: a str leaf for a map's
+# key literal, an int leaf for a list's index.
+function main() {
+  if (!is_member($0)) {
+    return
+  }
 
-is_member($0) {
   parse($0)
 
   if (is_name(KEY)) {
@@ -17,8 +19,14 @@ is_member($0) {
   at++
 }
 
+BEGIN {
+  at = 0
+}
+
 END {
   if (at == 0) {
     print "0.:list"
   }
 }
+
+{ main() }

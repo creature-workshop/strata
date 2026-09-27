@@ -139,6 +139,32 @@ function nest(key, depth, __i) {
   }
 }
 
+# One line in the run's state: the empty root's own line is nothing;
+# dropping skips the replaced member's deeper lines and turns to copying at
+# the first that is not; copying passes the line through; placing matches
+# it against the path.
+function main() {
+  if (is_keyless($0)) {
+    return
+  }
+
+  if (state == "dropping") {
+    parse($0)
+    if (DEPTH > at) {
+      return
+    }
+    state = "copying"
+  }
+
+  if (state == "copying") {
+    print
+    return
+  }
+
+  parse($0)
+  match_line($0)
+}
+
 BEGIN {
   load_segments()
   read_value()
@@ -149,32 +175,10 @@ BEGIN {
   state = "placing"
 }
 
-is_keyless($0) {
-  next
-}
-
-state == "dropping" {
-  parse($0)
-
-  if (DEPTH > at) {
-    next
-  }
-
-  state = "copying"
-}
-
-state == "copying" {
-  print
-  next
-}
-
-{
-  parse($0)
-  match_line($0)
-}
-
 END {
   if (state == "placing") {
     place_new()
   }
 }
+
+{ main() }

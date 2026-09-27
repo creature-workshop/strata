@@ -9,19 +9,23 @@ function shifted(line, __rest) {
   return "0." (substr(__rest, 1, index(__rest, ":") - 1) + offset) substr(__rest, index(__rest, ":"))
 }
 
+# Drops the empty list's line, moves an element's index on, and keeps a
+# deeper line as it is.
+function main() {
+  if (is_keyless($0)) {
+    return
+  }
+
+  if (is_member($0)) {
+    print shifted($0)
+    return
+  }
+
+  print
+}
+
 BEGIN {
   offset = ENVIRON["SILT_INDEX"] + 0
 }
 
-is_keyless($0) {
-  next
-}
-
-is_member($0) {
-  print shifted($0)
-  next
-}
-
-{
-  print
-}
+{ main() }

@@ -41,17 +41,13 @@ function close_member() {
   open = 0
 }
 
-BEGIN {
-  open = 0
-  root = ""
-  RS_LINE = sprintf("%c", 30)
-}
+# One line: the empty collection's keyless line is nothing, a depth-0 line
+# opens a member, a deeper one extends the member open.
+function main() {
+  if (is_keyless($0)) {
+    return
+  }
 
-is_keyless($0) {
-  next
-}
-
-{
   parse($0)
 
   if (DEPTH == 0) {
@@ -61,6 +57,14 @@ is_keyless($0) {
   }
 }
 
+BEGIN {
+  open = 0
+  root = ""
+  RS_LINE = sprintf("%c", 30)
+}
+
 END {
   close_member()
 }
+
+{ main() }
