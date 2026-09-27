@@ -16,7 +16,7 @@ built in a shell has none of the three. A `.strt` line writes keys and
 types as codes from a header
 ([ADR.16@strata](../000016-two-document-forms-one-corpus-form/adr.md)), and
 a variable carries no header. The rest of a line a shell reads with no
-parser and no process.
+parser or process.
 
 ## Decision
 
@@ -48,8 +48,8 @@ SILT    0."runner":str="bats"
   ([ADR.12@strata](../000012-keyless-line/adr.md)). Every other rule holds.
 - No header, no ids, no version: a document alone is complete.
 - SILT is a value in flight, never at rest: no corpus holds one. A file
-  holding one, a fixture or a spill, ends `.silt`. In a variable a document
-  has no LF after its last line; on a stream it ends in one
+  holding one, a fixture or a spill, ends `.silt`. In a variable it has no
+  final LF; on a stream it ends in one
   ([ADR.19@strata](../000019-text/adr.md)).
 - **Writing** a document into a corpus gives it a toc number
   ([ADR.10@strata](../000010-the-toc/adr.md)), draws each line's LID from
@@ -60,21 +60,23 @@ SILT    0."runner":str="bats"
 - The translation is always explicit. A `.strh` reader MUST refuse a line
   without a LID, and a SILT reader MUST refuse one that opens with a LID or
   carries a code, naming the line. The caller names the form, by the file's
-  ending or the verb's name; no tool guesses it from a line.
+  ending or the verb's name; no tool guesses.
 
 ## Consequences
 
-`.strh` is SILT with a column in front, so each translation is one field
-per line, and a reader of one is nearly a reader of the other.
+`.strh` is SILT with a column in front: each translation is one field per
+line.
+
+A value in flight has no address. Provenance is recorded where it is
+written, in the history ([ADR.18@strata](../000018-the-history/adr.md)),
+and a document read whole has its LIDs back from its seeds and number.
 
 A `.strh` missing its column is broken, and a SILT carrying one is not
-SILT. Each is refused where it happens, so no document loses or invents
-ids unnoticed.
+SILT. Each is refused, so no document loses or invents ids unnoticed.
 
-The draw is thirty-one multiplications a line under 2^47
+The draw is thirty-one multiplications under 2^47
 ([ADR.9@strata](../000009-ecuyer1988-doc-line/adr.md)), exact in dash's and
-bash's own arithmetic, so a shell writes a `.strh` without starting a
-process.
+bash's arithmetic, so a shell writes a `.strh` without a process.
 
 SILT is no feature of the manifest
 ([ADR.14@strata](../000014-the-version/adr.md)): a corpus never uses it.
