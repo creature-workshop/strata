@@ -26,6 +26,7 @@ silt__keys() {
 
   __silt__ANSWER=''
   __silt__INDEX=0
+  __silt__AWK='keys'
   __silt__walk "$2" __silt__keys_line || return 1
 
   __silt__answer_list

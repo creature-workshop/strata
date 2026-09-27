@@ -33,6 +33,7 @@ __silt__nest() {
   esac
 
   __silt__NEST_DEPTH="$3"
+  __silt__AWK='nest'
   __silt__walk "$2" __silt__nest_line
 }
 

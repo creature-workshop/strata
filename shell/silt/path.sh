@@ -81,3 +81,35 @@ __silt__name_segment() {
   __silt__wrap_literal "$__silt__name_segment__name"
   __silt__SEGMENT="$__silt__LITERAL"
 }
+
+: <<'FUN'
+Reads every segment left in __silt__PATH into __silt__SEGMENTS, one per
+line, from the one in __silt__SEGMENT on, and leaves __silt__PATH where it
+was so the shell's own walk reads the same segments again.
+
+args: none, reads __silt__SEGMENT and __silt__PATH
+FUN
+__silt__all_segments() {
+  __silt__all_segments__path="$__silt__PATH"
+  __silt__SEGMENTS="$__silt__SEGMENT"
+
+  while :; do
+    __silt__next_segment || return 1
+    if [ "$__silt__PATH_DONE" = true ]; then
+      break
+    fi
+    __silt__SEGMENTS="$__silt__SEGMENTS$__silt__NL$__silt__SEGMENT"
+  done
+
+  __silt__PATH="$__silt__all_segments__path"
+  __silt__next_segment_back
+}
+
+: <<'FUN'
+Puts __silt__SEGMENT back to the first segment of __silt__PATH after
+__silt__all_segments read them all, by reading the first again.
+FUN
+__silt__next_segment_back() {
+  __silt__SEGMENT="${__silt__SEGMENTS%%"$__silt__NL"*}"
+  __silt__PATH_DONE=false
+}

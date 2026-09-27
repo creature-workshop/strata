@@ -62,10 +62,14 @@ FUN
 __silt__place_in() {
   __silt__require_collection "$1" || return 1
   __silt__start_placing
+  __silt__all_segments || return 1
+  __silt__spill "$__silt__NEW"
 
+  __silt__AWK='set'
   __silt__walk "$1" __silt__place_line || return 1
+  __silt__unspill
 
-  if [ "$__silt__DONE" = false ]; then
+  if [ "$__silt__DONE" = false ] && [ "$__silt__HANDED" = false ]; then
     __silt__place_new || return 1
   fi
 }

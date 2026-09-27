@@ -25,6 +25,7 @@
     "shell/silt/type.sh",
     "shell/silt/walk.sh",
     "test/silt-exercise.sh",
+    "test/silt-threshold.bench.sh",
     "test/silt-transcript.sh"
   ],
   "exclude": [

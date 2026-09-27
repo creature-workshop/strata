@@ -25,17 +25,17 @@ silt__join() {
   __silt__require_list "$2" join || return 1
 
   __silt__SEPARATOR="${3-}"
-  __silt__JOINED=''
+  __silt__ANSWER=''
   __silt__FIRST=true
+  __silt__AWK='join'
   __silt__walk "$2" __silt__join_line || return 1
 
-  __silt__ANSWER="$__silt__JOINED"
   __silt__OUT="$__silt__join__out"
   __silt__answer
 }
 
 : <<'FUN'
-Adds one element's text to __silt__JOINED, with __silt__SEPARATOR before it
+Adds one element's text to the answer, with __silt__SEPARATOR before it
 unless it is the first. The empty list's line adds nothing. A collection
 has no text, so it is refused before its deeper lines are reached.
 
@@ -53,12 +53,12 @@ __silt__join_line() {
     return 1
   fi
 
+  __silt__join_line__built="$__silt__ANSWER"
   __silt__string_of_scalar "0.:${1#*:}" || return 1
 
   if [ "$__silt__FIRST" = true ]; then
-    __silt__JOINED="$__silt__ANSWER"
     __silt__FIRST=false
   else
-    __silt__JOINED="$__silt__JOINED$__silt__SEPARATOR$__silt__ANSWER"
+    __silt__ANSWER="$__silt__join_line__built$__silt__SEPARATOR$__silt__ANSWER"
   fi
 }

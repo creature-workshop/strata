@@ -53,10 +53,12 @@ __silt__find_in() {
   __silt__WANT=0
   __silt__FOUND=false
   __silt__ANSWER=''
+  __silt__all_segments || return 1
 
+  __silt__AWK='get'
   __silt__walk "$1" __silt__find_line || return 1
 
-  if [ "$__silt__FOUND" = false ]; then
+  if [ "$__silt__FOUND" = false ] && [ "$__silt__HANDED" = false ]; then
     __silt__ANSWER=''
   fi
 }

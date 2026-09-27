@@ -7,7 +7,8 @@
 # and <name>.expected is the transcript test/silt-transcript.sh writes.
 #
 # Every fileset is registered as a test of its own under bash, dash and
-# /bin/sh, so a new case is a new fileset and no new test code.
+# /bin/sh, on the shell tier and again with every walk handed to awk, so a
+# new case is a new fileset and no new test code.
 # UPDATE_GOLDENS=1 rewrites the .expected files from the live answers under
 # bash, to be read before they are committed.
 
@@ -16,41 +17,56 @@ bats_require_minimum_version 1.5.0
 REPO="$(cd "${BATS_TEST_DIRNAME}/.." && pwd)"
 FIXTURES="$BATS_TEST_DIRNAME/fixtures/silt"
 SHELLS="bash dash sh"
+TIERS="shell awk"
 
 load "${SHELLOPS_DIR:-$REPO/shell/.ops}/test/lib/bats-support/load.bash"
 load "${SHELLOPS_DIR:-$REPO/shell/.ops}/test/lib/bats-assert/load.bash"
 
-# Registers every fileset as a test under each shell, named for the case.
+# Registers every fileset as a test under each shell and each tier, named
+# for the case. The awk tier is every walk handed to awk, SILT_THRESHOLD=0.
 register_golden_cases() {
-  local calls name shell
+  local calls name shell tier
   for calls in "$FIXTURES"/*.calls; do
     name="$(basename "$calls" .calls)"
-    for shell in $SHELLS; do
-      bats_test_function --description "golden under $shell: $(cat "$FIXTURES/$name.name")" -- golden_case "$name" "$shell"
+    for tier in $TIERS; do
+      for shell in $SHELLS; do
+        bats_test_function --description "golden, $tier tier under $shell: $(cat "$FIXTURES/$name.name")" -- golden_case "$name" "$shell" "$tier"
+      done
     done
   done
 }
 
-# One fileset under one shell: its transcript against its .expected.
+# One fileset under one shell and tier: its transcript against its .expected.
 golden_case() {
-  local name="$1" shell="$2" actual
-  actual="$(transcript "$name" "$shell")"
+  local name="$1" shell="$2" tier="$3" actual
+  actual="$(transcript "$name" "$shell" "$tier")"
 
-  if [ "${UPDATE_GOLDENS:-}" = 1 ] && [ "$shell" = bash ]; then
+  if [ "${UPDATE_GOLDENS:-}" = 1 ] && [ "$shell" = bash ] && [ "$tier" = shell ]; then
     printf '%s\n' "$actual" > "$FIXTURES/$name.expected"
   fi
 
   if ! diff "$FIXTURES/$name.expected" - <<< "$actual"; then
-    echo "## $(cat "$FIXTURES/$name.name") ($name, under $shell): the transcript differs from $name.expected"
+    echo "## $(cat "$FIXTURES/$name.name") ($name, $tier tier under $shell): the transcript differs from $name.expected"
     cat "$FIXTURES/$name.about"
     false
   fi
 }
 
-# The transcript of a fileset's calls, written by the script under the shell.
+# The transcript of a fileset's calls, written by the script under the shell
+# and the tier.
 transcript() {
-  local name="$1" shell="$2"
-  "$shell" "$REPO/test/silt-transcript.sh" "$REPO/shell/silt/api.sh" "$FIXTURES/$name.calls" "$(document_of "$name")"
+  local name="$1" shell="$2" tier="$3"
+  SILT_THRESHOLD="$(threshold_of "$tier")" "$shell" "$REPO/test/silt-transcript.sh" "$REPO/shell/silt/api.sh" "$FIXTURES/$name.calls" "$(document_of "$name")"
+}
+
+# The threshold that puts every walk on a tier: the library's own for the
+# shell tier, 0 for awk.
+threshold_of() {
+  if [ "$1" = awk ]; then
+    printf '0'
+  else
+    printf '1000000'
+  fi
 }
 
 # The document a fileset's calls run against: <name>.silt beside the calls,

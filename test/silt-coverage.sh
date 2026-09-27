@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Measures how much of shell/silt the golden fixtures and the exercise script
-# run, and fails when either share is under its bar; there is no warning
-# band. bash traces every command it runs with the file, the line and the
+# run, on the shell tier and with every walk handed to awk, and fails when
+# either share is under its bar; there is no warning band. bash traces every command it runs with the file, the line and the
 # function it sits in, so the goldens run once more under the trace and the
 # trace is the coverage: which functions were entered, and which lines of
 # each file were executed.
@@ -47,12 +47,14 @@ parse_args() {
   done
 }
 
-# Runs every golden fileset's transcript under bash -x, appending the trace.
+# Runs every golden fileset's transcript under bash -x, appending the trace,
+# once on the shell tier and once with every walk handed to the awk tier.
 trace_goldens() {
   local calls name
   for calls in "$FIXTURES"/*.calls; do
     name="$(basename "$calls" .calls)"
     traced "$REPO/test/silt-transcript.sh" "$LIBRARY/api.sh" "$calls" "$(document_of "$name")"
+    SILT_THRESHOLD=0 traced "$REPO/test/silt-transcript.sh" "$LIBRARY/api.sh" "$calls" "$(document_of "$name")"
   done
 }
 
