@@ -1,0 +1,1 @@
+Strings that run over lines, one holding a control character, one a tab, one neither: only the last two may be written as literal blocks, since YAML cannot carry a control character raw. Found by the fuzzer (seeds 207 and 243), which had to_yaml writing an invalid block.

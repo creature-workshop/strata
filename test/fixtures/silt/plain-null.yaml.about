@@ -1,0 +1,1 @@
+Plain scalars that end in a tilde or the word null but hold more than that, which are strings, beside the ones that are exactly a tilde, the word null or nothing, which are null. Found by the fuzzer (seed 22 of the first run): an empty branch in an alternation reads as an empty pattern under mawk.

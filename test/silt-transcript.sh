@@ -10,7 +10,8 @@
 # A call is a verb and one argument; a blank line or a # line is skipped.
 # type, scalar, len, keys, canon, to_json, to_yaml and to_toml take the
 # document; get, string and has take it and a path; from_json, from_yaml and
-# from_toml take a file beside the calls file and read it on stdin; unwrap
+# from_toml take a file, beside the calls file unless absolute, and read it
+# on stdin; unwrap
 # takes the literal; wrap and transcript__roundtrip take text read through
 # printf %b, so a line can spell a newline or a control character; each takes
 # an extra argument for its callback, and each-until the key at which the
@@ -147,7 +148,7 @@ transcript__run_verb() {
   case "$1" in
     type | scalar | len | keys | canon | to_json | to_yaml | to_toml) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
     get | string | has) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
-    from_json | from_yaml | from_toml) transcript__capture "silt__$1" ANSWER < "$CALLS_DIR/$2" ;;
+    from_json | from_yaml | from_toml) transcript__capture "silt__$1" ANSWER < "$(transcript__file_of "$2")" ;;
     unwrap) transcript__capture silt__unwrap ANSWER "$2" ;;
     wrap) transcript__capture silt__wrap ANSWER "$(transcript__unescape "$2")" ;;
     str) transcript__capture silt__str ANSWER "$(transcript__unescape "$2")" ;;
@@ -155,6 +156,14 @@ transcript__run_verb() {
     each) transcript__capture silt__each transcript__note "$DOCUMENT_FOR_CALL" "$2" ;;
     each-until) transcript__capture silt__each transcript__until_key "$DOCUMENT_FOR_CALL" "$2" ;;
     *) STATUS=127 ;;
+  esac
+}
+
+# A file a call reads by name: as given when absolute, else beside the calls file.
+transcript__file_of() {
+  case "$1" in
+    /*) printf '%s' "$1" ;;
+    *) printf '%s/%s' "$CALLS_DIR" "$1" ;;
   esac
 }
 

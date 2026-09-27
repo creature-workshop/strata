@@ -1,0 +1,8 @@
+# Plain scalars that end in a word YAML reads as null on its own.
+- yes 'single' ~
+- No null
+- 2026-09-20T18:11:50Z null
+- ~ ~ null
+- ~
+- null
+-

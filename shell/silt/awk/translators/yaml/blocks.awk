@@ -2,21 +2,29 @@
 # writer as one str. A literal block keeps its line breaks; a folded one
 # joins a line to the next with a space, a blank line standing for a line
 # break and a line indented further kept on its own. The "-" and "+" after
-# the mark strip or keep the line breaks at the end, and an indentation
-# digit there is refused. Loaded after translators/write.awk and lines.awk beside this one.
+# the mark strip or keep the line breaks at the end, and a digit there says
+# how far past its parent the block is indented, which a block whose first
+# line starts with a space needs. Loaded after translators/write.awk and
+# lines.awk beside this one.
 #
-#   key: |          key: >-
-#     a               a
-#     b               b
+#   key: |          key: >-        key: |2-
+#     a               a               text
+#     b               b           -> " text"
 #   -> "a\nb\n"     -> "a b"
 
-# Whether the text is the mark that opens a block scalar.
+# Whether the text is the mark that opens a block scalar: the bar or the
+# angle, then a chomping sign and an indentation digit in either order.
 function is_block_header(text) {
-  if (text ~ /^[|>][-+]?[0-9]/) {
-    refuse_yaml("a block scalar with an indentation digit")
+  return text ~ /^[|>]([-+]?[1-9]?|[1-9][-+])$/
+}
+
+# The indentation digit of a block header, or 0 when it has none.
+function header_indent(header) {
+  if (header ~ /[1-9]/) {
+    return substr(header, match(header, /[1-9]/), 1) + 0
   }
 
-  return text ~ /^[|>][-+]?$/
+  return 0
 }
 
 # Whether raw line i belongs to a block under a node indented by <parent>:
@@ -26,9 +34,11 @@ function block_holds(i, parent) {
 }
 
 # Gathers the block's lines into BLOCK[1..n], the block's own indentation
-# off, and steps past them. Returns n.
-function block_gather(parent, __n, __i, __indent) {
-  __indent = -1
+# off, and steps past them. Returns n. The block is indented by <indent>
+# when the header says so, and otherwise as far as its first line that
+# holds something.
+function block_gather(parent, indent, __n, __i, __indent) {
+  __indent = (indent > 0) ? indent : -1
   __n = 0
 
   for (__i = Y_POS; __i <= Y_N && block_holds(__i, parent); __i++) {
@@ -96,12 +106,12 @@ function block_literal(n, __out, __i) {
 # The line breaks a block's text ends with: none for "-", every one the
 # block had for "+", and one otherwise.
 function block_ending(header, trailing, __out) {
-  if (header ~ /-$/) {
+  if (index(header, "-") > 0) {
     return ""
   }
 
   __out = "\n"
-  while (header ~ /\+$/ && trailing-- > 0) {
+  while (index(header, "+") > 0 && trailing-- > 0) {
     __out = __out "\n"
   }
 
@@ -112,7 +122,7 @@ function block_ending(header, trailing, __out) {
 # lines after them.
 function block_text(header, n, trailing) {
   if (n == 0) {
-    return (header ~ /\+$/) ? block_ending(header, trailing - 1) : ""
+    return (index(header, "+") > 0) ? block_ending(header, trailing - 1) : ""
   }
   if (header ~ /^>/) {
     return block_folded(n) block_ending(header, trailing)
@@ -126,7 +136,7 @@ function block_text(header, n, trailing) {
 # the first line past the block.
 function write_block(key, header, parent, __n, __trailing) {
   Y_POS++
-  __n = block_gather(parent)
+  __n = block_gather(parent, (header_indent(header) > 0) ? parent + header_indent(header) : 0)
   __trailing = block_trailing(__n)
 
   write_scalar(key, "str", wrap(block_text(header, __n - __trailing, __trailing)))
