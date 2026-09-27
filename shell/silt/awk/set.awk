@@ -1,8 +1,11 @@
 # The document with the value in SILT_SPILL placed at the path in
-# SILT_SEGMENTS: silt__set past the threshold. The member there is replaced
-# with everything under it; a missing one is added at the end of its parent,
-# with missing parents created as maps, or lists where the next segment is
-# an index. A refusal ends the run with the shell's message and status 1.
+# SILT_SEGMENTS: silt__set past the threshold. The run is in one of three
+# states: placing, while the path is followed and the value goes in;
+# dropping, while the replaced member's old lines are skipped; and copying,
+# once the value is in and the lines left pass through. A member missing at
+# the path is added at the end of its parent, with missing parents created
+# as maps, or lists where the next segment is an index. A refusal ends the
+# run with the shell's message and status 1.
 
 # Reads the value document from the spill file into VALUE_LINE[1..VALUES].
 function read_value(__line) {
@@ -15,10 +18,9 @@ function read_value(__line) {
   close(ENVIRON["SILT_SPILL"])
 }
 
-# Handles one parsed line before the value is placed: a shallower line closes
-# the parent, so the value goes in before it; a line that is not the segment
-# is kept; the segment itself is replaced when the path ends there, and
-# descended into when it does not.
+# Placing: a shallower line closes the parent, so the value goes in before
+# it; a line that is not the segment is kept; the segment itself is replaced
+# when the path ends there, and descended into when it does not.
 function match_line(line) {
   if (DEPTH < want) {
     place_new()
@@ -43,13 +45,12 @@ function match_line(line) {
   descend(line)
 }
 
-# Puts the value in place of the matched member and marks its old lines to
-# be dropped.
+# Puts the value in place of the matched member and moves the run to
+# dropping the member's old lines, which sit deeper than <at>.
 function replace(key) {
   nest(key, want)
-  done = 1
-  skipping = 1
   at = want
+  state = "dropping"
 }
 
 # Keeps the matched line and moves the walk one level down; a scalar cannot
@@ -76,7 +77,7 @@ function place_new(__depth) {
 
     if (at_segment == SEGMENTS) {
       nest(SEGMENT[at_segment], __depth)
-      done = 1
+      state = "copying"
       return
     }
 
@@ -143,36 +144,37 @@ BEGIN {
   read_value()
   want = 0
   at_segment = 1
-  done = 0
-  skipping = 0
   parent_kind = ENVIRON["SILT_KIND"]
   parent_empty = 1
+  state = "placing"
 }
 
 is_keyless($0) {
   next
 }
 
-{
+state == "dropping" {
   parse($0)
 
-  if (skipping) {
-    if (DEPTH > at) {
-      next
-    }
-    skipping = 0
-  }
-
-  if (!done) {
-    match_line($0)
+  if (DEPTH > at) {
     next
   }
 
+  state = "copying"
+}
+
+state == "copying" {
   print
+  next
+}
+
+{
+  parse($0)
+  match_line($0)
 }
 
 END {
-  if (!done) {
+  if (state == "placing") {
     place_new()
   }
 }

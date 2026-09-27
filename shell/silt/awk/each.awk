@@ -1,7 +1,7 @@
 # The members of a map or a list, one block each for silt__each past the
 # threshold: the key as text on one line, the member's value as a document,
 # then a line holding the record separator alone. The empty collection's
-# keyless line ends the members; what follows it is read and skipped.
+# one keyless line has no member to write.
 
 # Opens a member from its parsed line: delivers the one open, prints the
 # key as text, and holds the value's root until a deeper line replaces it.
@@ -43,17 +43,11 @@ function close_member() {
 
 BEGIN {
   open = 0
-  done = 0
   root = ""
   RS_LINE = sprintf("%c", 30)
 }
 
-done {
-  next
-}
-
 is_keyless($0) {
-  done = 1
   next
 }
 

@@ -1,15 +1,16 @@
 # The value at the path in SILT_SEGMENTS, as a document of its own:
-# silt__get past the threshold. Nothing is printed for a path no member
-# holds. Once the answer is known the remaining lines are read and skipped,
-# and the answer's root is printed from END.
+# silt__get past the threshold. The run is in one of three states: seeking
+# the segment wanted, collecting the value's members once its line is found,
+# and finished, when the lines left are read and skipped. Nothing is printed
+# for a path no member holds; the value's root is printed from END.
 
-# Matches a parsed line against the segment being looked for at the depth
-# wanted: a shallower line ends the search, a line that is not the segment is
-# skipped, and the segment itself is the value when the path ends there, or
-# sends the search one level down.
+# Seeking: matches a parsed line against the segment wanted at the depth
+# wanted. A shallower line finishes the run without a value, a line that is
+# not the segment is skipped, and the segment itself is the value when the
+# path ends there, or sends the search one level down.
 function match_segment() {
   if (DEPTH < want) {
-    decided = 1
+    state = "finished"
     return
   }
 
@@ -18,9 +19,9 @@ function match_segment() {
   }
 
   if (at_segment == SEGMENTS) {
-    found = 1
     at = DEPTH
     root = LEAF ? "0.:" TYPE "=" VALUE : "0.:" TYPE
+    state = "collecting"
     return
   }
 
@@ -28,13 +29,12 @@ function match_segment() {
   want++
 }
 
-# Collects a parsed line after the value was found: a line no deeper than
-# the value ends the collection, a deeper one is a member moved up so the
-# value's own members sit at depth 0, and the first member replaces the
-# placeholder root.
+# Collecting: a line no deeper than the value finishes the run, a deeper one
+# is a member moved up so the value's own members sit at depth 0, and the
+# first member replaces the placeholder root.
 function collect_member(line) {
   if (DEPTH <= at) {
-    decided = 1
+    state = "finished"
     return
   }
 
@@ -49,23 +49,23 @@ BEGIN {
   load_segments()
   want = 0
   at_segment = 1
-  found = 0
-  decided = 0
   root = ""
+  state = "seeking"
 }
 
-decided {
+state == "finished" {
+  next
+}
+
+state == "collecting" {
+  parse($0)
+  collect_member($0)
   next
 }
 
 {
   parse($0)
-
-  if (found) {
-    collect_member($0)
-  } else {
-    match_segment()
-  }
+  match_segment()
 }
 
 END {
