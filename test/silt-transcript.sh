@@ -11,9 +11,10 @@
 # type, scalar, len, keys, canon, unique, is_true, is_false, is_zero,
 # to_json, to_yaml and to_toml take the document; get, string, has and pluck
 # take it and a path; string-or takes a default word, then the path;
-# from_json, from_yaml and from_toml take a file, beside the calls file
-# unless absolute, and read it on stdin; unwrap takes the literal; wrap and
-# transcript__roundtrip take text read through printf %b, so a line can
+# from_json, from_yaml, from_toml and from_strh take a file, beside the calls
+# file unless absolute, and read it on stdin, and from_strt such a file and
+# then the register holding the corpus's keys; unwrap takes the literal; wrap
+# and transcript__roundtrip take text read through printf %b, so a line can
 # spell a newline or a control character; each takes an extra argument for
 # its callback, each-until the key at which the callback returns 3, and
 # each-string a path its callback reads. map, filter, find, any and all take
@@ -22,8 +23,8 @@
 # its answer in a register, "@<name>" in place of the document makes a call
 # read that register, and a writer's words may name one as "$<name>": obj,
 # arr and split take their words alone; push, set, concat, join, equals,
-# merge, difference and intersect take the document first; str takes the
-# rest of the line as its text.
+# merge, difference, intersect, to_strh and to_strt take the document first;
+# str takes the rest of the line as its text.
 
 set -u
 
@@ -112,7 +113,7 @@ transcript__run_call() {
 
   # shellcheck disable=SC2086  # a writer's words are split on purpose
   case "${1%% *}" in
-    obj | arr | push | set | concat | join | split | equals | merge | difference | intersect) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
+    obj | arr | push | set | concat | join | split | equals | merge | difference | intersect | to_strh | to_strt) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
     map | filter | find | any | all | project) transcript__run_collection "${1%% *}" $__transcript__run_call__rest ;;
     *) transcript__run_verb "${1%% *}" "$__transcript__run_call__rest" ;;
   esac
@@ -175,7 +176,8 @@ transcript__run_verb() {
     type | scalar | len | keys | canon | unique | is_true | is_false | is_zero | to_json | to_yaml | to_toml) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
     get | string | has | pluck) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
     string-or) transcript__capture silt__string ANSWER "$DOCUMENT_FOR_CALL" "$(transcript__argument_of "$2")" "$(transcript__unescape "${2%% *}")" ;;
-    from_json | from_yaml | from_toml) transcript__capture "silt__$1" ANSWER < "$(transcript__file_of "$2")" ;;
+    from_json | from_yaml | from_toml | from_strh) transcript__capture "silt__$1" ANSWER < "$(transcript__file_of "$2")" ;;
+    from_strt) transcript__capture silt__from_strt ANSWER "$(transcript__register_of "${2#* }")" < "$(transcript__file_of "${2%% *}")" ;;
     unwrap) transcript__capture silt__unwrap ANSWER "$2" ;;
     wrap) transcript__capture silt__wrap ANSWER "$(transcript__unescape "$2")" ;;
     str) transcript__capture silt__str ANSWER "$(transcript__unescape "$2")" ;;

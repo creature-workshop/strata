@@ -1,10 +1,10 @@
 #!/bin/sh
 
 : <<'MODULE'
-The translators: a JSON, a YAML or a TOML document read into SILT, and a
-SILT document written out as any of the three. Each is one awk start, the
-document in on stdin, and each reader answers with every map in canonical
-order.
+The translators: a JSON, a YAML, a TOML, a .strh or a .strt document read
+into SILT, and a SILT document written out as any of the five. Each is one
+awk start, the document in on stdin or handed over; the JSON, YAML and TOML
+readers answer with every map in canonical order.
 MODULE
 
 : <<'PUB_FUN'
@@ -167,6 +167,162 @@ silt__to_toml() {
 
   __silt__OUT="$__silt__to_toml__out"
   __silt__answer
+}
+
+: <<'PUB_FUN'
+Answers the .strh document on stdin as a SILT document: every line with its
+LID and the space after it removed, nothing else changed (ADR.32@strata).
+Refuses a line that does not open with a LID, sixteen lowercase hex
+characters, and an empty document, naming the line.
+
+  silt__from_strh doc < jobs.strh   ->  doc='0."runner":str="bats"'
+
+args:
+  $1  The name of the variable to answer in
+PUB_FUN
+silt__from_strh() {
+  __silt__out "$1" || return 1
+  __silt__from_strh__out="$__silt__OUT"
+
+  __silt__ANSWER=''
+  __silt__translate_stdin 'translators/strh/from' || return 1
+
+  __silt__OUT="$__silt__from_strh__out"
+  __silt__answer
+}
+
+: <<'PUB_FUN'
+Answers the .strt document on stdin as a SILT document, its codes spelled out
+(ADR.16@strata): a key written as @ and a code becomes the key with that code
+in the corpus's index, a type written as a code becomes its name, and a
+bool's 1 or 0 becomes true or false. The index is the corpus's keys as a
+list of str in code order, from 0: the header's index plucked of its key.
+Refuses a code the list lacks, a type code no natural primitive has, a key
+or a type not written as a code, a bool spelled otherwise, and an empty
+document, naming the line.
+
+  silt__from_strt doc '0.0:str="clean"
+  0.1:str="ready"' < flags.strt   ->  doc='0."ready":bool=true', from 0.@1:-4=1
+
+args:
+  $1  The name of the variable to answer in
+  $2  The corpus's keys, a list of str in code order
+PUB_FUN
+silt__from_strt() {
+  __silt__out "$1" || return 1
+  __silt__from_strt__out="$__silt__OUT"
+  __silt__require_list "$2" from_strt || return 1
+
+  __silt__ANSWER=''
+  __silt__spill "$2"
+  __silt__from_strt__status=0
+  __silt__translate_stdin 'translators/strt/index translators/strt/from' || __silt__from_strt__status=$?
+  __silt__unspill
+  if [ "$__silt__from_strt__status" -ne 0 ]; then
+    return "$__silt__from_strt__status"
+  fi
+
+  __silt__OUT="$__silt__from_strt__out"
+  __silt__answer
+}
+
+: <<'PUB_FUN'
+Answers the document as .strt text (ADR.16@strata): a map's key as @ and its
+code in the corpus's index, a type as its code, a bool as 1 or 0, and the
+depth, an index and every other value as written. The index is the corpus's
+keys as a list of str in code order, read as it is: a key it lacks is
+refused, naming the line, as a closed header refuses one (ADR.8@strata);
+appending a key to an open header is the corpus writer's. Refuses too a type
+no natural primitive names, and an empty document.
+
+  silt__to_strt terse '0."ready":bool=true' '0.0:str="clean"
+  0.1:str="ready"'   ->  terse='0.@1:-4=1'
+
+args:
+  $1  The name of the variable to answer in
+  $2  The document
+  $3  The corpus's keys, a list of str in code order
+PUB_FUN
+silt__to_strt() {
+  __silt__out "$1" || return 1
+  __silt__to_strt__out="$__silt__OUT"
+  __silt__require_list "$3" to_strt || return 1
+
+  __silt__ANSWER=''
+  __silt__spill "$3"
+  __silt__to_strt__status=0
+  __silt__hand_off "$2" 'translators/strt/index translators/strt/to' || __silt__to_strt__status=$?
+  __silt__unspill
+  if [ "$__silt__to_strt__status" -ne 0 ]; then
+    return "$__silt__to_strt__status"
+  fi
+
+  __silt__OUT="$__silt__to_strt__out"
+  __silt__answer
+}
+
+: <<'PUB_FUN'
+Answers the document as the .strh text a corpus keeps: every line with its
+LID and one space in front, the LID drawn from the corpus's two seeds, the
+document's number and the line's place, from 1 (ADR.11@strata,
+ADR.9@strata). Nothing else changes, so a document written back to its
+number draws the LIDs it had. The text has no final newline; a file gets one
+(ADR.19@strata).
+
+  silt__to_strh stored '0."runner":str="bats"' 1299709 104729 1
+    ->  stored='67e924b179c7e1f3 0."runner":str="bats"'
+
+args:
+  $1  The name of the variable to answer in
+  $2  The document
+  $3  The doc-seed, 1 to 2147483398
+  $4  The line-seed, 1 to 2147483562
+  $5  The document's number in the corpus, 0 for the header
+PUB_FUN
+silt__to_strh() {
+  __silt__out "$1" || return 1
+  __silt__to_strh__out="$__silt__OUT"
+  __silt__require_in_range doc-seed "$3" 1 2147483398 || return 1
+  __silt__require_in_range line-seed "$4" 1 2147483562 || return 1
+  __silt__require_in_range number "$5" 0 2147483397 || return 1
+
+  __silt__to_strh__seeds=''
+  silt__arr __silt__to_strh__seeds "0.:int=$3" "0.:int=$4" "0.:int=$5" || return 1
+  __silt__ANSWER=''
+  __silt__spill "$__silt__to_strh__seeds"
+  __silt__to_strh__status=0
+  __silt__hand_off "$2" translators/strh/to || __silt__to_strh__status=$?
+  __silt__unspill
+  if [ "$__silt__to_strh__status" -ne 0 ]; then
+    return "$__silt__to_strh__status"
+  fi
+
+  __silt__OUT="$__silt__to_strh__out"
+  __silt__answer
+}
+
+: <<'FUN'
+Refuses a seed or a number that is not an int in its range.
+
+args:
+  $1  What the value is, for the message: doc-seed, line-seed or number
+  $2  The value
+  $3  The least it may be
+  $4  The most it may be
+FUN
+__silt__require_in_range() {
+  case "$2" in
+    # structs-lint: allow -- the digits of an int, checked before arithmetic; SILT sits beneath structs
+    '' | *[!0-9]*)
+      __silt__fail "the $1 is an int from $3 to $4, not $2"
+      return 1
+      ;;
+  esac
+
+  if [ "$2" -lt "$3" ] || [ "$2" -gt "$4" ]; then
+    __silt__fail "the $1 is an int from $3 to $4, not $2"
+    return 1
+  fi
 }
 
 : <<'FUN'

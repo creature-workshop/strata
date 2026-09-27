@@ -1,0 +1,19 @@
+67e924b179c7e1f3 0."runner":str="bats"
+67e924b168c84c23 0."count":int=3
+67e924b17b970259 0."ratio":float=-1.5e3
+67e924b12da30f25 0."clean":bool=true
+67e924b144fbaa08 0."nothing":null
+67e924b16066a65c 0."empty":map
+67e924b16ccdd5cb 0."none":list
+67e924b1152af53b 0."tests":map
+67e924b1208f4107 1."test/a.bats":map
+67e924b13753478c 2."status":str="passed"
+67e924b11b0f8b23 2."reads":list
+67e924b13790b151 3.0:str="lib/a.sh"
+67e924b11a39ea10 3.1:str="test/a.bats"
+67e924b14851b2de 1."test/b.bats":map
+67e924b1520119df 2."status":str="failed"
+67e924b1283b0591 2."reads":list
+67e924b139705dce 0."a \"quoted\" key: with.dots":str="every mark a line is split on"
+67e924b1797d6663 0."text":str="a \"quote\", a \\ backslash,\na line\tand a tab"
+67e924b16ecac80c 0."unicode":str="café 😀"

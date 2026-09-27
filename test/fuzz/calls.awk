@@ -131,15 +131,21 @@ function scalar_verb_calls(doc, path, at, __n) {
   print "is_zero @v" __n " => " at " == 0"
 }
 
-# The calls every case makes over the root: read it, write it back, and
-# read it again through YAML in both styles yq writes unless -v yaml=0 says
-# yq could not spell the value, and through TOML when -v toml=1 says TOML
-# holds it.
+# The calls every case makes over the root: read it, write it back, read it
+# again through the .strh and the .strt node wrote, the .strt under the index
+# node shuffled, and through YAML in both styles yq writes unless -v yaml=0
+# says yq could not spell the value, and through TOML when -v toml=1 says
+# TOML holds it.
 function root_calls() {
   print "as d from_json value.json"
   print "to_json @d => tojson"
   print "as c canon @d"
   print "equals @d $c => true"
+  print "as h from_strh value.strh"
+  print "equals @d $h => true"
+  print "as i from_json index.json"
+  print "as t from_strt value.strt $i"
+  print "equals @d $t => true"
 
   if (yaml != 0) {
     print "as y from_yaml block.yaml"

@@ -86,6 +86,33 @@ awk_starts() {
   assert_equal "$(printf '%s' "$json" | jq -c .)" "$(jq -c . "$REPO/shell/silt/map.fixture.json")"
 }
 
+@test "from_strh: the map fixture's .strh twin reads back as the fixture" {
+  silt__from_strh doc < "$BATS_TEST_DIRNAME/fixtures/silt/map.strh"
+  assert_equal "$doc" "$MAP"
+}
+
+@test "from_strt: the map fixture's .strt twin reads back as the fixture under its index" {
+  silt__split index 'runner,count,ratio,clean,nothing,empty,none,tests,test/a.bats,status,reads,test/b.bats,a "quoted" key: with.dots,text,unicode' ,
+  silt__from_strt doc "$index" < "$BATS_TEST_DIRNAME/fixtures/silt/map.strt"
+  assert_equal "$doc" "$MAP"
+}
+
+@test "to_strt: the map fixture under its index is its .strt twin" {
+  silt__split index 'runner,count,ratio,clean,nothing,empty,none,tests,test/a.bats,status,reads,test/b.bats,a "quoted" key: with.dots,text,unicode' ,
+  silt__to_strt terse "$MAP" "$index"
+  assert_equal "$terse" "$(cat "$BATS_TEST_DIRNAME/fixtures/silt/map.strt")"
+}
+
+@test "to_strh: the map fixture as document 1 under ADR.9's seeds is its .strh twin" {
+  silt__to_strh stored "$MAP" 1299709 104729 1
+  assert_equal "$stored" "$(cat "$BATS_TEST_DIRNAME/fixtures/silt/map.strh")"
+}
+
+@test "to_strh: the header, document 0, draws the LIDs of ADR.9's vector" {
+  silt__to_strh stored "0.0:int=1${NL}0.1:int=2${NL}0.2:int=3" 1299709 104729 0
+  assert_equal "$stored" "505b3e7c79c7e1f3 0.0:int=1${NL}505b3e7c68c84c23 0.1:int=2${NL}505b3e7c7b970259 0.2:int=3"
+}
+
 @test "coverage: the goldens enter every function in shell/silt and run at least 95% of its lines" {
   run bash "$REPO/test/silt-coverage.sh"
   echo "$output"

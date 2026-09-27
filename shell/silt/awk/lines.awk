@@ -8,7 +8,8 @@
 # parse does: the key a quoted literal under a map, bare digits under a list,
 # empty on a keyless line; LEAF 1 when the line carries a value. Refuses a
 # line that does not open with its depth, a .strh line with its id still on
-# among them, and a quoted key that never closes.
+# among them, a quoted key that never closes, and a line writing its key or
+# its type as a code, the way a .strt line does.
 function parse(line, __rest, __head) {
   if (line !~ /^[0-9]+\./) {
     refuse("not a SILT line: " line)
@@ -29,6 +30,10 @@ function parse(line, __rest, __head) {
     __rest = substr(__rest, index(__rest, ":") + 1)
   }
 
+  if (substr(KEY, 1, 1) == "@") {
+    refuse("a SILT line writes its key, not a code: " line)
+  }
+
   if (index(__rest, "=") > 0) {
     TYPE = substr(__rest, 1, index(__rest, "=") - 1)
     VALUE = substr(__rest, index(__rest, "=") + 1)
@@ -37,6 +42,10 @@ function parse(line, __rest, __head) {
     TYPE = __rest
     VALUE = ""
     LEAF = 0
+  }
+
+  if (TYPE ~ /^-?[0-9]/) {
+    refuse("a SILT line names its type, not a code: " line)
   }
 }
 

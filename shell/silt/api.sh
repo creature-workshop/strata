@@ -59,6 +59,10 @@ to the awk tier, which answers the same call the same way.
   silt__to_yaml   a document as YAML in block style
   silt__from_toml the TOML on stdin as a document
   silt__to_toml   a document as TOML, its tables under headers
+  silt__from_strh the .strh on stdin as a document, its id column dropped
+  silt__from_strt the .strt on stdin as a document, its codes spelled out
+  silt__to_strh   a document as .strh text, a LID drawn for every line
+  silt__to_strt   a document as .strt text, its keys and types as codes
 
 A verb with a callback calls it as a verb is called: the answer variable's
 name, the member's key as text, its value as a document, then the caller's

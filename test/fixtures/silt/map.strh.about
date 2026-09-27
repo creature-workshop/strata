@@ -1,0 +1,1 @@
+The .strh twin of the map fixture, its LIDs drawn as document 1 under the doc-seed 1299709 and the line-seed 104729, the seeds ADR.9 gives its vector; from_strh drops the column and to_strh draws it again byte for byte.

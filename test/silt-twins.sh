@@ -3,8 +3,8 @@
 # against jq's over the JSON twin, the calls run as one transcript so a call
 # may keep a register for a later line; a line with no jq side only runs.
 # Prints each pair that differs, with both answers, and fails when any does.
-# A file a call reads by name, from_json or from_yaml, is found beside the
-# twins file. SILT_TRANSCRIPT names the command that writes a transcript for
+# A file a call reads by name, from_json, from_yaml, from_toml, from_strh or
+# from_strt, is found beside the twins file. SILT_TRANSCRIPT names the command that writes a transcript for
 # a calls file, test/silt-transcript.sh over shell/silt when not set, so
 # another implementation runs the same twins through its own.
 #
@@ -40,7 +40,7 @@ require_usage() {
 write_calls() {
   local dir
   dir="$(cd "$(dirname "$1")" && pwd)"
-  sed -E -e 's/ => .*$//' -e "s#^((as [A-Za-z0-9_]+ )?from_(json|yaml|toml)) ([^/])#\1 $dir/\4#" "$1"
+  sed -E -e 's/ => .*$//' -e "s#^((as [A-Za-z0-9_]+ )?from_(json|yaml|toml|strh|strt)) ([^/])#\1 $dir/\4#" "$1"
 }
 
 # Every pair of the twins file against the transcript, by line.

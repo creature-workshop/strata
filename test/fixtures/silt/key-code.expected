@@ -1,0 +1,4 @@
+## type
+!! 1 ERROR: silt: a SILT line writes its key, not a code: 0.@0:-5=1
+## get .a
+!! 1 ERROR: silt: a SILT line writes its key, not a code: 0.@0:-5=1

@@ -1,0 +1,1 @@
+A SILT line names its type; a type as a code is a .strt line, and the reader refuses it where it meets it, naming the line (ADR.32).

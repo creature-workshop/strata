@@ -1,0 +1,8 @@
+from_strt reads the map fixture's .strt twin under the index, given as the
+list of the corpus's keys in code order, the reader verbs read the result,
+and to_strt writes it back under the same index, byte for byte. The calls
+end with what is refused: an index too short for a code or a key, an empty
+index, an index that is not a list of str, a text whose keys and types are
+already spelled out, a bool spelled as a word, a type code no natural
+primitive has, a key code that is not a number, and a type no primitive
+names.

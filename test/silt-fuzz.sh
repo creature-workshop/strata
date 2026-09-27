@@ -6,7 +6,10 @@
 # calls to run over it with the jq program each must agree with, and
 # test/silt-twins.sh checks the pairs. Beside the twins, the value written
 # back as JSON must be the bytes it was read from, and written as YAML or
-# TOML must read through yq to the same value. A case that fails is kept
+# TOML must read through yq to the same value; node writes the value's .strh
+# and .strt through test/fuzz/store.mjs, a second opinion on the corpus
+# translators, and to_strh and to_strt must give them byte for byte under
+# the seeds and the index it drew. A case that fails is kept
 # under the work directory and named with its seed, what differed in its
 # report file, so it reproduces, reduces to a golden by hand, and files as
 # an issue through test/silt-fuzz-report.sh. SILT_TRANSCRIPT names the implementation
@@ -76,6 +79,7 @@ run_case() {
   write_case "$seed" "$dir"
   check_twins "$dir" > "$dir/report" 2>&1 || status=1
   check_written "$dir" >> "$dir/report" 2>&1 || status=1
+  check_stored "$dir" >> "$dir/report" 2>&1 || status=1
 
   if [ "$status" -ne 0 ]; then
     cat "$dir/report"
@@ -87,7 +91,8 @@ run_case() {
 }
 
 # The case's files: the value, its YAML spellings, its TOML when TOML can
-# hold it, its paths and its twins. The YAML and the TOML twins are left out
+# hold it, its .strh and .strt with their index and the seeds they were drawn
+# under, its paths and its twins. The YAML and the TOML twins are left out
 # when yq cannot read its own spelling back as the value, which it cannot
 # for a string ending in a space.
 write_case() {
@@ -106,6 +111,7 @@ write_case() {
     rm -f "$dir/table.toml"
   fi
 
+  node "$FUZZ/store.mjs" "$seed" "$dir" > "$dir/seeds"
   jq -r -f "$FUZZ/paths.jq" "$dir/value.json" > "$dir/paths"
   root="$(jq -r type "$dir/value.json")"
   awk -v seed="$seed" -v root="$root" -v yaml="$yaml" -v toml="$toml" -f "$FUZZ/calls.awk" "$dir/paths" > "$dir/value.twins"
@@ -153,6 +159,24 @@ check_written() {
 reads_back_as_value() {
   yq -p "$3" -o json -I 0 . "$1/$2" 2>/dev/null | jq -S -c . > "$1/$2.json"
   cmp -s <(jq -S -c . "$1/value.json") "$1/$2.json"
+}
+
+# The value written into a corpus: to_strh under the seeds node drew must be
+# the .strh node wrote, and to_strt under the index it shuffled the .strt,
+# byte for byte.
+check_stored() {
+  local dir="$1" seeds status=0
+  seeds="$(cat "$dir/seeds")"
+  # shellcheck disable=SC2016  # $i names the transcript's register, not a variable
+  printf 'as d from_json %s/value.json\nto_strh @d %s\nas i from_json %s/index.json\nto_strt @d $i\n' "$dir" "$seeds" "$dir" > "$dir/stored.calls"
+  # shellcheck disable=SC2086  # the transcript command is words on purpose
+  $TRANSCRIPT "$dir/stored.calls" > "$dir/stored.transcript" 2>&1
+
+  answer_of 2 "$dir/stored.transcript" > "$dir/stored.strh"
+  answer_of 4 "$dir/stored.transcript" > "$dir/stored.strt"
+  cmp -s "$dir/value.strh" "$dir/stored.strh" || { printf 'to_strh is not the .strh node drew: %s\n' "$dir/stored.strh"; status=1; }
+  cmp -s "$dir/value.strt" "$dir/stored.strt" || { printf 'to_strt is not the .strt node drew: %s\n' "$dir/stored.strt"; status=1; }
+  return "$status"
 }
 
 # The answer lines of block number <index> of a transcript.
