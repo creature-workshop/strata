@@ -37,9 +37,8 @@ A path names members from the top: ".a.b" the member b of the member a,
 document, and a key holding "." or "[" is quoted the way JSON spells it,
 `."test/a.bats"` or `["test/a.bats"]`, and is matched by that spelling.
 
-The library is this file and the ones it sources beside it, and it reports
-through shell-logs, the submodule at shell/.logs. A caller sources api.sh
-alone; SILT_DIR names this directory where the shell cannot tell (dash).
+A caller sources api.sh alone; SILT_DIR names this directory where the shell
+cannot tell (dash).
 MODULE
 
 : <<'FUN'

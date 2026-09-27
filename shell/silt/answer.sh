@@ -1,13 +1,13 @@
 #!/bin/sh
 
 : <<'MODULE'
-How a verb reports: a failure through shell-logs, the answer variable
-checked and assigned, a document built one line at a time.
+How a verb reports: a failure, the answer variable checked and assigned, a
+document built one line at a time.
 MODULE
 
 : <<'FUN'
-Reports a failure of this library through shell-logs' error, and returns 1,
-so a caller under set -e stops and one without it reads the status.
+Reports a failure of this library and returns 1, so a caller under set -e
+stops and one without it reads the status.
 
 args:
   $1  What went wrong, one line
