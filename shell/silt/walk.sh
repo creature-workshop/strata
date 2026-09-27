@@ -25,14 +25,7 @@ args:
   $2  The callback, a function taking the line
 FUN
 __silt__walk() {
-  __silt__walk__document="$1"
-  __silt__walk__program="${__silt__AWK-}"
-  __silt__AWK=''
-  __silt__STOP=false
-  __silt__HANDED=false
-  __silt__HANDED_OUT=''
-  __silt__walk__status=0
-
+  __silt__start_walk "$1"
   set -- "$1" "$2" "${__silt__LINE_CALLBACK-}"
   __silt__LINE_CALLBACK="$2"
 
@@ -46,24 +39,48 @@ __silt__walk() {
 
   if [ "$#" -gt "$((__silt__THRESHOLD + 1))" ] && [ -n "$__silt__walk__program" ]; then
     __silt__hand_off "$__silt__walk__document" "$__silt__walk__program" || __silt__walk__status=$?
-    __silt__walk_done "$#" "$@"
-    return "$__silt__walk__status"
+  else
+    __silt__walk_lines "$@" || __silt__walk__status=$?
   fi
 
+  __silt__walk_done "$#" "$@"
+  return "$__silt__walk__status"
+}
+
+: <<'FUN'
+Opens a walk: takes the awk program the verb named, if any, and clears the
+registers a walk reports through.
+
+args:
+  $1  The document
+FUN
+__silt__start_walk() {
+  __silt__walk__document="$1"
+  __silt__walk__program="${__silt__AWK-}"
+  __silt__walk__status=0
+  __silt__AWK=''
+  __silt__STOP=false
+  __silt__HANDED=false
+  __silt__HANDED_OUT=''
+}
+
+: <<'FUN'
+Calls __silt__LINE_CALLBACK on each line in turn, the outer walk's callback
+riding last and never called, until the lines run out, the callback sets
+__silt__STOP, or it fails, whose status is returned.
+
+args:
+  $@  The lines, then the outer walk's callback
+FUN
+__silt__walk_lines() {
   while [ "$#" -gt 1 ]; do
-    "$__silt__LINE_CALLBACK" "$1" || __silt__walk__status=$?
-    if [ "${__silt__walk__status:-0}" -ne 0 ]; then
-      __silt__walk_done "$#" "$@"
-      return "$__silt__walk__status"
-    fi
+    "$__silt__LINE_CALLBACK" "$1" || return $?
     shift
 
     if [ "$__silt__STOP" = true ]; then
-      break
+      return 0
     fi
   done
-
-  __silt__walk_done "$#" "$@"
 }
 
 : <<'FUN'
