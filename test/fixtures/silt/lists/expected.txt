@@ -1,0 +1,129 @@
+## first
+0.:str="a"
+## last
+0.:null
+## slice 1 3
+0.0:map
+1."k":list
+2.0:int=1
+0.1:int=3
+## slice 0 1
+0.0:str="a"
+## slice 2 9
+0.0:int=3
+0.1:null
+## slice 3 3
+0.:list
+## slice 9 12
+0.:list
+## slice x 2
+!! 1 ERROR: silt: slice takes an index of 0 or more, not 'x'
+## slice 1 y
+!! 1 ERROR: silt: slice takes an index of 0 or more, not 'y'
+## values
+0.0:str="a"
+0.1:map
+1."k":list
+2.0:int=1
+0.2:int=3
+0.3:null
+## line
+one line: true
+identity: true
+## as none arr
+0.:list
+## first @none
+
+## last @none
+
+## slice @none 0 2
+0.:list
+## sum @none
+0.:int=0
+## values @none
+0.:list
+## as whole arr 0.:int=1 0.:int=-5 0.:int=40
+0.0:int=1
+0.1:int=-5
+0.2:int=40
+## sum @whole
+0.:int=36
+## as mixed arr 0.:int=1 0.:float=1.5 0.:float=0.25
+0.0:int=1
+0.1:float=1.5
+0.2:float=0.25
+## sum @mixed
+0.:float=2.75
+## as round arr 0.:float=1.5 0.:float=1.5
+0.0:float=1.5
+0.1:float=1.5
+## sum @round
+0.:float=3.0
+## as tenths arr 0.:float=0.1 0.:float=0.2
+0.0:float=0.1
+0.1:float=0.2
+## sum @tenths
+0.:float=0.30000000000000004
+## sum
+!! 1 ERROR: silt: sum takes numbers, not a str at index 0
+## as deep obj on 0.:bool=true
+0."on":bool=true
+## as inner arr $deep 0.:int=2
+0.0:map
+1."on":bool=true
+0.1:int=2
+## as m obj b 0.:int=1 a $inner c 0.:str="x"
+0."b":int=1
+0."a":list
+1.0:map
+2."on":bool=true
+1.1:int=2
+0."c":str="x"
+## values @m
+0.0:int=1
+0.1:list
+1.0:map
+2."on":bool=true
+1.1:int=2
+0.2:str="x"
+## entries @m
+0.0:map
+1."key":str="b"
+1."value":int=1
+0.1:map
+1."key":str="a"
+1."value":list
+2.0:map
+3."on":bool=true
+2.1:int=2
+0.2:map
+1."key":str="c"
+1."value":str="x"
+## line @m
+one line: true
+identity: true
+## as empty obj
+0.:map
+## values @empty
+0.:list
+## entries @empty
+0.:list
+## entries
+!! 1 ERROR: silt: entries takes a map, not a list
+## first @m
+!! 1 ERROR: silt: first takes a list, not a map
+## last @m
+!! 1 ERROR: silt: last takes a list, not a map
+## slice @m 0 1
+!! 1 ERROR: silt: slice takes a list, not a map
+## sum @m
+!! 1 ERROR: silt: sum takes a list, not a map
+## as s str x
+0.:str="x"
+## values @s
+!! 1 ERROR: silt: str has no values
+## entries @s
+!! 1 ERROR: silt: entries takes a map, not a str
+## line @s
+one line: true
+identity: true

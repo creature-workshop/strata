@@ -211,6 +211,8 @@ __silt__tier() {
     SILT_SEPARATOR="${__silt__SEPARATOR-}" \
     SILT_DEPTH="${__silt__NEST_DEPTH-}" \
     SILT_INDEX="${__silt__INDEX-}" \
+    SILT_FROM="${__silt__FROM-}" \
+    SILT_TO="${__silt__TO-}" \
     SILT_KIND="${__silt__PARENT_KIND-}" \
     SILT_SPILL="${__silt__SPILL-}" \
     awk -f "$__silt__DIR/awk/lines.awk" "$@"
