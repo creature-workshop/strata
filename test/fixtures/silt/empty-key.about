@@ -1,0 +1,4 @@
+A key is any JSON string, the empty one included (ADR.4), and the awk tier
+carries a member's key to each as the line writes it, so the empty key is
+still a line of the block. The calls read the empty key by path, walk the
+members with each and the verbs over it, and write the map back as JSON.

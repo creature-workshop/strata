@@ -30,3 +30,18 @@ as canonical_reads_keys keys @canonical_reads
 join @canonical_reads_keys , => .tests | keys | join(",")
 as canonical_tests get @canonical .tests
 to_json @canonical_tests => .tests | walk(if type == "object" then to_entries | sort_by(.key) | from_entries else . end) | tojson
+string-or unnamed .missing => .missing // "unnamed"
+string-or unnamed .nothing => .nothing // "unnamed"
+string-or unnamed .runner => .runner // "unnamed"
+as clean get .clean
+is_true @clean => .clean == true
+is_false @clean => .clean == false
+as count get .count
+is_zero @count => .count == 0
+as tests get .tests
+as statuses pluck @tests .status
+join @statuses , => [.tests[] | .status] | join(",")
+as passing filter @tests string_is .status passed
+as passing_keys keys @passing
+join @passing_keys , => [.tests | to_entries[] | select(.value.status == "passed") | .key] | join(",")
+to_json @tests => .tests | tojson

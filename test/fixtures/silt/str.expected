@@ -16,3 +16,7 @@ false
 "bats"
 ## to_yaml
 bats
+## is_true
+false
+## pluck .x
+!! 1 ERROR: silt: str has no members

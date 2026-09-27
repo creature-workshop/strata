@@ -1,18 +1,15 @@
 # The members of a map or a list, one block each for silt__each past the
-# threshold: the key as text on one line, the member's value as a document,
-# then a line holding the record separator alone. The empty collection's
-# one keyless line has no member to write.
+# threshold: the key as the line writes it on one line, a map's as its
+# literal, so the empty key is still a line, the member's value as a
+# document, then a line holding the record separator alone. The empty
+# collection's one keyless line has no member to write.
 
 # Opens a member from its parsed line: delivers the one open, prints the
-# key as text, and holds the value's root until a deeper line replaces it.
+# key as the line writes it, and holds the value's root until a deeper line
+# replaces it.
 function open_member() {
   close_member()
-
-  if (is_name(KEY)) {
-    print unwrap(KEY)
-  } else {
-    print KEY
-  }
+  print KEY
 
   root = LEAF ? "0.:" TYPE "=" VALUE : "0.:" TYPE
   open = 1

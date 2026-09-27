@@ -1,0 +1,10 @@
+string .""
+get .b.""
+has .b.""
+keys
+each
+map str_of_key
+filter has_at .""
+pluck .""
+any has_at .""
+to_json

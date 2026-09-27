@@ -8,3 +8,15 @@ true
 !! 1 ERROR: silt: bool has no length
 ## keys
 !! 1 ERROR: silt: bool has no keys
+## is_true
+true
+## is_false
+false
+## is_zero
+false
+## to_json
+true
+## string-or x
+true
+## map str_of_key
+!! 1 ERROR: silt: bool has no members

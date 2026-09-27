@@ -81,6 +81,11 @@ awk_starts() {
   done
 }
 
+@test "to_json: jq reads the map fixture's JSON back as the fixture's value" {
+  silt__to_json json "$MAP"
+  assert_equal "$(printf '%s' "$json" | jq -c .)" "$(jq -c . "$REPO/shell/silt/map.fixture.json")"
+}
+
 @test "coverage: the goldens enter every function in shell/silt and run at least 95% of its lines" {
   run bash "$REPO/test/silt-coverage.sh"
   echo "$output"

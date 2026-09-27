@@ -186,3 +186,50 @@ text: |-
   a "quote", a \ backslash,
   a line	and a tab
 unicode: "café 😀"
+## string-or unnamed .missing
+unnamed
+## string-or unnamed .nothing
+unnamed
+## string-or unnamed .empty
+unnamed
+## string-or unnamed .tests
+unnamed
+## string-or unnamed .clean
+true
+## string-or unnamed .runner
+bats
+## is_true
+false
+## is_zero
+false
+## as tests get .tests
+0."test/a.bats":map
+1."status":str="passed"
+1."reads":list
+2.0:str="lib/a.sh"
+2.1:str="test/a.bats"
+0."test/b.bats":map
+1."status":str="failed"
+1."reads":list
+## map @tests str_of_key
+0."test/a.bats":str="test/a.bats"
+0."test/b.bats":str="test/b.bats"
+## filter @tests string_is .status passed
+0."test/a.bats":map
+1."status":str="passed"
+1."reads":list
+2.0:str="lib/a.sh"
+2.1:str="test/a.bats"
+## find @tests string_is .status failed
+0."status":str="failed"
+0."reads":list
+## pluck @tests .reads
+0.0:list
+1.0:str="lib/a.sh"
+1.1:str="test/a.bats"
+0.1:list
+## project @tests status
+0.0:map
+1."status":str="passed"
+0.1:map
+1."status":str="failed"

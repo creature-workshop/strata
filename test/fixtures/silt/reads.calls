@@ -9,3 +9,7 @@ string .[0]
 scalar
 get
 each
+to_json
+map str_of_key
+filter is_list
+string-or x .[7]

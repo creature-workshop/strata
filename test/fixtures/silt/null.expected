@@ -12,3 +12,7 @@ false
 null
 ## to_yaml
 null
+## string-or x
+x
+## is_false
+false

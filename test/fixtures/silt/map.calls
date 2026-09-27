@@ -36,3 +36,17 @@ each tag
 each-until count
 to_json
 to_yaml
+string-or unnamed .missing
+string-or unnamed .nothing
+string-or unnamed .empty
+string-or unnamed .tests
+string-or unnamed .clean
+string-or unnamed .runner
+is_true
+is_zero
+as tests get .tests
+map @tests str_of_key
+filter @tests string_is .status passed
+find @tests string_is .status failed
+pluck @tests .reads
+project @tests status

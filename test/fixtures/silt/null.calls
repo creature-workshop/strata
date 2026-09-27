@@ -5,3 +5,5 @@ string
 has .x
 to_json
 to_yaml
+string-or x
+is_false

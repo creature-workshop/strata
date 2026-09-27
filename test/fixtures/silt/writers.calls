@@ -54,3 +54,19 @@ push @el
 push @el $r
 join @l3 ,
 obj k
+as zc set @c .count 0.:int=0
+as zero get @zc .count
+is_zero @zero
+is_zero @c
+to_json @c
+to_json @l2
+to_json @c3
+to_json @e
+as inf set @c .ratio 0.:float=inf
+to_json @inf
+as at set @c .at 0.:time-rfc3339-utc=2026-09-20T18:11:50.946Z
+to_json @at
+as odd set @c .k 0.:blob=x
+to_json @odd
+as odd2 set @c .k 0.:blob
+to_json @odd2

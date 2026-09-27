@@ -7,3 +7,5 @@ has .x
 keys
 to_json
 to_yaml
+is_true
+pluck .x

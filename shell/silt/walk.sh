@@ -2,7 +2,9 @@
 
 : <<'MODULE'
 Walking a document line by line. Every verb that reads lines goes through
-here.
+here, and a callback the walk runs may walk another document: what a walk
+needs afterwards rides in its own positional parameters, and what it reports
+is set once the lines are done.
 MODULE
 
 : <<'FUN'
@@ -16,9 +18,14 @@ __silt__HANDED is true, and no line is walked. Walking clears __silt__AWK.
 registers:
   __silt__LINE_CALLBACK  The callback of the walk running; a callback may
                          walk another document, so the outer walk's callback
-                         rides last in this walk's positional parameters and
-                         is given back when this walk ends
-  __silt__STOP           Set true by a callback to end the walk early
+                         rides last but one in this walk's positional
+                         parameters and is given back when this walk ends
+  __silt__STOP           Set true by a callback to end the walk early; the
+                         outer walk's rides last in the positional parameters
+                         and is given back the same way
+  __silt__HANDED         Whether this walk went to awk, set once it is over,
+                         whatever the walks its callbacks ran
+  __silt__HANDED_OUT     What the awk program printed, when it did
   __silt__IFS            The field separator held aside during a split
   __silt__WALK_DOCUMENT  The document, kept for the hand-off once the split
                          has taken the positional parameters
@@ -30,20 +37,21 @@ args:
   $2  The callback, a function taking the line
 FUN
 __silt__walk() {
+  set -- "$1" "$2" "${__silt__LINE_CALLBACK-}" "${__silt__STOP-}"
   __silt__start_walk "$1"
-  set -- "$1" "$2" "${__silt__LINE_CALLBACK-}"
   __silt__LINE_CALLBACK="$2"
 
   __silt__split_lines
   # shellcheck disable=SC2086
-  set -- $1 "$3"
+  set -- $1 "$3" "$4"
   __silt__split_over
 
-  if [ "$#" -gt "$((__silt__THRESHOLD + 1))" ] && [ -n "$__silt__WALK_PROGRAM" ]; then
-    __silt__hand_off "$__silt__WALK_DOCUMENT" "$__silt__WALK_PROGRAM" || __silt__WALK_STATUS=$?
+  if [ "$#" -gt "$((__silt__THRESHOLD + 2))" ] && [ -n "$__silt__WALK_PROGRAM" ]; then
+    __silt__hand_off "$__silt__WALK_DOCUMENT" "$__silt__WALK_PROGRAM"
   else
-    __silt__walk_lines "$@" || __silt__WALK_STATUS=$?
+    __silt__walk_in_shell "$@"
   fi
+  __silt__WALK_STATUS=$?
 
   __silt__walk_done "$#" "$@"
   return "$__silt__WALK_STATUS"
@@ -87,15 +95,31 @@ __silt__start_walk() {
 }
 
 : <<'FUN'
-Calls __silt__LINE_CALLBACK on each line in turn, the outer walk's callback
-riding last and never called, until the lines run out, the callback sets
-__silt__STOP, or it fails, whose status is returned.
+Walks the lines in this shell, then reports that nothing was handed to awk,
+whatever the walks the callback ran meanwhile reported.
 
 args:
-  $@  The lines, then the outer walk's callback
+  $@  The lines, then the outer walk's callback and its stop flag
+FUN
+__silt__walk_in_shell() {
+  __silt__walk_lines "$@"
+  __silt__walk_in_shell__status=$?
+
+  __silt__HANDED=false
+  __silt__HANDED_OUT=''
+  return "$__silt__walk_in_shell__status"
+}
+
+: <<'FUN'
+Calls __silt__LINE_CALLBACK on each line in turn, the outer walk's callback
+and stop flag riding last and never called, until the lines run out, the
+callback sets __silt__STOP, or it fails, whose status is returned.
+
+args:
+  $@  The lines, then the outer walk's callback and its stop flag
 FUN
 __silt__walk_lines() {
-  while [ "$#" -gt 1 ]; do
+  while [ "$#" -gt 2 ]; do
     "$__silt__LINE_CALLBACK" "$1" || return $?
     shift
 
@@ -106,17 +130,20 @@ __silt__walk_lines() {
 }
 
 : <<'FUN'
-Ends a walk: gives __silt__LINE_CALLBACK back to the walk this one ran
-inside, whose callback rides last in the positional parameters.
+Ends a walk: gives __silt__LINE_CALLBACK and __silt__STOP back to the walk
+this one ran inside, whose callback and stop flag ride last in the
+positional parameters.
 
 args:
   $1  The count of positional parameters that follow
-  $@  The rest of the walk's positional parameters, the outer callback last
+  $@  The rest of the walk's positional parameters, the outer callback and
+      its stop flag last
 FUN
 __silt__walk_done() {
   __silt__walk_done__count="$1"
   shift
-  eval "__silt__LINE_CALLBACK=\${$__silt__walk_done__count}"
+  eval "__silt__STOP=\${$__silt__walk_done__count}"
+  eval "__silt__LINE_CALLBACK=\${$((__silt__walk_done__count - 1))}"
 }
 
 : <<'FUN'

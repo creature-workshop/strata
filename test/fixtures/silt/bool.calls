@@ -3,3 +3,9 @@ scalar
 string
 len
 keys
+is_true
+is_false
+is_zero
+to_json
+string-or x
+map str_of_key
