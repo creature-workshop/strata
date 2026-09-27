@@ -1,0 +1,1 @@
+A JSON map whose keys are not in sorted order, at the top level and inside a list. Two of the keys are whole numbers written as text, which some readers move to the front.

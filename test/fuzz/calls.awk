@@ -179,7 +179,7 @@ function collection_root_calls() {
 
   if (root == "object") {
     print "as k keys @d"
-    print "join @k , => keys | join(\",\")"
+    print "join @k , => keys_unsorted | join(\",\")"
     print "has @d .\"no such key\" => has(\"no such key\")"
     print "string-or @d none .\"no such key\" => .[\"no such key\"] // \"none\""
     print "as t set @d .\"fresh\" 0.:str=\"new\""
@@ -214,7 +214,7 @@ function any_collection_calls(i) {
 # merged with it when the root is a map too.
 function map_calls(i) {
   print "as k" i " keys @s" i
-  print "join @k" i " , => getpath(" JQ[i] ") | keys | join(\",\")"
+  print "join @k" i " , => getpath(" JQ[i] ") | keys_unsorted | join(\",\")"
   print "as n" i " entries @s" i
   print "to_json @n" i " => getpath(" JQ[i] ") | to_entries | tojson"
 

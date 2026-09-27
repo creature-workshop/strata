@@ -1,10 +1,10 @@
-# The YAML document on stdin as a SILT document, every map in canonical
-# order: silt__from_yaml. It reads the YAML a config or a pipeline file is
-# written in: block mappings and sequences, plain and quoted scalars, literal
+# The YAML document on stdin as a SILT document, with the members of every
+# map in the order the YAML wrote them: silt__from_yaml. It reads the YAML
+# a config or a pipeline file is written in: block mappings and sequences, plain and quoted scalars, literal
 # and folded blocks, flow collections on one line, and comments. What it
 # does not read it refuses, naming the line: anchors and aliases, tags, merge
 # keys, complex keys, directives, a second document, and a scalar or a flow
-# collection that runs over lines. Loaded after lines.awk, order.awk,
+# collection that runs over lines. Loaded after lines.awk,
 # translators/write.awk and the files beside this one.
 #
 #   a:            ->  0."a":list
@@ -17,13 +17,12 @@ function main() {
 }
 
 BEGIN {
-  order_begin()
   Y_N = 0
 }
 
 END {
   read_tree()
-  print_ordered()
+  print_written()
 }
 
 { main() }

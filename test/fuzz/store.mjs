@@ -1,16 +1,22 @@
-// The corpus forms of one fuzz case's value, for test/silt-fuzz.sh: the value
-// read from <dir>/value.json written as <dir>/value.strh, every line with the
-// LID ADR.9 draws for it from a doc-seed, a line-seed and a document number
-// the seed picks; as <dir>/value.strt, its keys and types as codes under an
-// index the seed shuffles; and that index as <dir>/index.json, a JSON array
-// of the keys in code order. Prints the doc-seed, the line-seed and the
-// number on one line, for the to_strh call the driver holds to value.strh.
-// BigInt keeps every product exact, and nothing here reads SILT, so the two
-// spellings are a second opinion on the translators.
+// Writes the corpus forms of one fuzz case's value, for test/silt-fuzz.sh.
+// It draws the value from the seed, the same value test/fuzz/value.mjs
+// prints, so a map's keys are in the order they were drawn. It writes three
+// files under <dir>:
+//
+//   value.strh   every line with the LID that ADR.9 gives it, from a
+//                doc-seed, a line-seed and a document number the seed picks
+//   value.strt   keys and types as codes, under an index the seed shuffles
+//   index.json   that index, a JSON array of the keys in code order
+//
+// It prints the doc-seed, the line-seed and the document number on one
+// line. The driver passes them to to_strh and compares the result with
+// value.strh. BigInt keeps every product exact. Nothing here reads SILT, so
+// the two files are an independent check of the translators.
 //
 //   node store.mjs 7 case  ->  1299709 104729 3
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
+import { drawTree, toOrderedValue } from "./drawnValue.mjs";
 
 const DOC_MULTIPLIER = 40692n;
 const DOC_MODULUS = 2147483399n;
@@ -62,22 +68,17 @@ function lid(docSeed, lineSeed, k, i) {
 function typeOf(value) {
   if (value === null) return "null";
   if (Array.isArray(value)) return "list";
-  if (typeof value === "object") return "map";
+  if (value instanceof Map) return "map";
   if (typeof value === "string") return "str";
   if (typeof value === "boolean") return "bool";
   return Number.isInteger(value) ? "int" : "float";
 }
 
-// A map's keys in canonical order, RFC 8785's: by UTF-16 code unit, which
-// is how JavaScript compares strings.
-function canonicalKeys(map) {
-  return Object.keys(map).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
-}
-
-// A collection's members as [key, value] pairs, a list's keys its indices.
+// A collection's members as [key, value] pairs. A list's keys are its
+// indices. A map's members are in the order the value has them.
 function membersOf(value) {
   if (Array.isArray(value)) return value.map((item, index) => [String(index), item]);
-  return canonicalKeys(value).map((key) => [key, value[key]]);
+  return [...value.entries()];
 }
 
 // Whether a value is a collection with no member.
@@ -158,7 +159,7 @@ const docSeed = 1n + BigInt(pick(2147483398));
 const lineSeed = 1n + BigInt(pick(2147483562));
 const number = pick(1000);
 
-const value = JSON.parse(readFileSync(`${dir}/value.json`, "utf8"));
+const value = toOrderedValue(drawTree(seed));
 const list = nodes(value);
 const keys = shuffledKeys(list);
 const codeOf = new Map(keys.map((key, code) => [key, code]));

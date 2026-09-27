@@ -1,18 +1,38 @@
-# The SILT writer every translator into SILT drives: a document built one
-# event at a time, a collection opened and closed and a scalar written under
-# a key, its lines kept and printed in canonical order once the document is
-# whole. The writer keeps which collections are open, so a caller under a
-# map names its member's key as a JSON string literal and a caller under a
-# list names nothing, the index being the writer's. A map handed a key twice
-# is refused. Loaded after lines.awk and order.awk, from awk/translators; a program's BEGIN calls
-# order_begin() and its END print_ordered().
+# The SILT writer that every translator into SILT uses. A translator
+# builds a document one step at a time: it opens and closes a collection,
+# and writes a scalar under a key. The writer keeps the lines and prints
+# them, in the order they were written, when the translator calls
+# print_written(). A map's members therefore stay in the order the source
+# document wrote them.
 #
-#   {"a":[1,"x"]}    open_collection("map", "")          ->  0."a":list
-#                    open_collection("list", "\"a\"")        1.0:int=1
-#                    write_number("", "1")                   1.1:str="x"
-#                    write_scalar("", "str", "\"x\"")
-#                    close_collection()
-#                    close_collection()
+# The writer tracks which collections are open. Under a map, the caller
+# gives the member's key as a JSON string literal. Under a list, the caller
+# gives no key, because the writer numbers the elements. The writer refuses
+# a key that its map already has.
+#
+# Load this file after lines.awk. A program's END calls print_written().
+#
+#   {"b":[1,"x"],"a":null}   open_collection("map", "")        ->  0."b":list
+#                            open_collection("list", "\"b\"")      1.0:int=1
+#                            write_number("", "1")                 1.1:str="x"
+#                            write_scalar("", "str", "\"x\"")      0."a":null
+#                            close_collection()
+#                            write_scalar("\"a\"", "null", "")
+#                            close_collection()
+#
+#   WRITTEN[1..WRITTEN_COUNT]   the lines, in the order they were written
+
+# Keeps one line of the document.
+function write_line(line) {
+  WRITTEN[++WRITTEN_COUNT] = line
+}
+
+# Prints every line of the document, in the order it was written.
+function print_written(__i) {
+  for (__i = 1; __i <= WRITTEN_COUNT; __i++) {
+    print WRITTEN[__i]
+  }
+}
 
 # Opens a collection, a map or a list, as the member <key> of the map open,
 # the next element of the list open, or the document's root when none is
@@ -25,7 +45,7 @@ function open_collection(kind, key) {
     return
   }
 
-  take(OPEN_DEPTH[OPEN] "." member_key(key) ":" kind)
+  write_line(OPEN_DEPTH[OPEN] "." member_key(key) ":" kind)
   push_collection(kind, OPEN_DEPTH[OPEN] + 1)
 }
 
@@ -42,7 +62,7 @@ function push_collection(kind, depth) {
 # keyless line of an empty collection.
 function close_collection() {
   if (OPEN == 1 && OPEN_COUNT[1] == 0) {
-    take("0.:" ROOT_KIND)
+    write_line("0.:" ROOT_KIND)
   }
 
   OPEN--
@@ -56,11 +76,11 @@ function write_scalar(key, type, value, __tail) {
   __tail = (type == "null") ? "" : "=" value
 
   if (OPEN == 0) {
-    take("0.:" type __tail)
+    write_line("0.:" type __tail)
     return
   }
 
-  take(OPEN_DEPTH[OPEN] "." member_key(key) ":" type __tail)
+  write_line(OPEN_DEPTH[OPEN] "." member_key(key) ":" type __tail)
 }
 
 # The key the next child of the collection open is written under: the

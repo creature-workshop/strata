@@ -1,16 +1,16 @@
-# The JSON document on stdin as a SILT document, every map in canonical
-# order: silt__from_json. The text is read whole, then walked once left to
+# The JSON document on stdin as a SILT document, with the members of every
+# map in the order the JSON wrote them: silt__from_json. The text is read whole, then walked once left to
 # right in one of seven states, each named for what the grammar expects
 # next. Every value is written as it is met: a str as its literal untouched,
 # a number by ADR.20's patterns, a collection opened on its bracket and
 # closed on the other. A map that holds a key twice, a number outside 64
 # bits or binary64, and any text that is not JSON are refused, naming the
-# line. Loaded after lines.awk, order.awk and translators/write.awk.
+# line. Loaded after lines.awk and translators/write.awk.
 #
-#   {"b":[1,"x"],"a":null}  ->  0."a":null
-#                               0."b":list
+#   {"b":[1,"x"],"a":null}  ->  0."b":list
 #                               1.0:int=1
 #                               1.1:str="x"
+#                               0."a":null
 
 # Ends the run naming the line the reader stands on.
 function refuse_json(why) {
@@ -269,7 +269,6 @@ function main() {
 }
 
 BEGIN {
-  order_begin()
   for (CONTROL_I = 1; CONTROL_I < 32; CONTROL_I++) {
     CONTROL = CONTROL sprintf("%c", CONTROL_I)
   }
@@ -282,7 +281,7 @@ BEGIN {
 
 END {
   read_document()
-  print_ordered()
+  print_written()
 }
 
 { main() }

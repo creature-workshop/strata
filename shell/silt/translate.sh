@@ -3,19 +3,22 @@
 : <<'MODULE'
 The translators: a JSON, a YAML, a TOML, a .strh or a .strt document read
 into SILT, and a SILT document written out as any of the five. Each is one
-awk start, the document in on stdin or handed over; the JSON, YAML and TOML
-readers answer with every map in canonical order.
+awk start, the document in on stdin or handed over. The JSON, YAML and TOML
+readers keep the members of a map in the order the document wrote them, so
+a document that is read and written back has the same order. Use
+silt__canon to put a document in canonical order.
 MODULE
 
 : <<'PUB_FUN'
 Answers the JSON document on stdin as a SILT document. A str's literal and a
-number's text are copied as written, and every map comes out in canonical
-order. Refuses text that is not one JSON value, a map that holds a key
+number's text are copied as written, and the members of a map stay in the
+order the JSON wrote them. Refuses text that is not one JSON value, a map that holds a key
 twice, and a number outside 64 bits or binary64, naming the line.
 
-  silt__from_json doc < map.json   ->  doc='0."a":null
-  0."b":list
-  1.0:int=1'
+  {"b":[1],"a":null}
+  silt__from_json doc < map.json   ->  doc='0."b":list
+  1.0:int=1
+  0."a":null'
 
 args:
   $1  The name of the variable to answer in
@@ -25,7 +28,7 @@ silt__from_json() {
   __silt__from_json__out="$__silt__OUT"
 
   __silt__ANSWER=''
-  __silt__translate_stdin 'order translators/write translators/json/from' || return 1
+  __silt__translate_stdin 'translators/write translators/json/from' || return 1
 
   __silt__OUT="$__silt__from_json__out"
   __silt__answer
@@ -77,7 +80,7 @@ silt__from_yaml() {
   __silt__from_yaml__out="$__silt__OUT"
 
   __silt__ANSWER=''
-  __silt__translate_stdin 'order translators/write translators/numbers translators/yaml/lines translators/yaml/scalars translators/yaml/values translators/yaml/flow translators/yaml/blocks translators/yaml/tree translators/yaml/from' || return 1
+  __silt__translate_stdin 'translators/write translators/numbers translators/yaml/lines translators/yaml/scalars translators/yaml/values translators/yaml/flow translators/yaml/blocks translators/yaml/tree translators/yaml/from' || return 1
 
   __silt__OUT="$__silt__from_yaml__out"
   __silt__answer
@@ -133,7 +136,7 @@ silt__from_toml() {
   __silt__from_toml__out="$__silt__OUT"
 
   __silt__ANSWER=''
-  __silt__translate_stdin 'order translators/write translators/numbers translators/toml/text translators/toml/strings translators/toml/tree translators/toml/times translators/toml/scalars translators/toml/values translators/toml/from' || return 1
+  __silt__translate_stdin 'translators/write translators/numbers translators/toml/text translators/toml/strings translators/toml/tree translators/toml/times translators/toml/scalars translators/toml/values translators/toml/from' || return 1
 
   __silt__OUT="$__silt__from_toml__out"
   __silt__answer

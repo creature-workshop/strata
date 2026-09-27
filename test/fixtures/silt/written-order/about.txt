@@ -1,0 +1,1 @@
+The JSON, YAML and TOML readers keep the members of a map in the order the document wrote them. JSON that is read and written back is the same text. canon puts a document in sorted order when a caller asks for it, and equals treats the sorted document and the original as the same value.

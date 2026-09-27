@@ -1,0 +1,12 @@
+as j from_json unsorted-json/unsorted.json
+to_json @j
+keys @j
+as sorted canon @j
+to_json @sorted
+equals @j $sorted
+as y from_yaml unsorted-yaml/unsorted.yaml
+to_yaml @y
+to_json @y
+as t from_toml unsorted-toml/unsorted.toml
+to_toml @t
+to_json @t

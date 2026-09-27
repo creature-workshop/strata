@@ -1,9 +1,9 @@
 ## read {"b":[1,{"c":null}],"a":"x"}
-0."a":str="x"
 0."b":list
 1.0:int=1
 1.1:map
 2."c":null
+0."a":str="x"
 ## read [1, 2.5, "three"]
 0.0:int=1
 0.1:float=2.5

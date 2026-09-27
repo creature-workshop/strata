@@ -1,0 +1,64 @@
+## as j from_json unsorted-json/unsorted.json
+0."b":list
+1.0:int=1
+1.1:map
+2."z":int=1
+2."y":int=2
+0."a":null
+0."10":str="x"
+0."2":str="y"
+## to_json @j
+{"b":[1,{"z":1,"y":2}],"a":null,"10":"x","2":"y"}
+## keys @j
+0.0:str="b"
+0.1:str="a"
+0.2:str="10"
+0.3:str="2"
+## as sorted canon @j
+0."10":str="x"
+0."2":str="y"
+0."a":null
+0."b":list
+1.0:int=1
+1.1:map
+2."y":int=2
+2."z":int=1
+## to_json @sorted
+{"10":"x","2":"y","a":null,"b":[1,{"y":2,"z":1}]}
+## equals @j $sorted
+true
+## as y from_yaml unsorted-yaml/unsorted.yaml
+0."b":int=1
+0."a":map
+1."z":int=1
+1."c":int=2
+0."10":str="x"
+## to_yaml @y
+b: 1
+a:
+  z: 1
+  c: 2
+"10": x
+## to_json @y
+{"b":1,"a":{"z":1,"c":2},"10":"x"}
+## as t from_toml unsorted-toml/unsorted.toml
+0."name":str="x"
+0."zeta":map
+1."k":int=1
+1."sub":map
+2."j":int=3
+0."alpha":map
+1."k":int=2
+## to_toml @t
+name = "x"
+
+[zeta]
+k = 1
+
+[zeta.sub]
+j = 3
+
+[alpha]
+k = 2
+## to_json @t
+{"name":"x","zeta":{"k":1,"sub":{"j":3}},"alpha":{"k":2}}
