@@ -76,7 +76,7 @@ silt__from_yaml() {
   __silt__from_yaml__out="$__silt__OUT"
 
   __silt__ANSWER=''
-  __silt__translate_stdin 'order translators/write translators/yaml/lines translators/yaml/scalars translators/yaml/values translators/yaml/flow translators/yaml/blocks translators/yaml/tree translators/yaml/from' || return 1
+  __silt__translate_stdin 'order translators/write translators/numbers translators/yaml/lines translators/yaml/scalars translators/yaml/values translators/yaml/flow translators/yaml/blocks translators/yaml/tree translators/yaml/from' || return 1
 
   __silt__OUT="$__silt__from_yaml__out"
   __silt__answer
@@ -101,7 +101,7 @@ silt__to_yaml() {
   __silt__to_yaml__out="$__silt__OUT"
 
   __silt__ANSWER=''
-  __silt__hand_off "$2" 'translators/yaml/lines translators/yaml/scalars translators/yaml/to' || return 1
+  __silt__hand_off "$2" 'translators/numbers translators/yaml/lines translators/yaml/scalars translators/yaml/to' || return 1
 
   __silt__OUT="$__silt__to_yaml__out"
   __silt__answer
