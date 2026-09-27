@@ -1,0 +1,1 @@
+A map with a str and a list. Each call gives a verb a path that opens a bracket and does not close it, as an index or as a quoted key. The verb refuses the path and shows it in the message. The same paths with the bracket closed are read as usual.
