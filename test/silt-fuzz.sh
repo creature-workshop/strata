@@ -7,8 +7,9 @@
 # test/silt-twins.sh checks the pairs. Beside the twins, the value written
 # back as JSON must be the bytes it was read from, and written as YAML or
 # TOML must read through yq to the same value. A case that fails is kept
-# under the work directory and named with its seed, so it reproduces and
-# reduces to a golden by hand. SILT_TRANSCRIPT names the implementation
+# under the work directory and named with its seed, what differed in its
+# report file, so it reproduces, reduces to a golden by hand, and files as
+# an issue through test/silt-fuzz-report.sh. SILT_TRANSCRIPT names the implementation
 # under test as test/silt-twins.sh reads it. Needs node with fast-check
 # installed under test/fuzz (npm ci --prefix test/fuzz), jq and yq.
 #
@@ -65,17 +66,19 @@ require_oracles() {
   [ -d "$FUZZ/node_modules/fast-check" ] || { printf 'silt-fuzz: fast-check is not installed; run npm ci --prefix test/fuzz\n' >&2; exit 2; }
 }
 
-# One seed: its files written under <dir>, then every check; the directory
-# is removed when every check passes.
+# One seed: its files written under <dir>, then every check, what they
+# found written to <dir>/report; the directory is removed when every check
+# passes.
 run_case() {
   local seed="$1" dir="$2" status=0
   mkdir -p "$dir"
 
   write_case "$seed" "$dir"
-  check_twins "$dir" || status=1
-  check_written "$dir" || status=1
+  check_twins "$dir" > "$dir/report" 2>&1 || status=1
+  check_written "$dir" >> "$dir/report" 2>&1 || status=1
 
   if [ "$status" -ne 0 ]; then
+    cat "$dir/report"
     printf 'seed %s: fails, kept under %s\n' "$seed" "$dir"
   else
     rm -rf "$dir"

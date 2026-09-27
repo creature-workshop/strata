@@ -14,9 +14,11 @@
 # `silt-fuzz` runs test/silt-fuzz.sh over a few hundred seeds against jq and
 # yq on a pipeline schedule, or by hand from the web, never on a merge
 # request; the workflow lets those two sources through for it, and the other
-# jobs gate themselves. Its tools come from ops.lock through cli/install, and
-# the seeds start at the hour, so every night draws new values and a failure
-# names its seed.
+# jobs gate themselves. Its tools come from ops.lock through cli/install, the
+# seeds start at the hour, so every night draws new values and a failure
+# names its seed, and the failing cases stay as artifacts for 90 days. When
+# it fails, `silt-fuzz-report` files them as one issue in the Fuzzer project
+# of the Strata team, pointing back at the run.
 
 include:
   - component: $CI_SERVER_FQDN/ksoft/creatures/forge--code-review-hygiene@0.19.1
@@ -58,10 +60,30 @@ silt-fuzz:
   script:
     - $SHELLOPS_DIR/cli/install dash mawk yq node
     - npm ci --prefix test/fuzz --no-audit --no-fund
-    - SILT_THRESHOLD=1000000 bash test/silt-fuzz.sh --seeds 300 --from "$(date +%s | cut -c1-8)" --keep fuzz-failures
-    - SILT_THRESHOLD=0 bash test/silt-fuzz.sh --seeds 300 --from "$(date +%s | cut -c2-9)" --keep fuzz-failures
+    - |
+      failed=0
+      SILT_THRESHOLD=1000000 bash test/silt-fuzz.sh --seeds 300 --from "$(date +%s | cut -c1-8)" --keep fuzz-failures/shell || failed=1
+      SILT_THRESHOLD=0 bash test/silt-fuzz.sh --seeds 300 --from "$(date +%s | cut -c2-9)" --keep fuzz-failures/awk || failed=1
+      exit "$failed"
   artifacts:
-    when: on_failure
+    when: always
     paths:
       - fuzz-failures/
-    expire_in: 2 weeks
+    expire_in: 90 days
+
+silt-fuzz-report:
+  stage: cleanup
+  image: ubuntu:22.04
+  needs:
+    - job: silt-fuzz
+      artifacts: true
+  when: on_failure
+  variables:
+    LINEAR_API_KEY: "$LINEAR_API_KEY"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web"
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq --no-install-recommends jq curl ca-certificates > /dev/null
+  script:
+    - bash test/silt-fuzz-report.sh fuzz-failures
