@@ -1,0 +1,1159 @@
+[
+  {
+    "name": "type: a string where a number is wanted",
+    "schema": {
+      "type": "number"
+    },
+    "value": "x"
+  },
+  {
+    "name": "type: a number with no fraction is an integer",
+    "schema": {
+      "type": "integer"
+    },
+    "value": 2.0
+  },
+  {
+    "name": "type: a number with a fraction is no integer",
+    "schema": {
+      "type": "integer"
+    },
+    "value": 2.5
+  },
+  {
+    "name": "type: one of several",
+    "schema": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "value": null
+  },
+  {
+    "name": "type: none of several",
+    "schema": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "value": [
+      1
+    ]
+  },
+  {
+    "name": "type: each JSON type by its name",
+    "schema": {
+      "properties": {
+        "o": {
+          "type": "object"
+        },
+        "a": {
+          "type": "array"
+        },
+        "s": {
+          "type": "string"
+        },
+        "b": {
+          "type": "boolean"
+        },
+        "n": {
+          "type": "null"
+        },
+        "i": {
+          "type": "number"
+        }
+      }
+    },
+    "value": {
+      "o": {},
+      "a": [],
+      "s": "",
+      "b": false,
+      "n": null,
+      "i": 0
+    }
+  },
+  {
+    "name": "type: each JSON type refused by another's name",
+    "schema": {
+      "properties": {
+        "o": {
+          "type": "array"
+        },
+        "a": {
+          "type": "object"
+        },
+        "s": {
+          "type": "boolean"
+        },
+        "b": {
+          "type": "null"
+        },
+        "n": {
+          "type": "string"
+        },
+        "i": {
+          "type": "string"
+        }
+      }
+    },
+    "value": {
+      "o": {},
+      "a": [],
+      "s": "",
+      "b": false,
+      "n": null,
+      "i": 0
+    }
+  },
+  {
+    "name": "enum: a value listed",
+    "schema": {
+      "enum": [
+        "a",
+        1,
+        null,
+        {
+          "k": [
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    "value": {
+      "k": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "name": "enum: a value not listed",
+    "schema": {
+      "enum": [
+        "a",
+        1,
+        null
+      ]
+    },
+    "value": "b"
+  },
+  {
+    "name": "enum: a map not listed",
+    "schema": {
+      "enum": [
+        {
+          "k": 1
+        }
+      ]
+    },
+    "value": {
+      "k": 2
+    }
+  },
+  {
+    "name": "enum: 1.0 is the 1 listed",
+    "schema": {
+      "enum": [
+        1
+      ]
+    },
+    "value": 1.0
+  },
+  {
+    "name": "enum: a map listed in another order of keys",
+    "schema": {
+      "enum": [
+        {
+          "b": 1,
+          "a": 2
+        }
+      ]
+    },
+    "value": {
+      "a": 2,
+      "b": 1
+    }
+  },
+  {
+    "name": "const: the value given",
+    "schema": {
+      "const": {
+        "a": [
+          true
+        ]
+      }
+    },
+    "value": {
+      "a": [
+        true
+      ]
+    }
+  },
+  {
+    "name": "const: another value",
+    "schema": {
+      "const": "yes"
+    },
+    "value": "no"
+  },
+  {
+    "name": "const: a number against a string of its digits",
+    "schema": {
+      "const": 3
+    },
+    "value": "3"
+  },
+  {
+    "name": "minLength and maxLength: within",
+    "schema": {
+      "minLength": 2,
+      "maxLength": 4
+    },
+    "value": "abc"
+  },
+  {
+    "name": "minLength: too short",
+    "schema": {
+      "minLength": 2
+    },
+    "value": "a"
+  },
+  {
+    "name": "maxLength: too long",
+    "schema": {
+      "maxLength": 2
+    },
+    "value": "abc"
+  },
+  {
+    "name": "minLength: a character of several bytes counts once",
+    "schema": {
+      "minLength": 3,
+      "maxLength": 3
+    },
+    "value": "née"
+  },
+  {
+    "name": "minLength: passed over for a number",
+    "schema": {
+      "minLength": 5
+    },
+    "value": 1
+  },
+  {
+    "name": "pattern: a match",
+    "schema": {
+      "pattern": "^[a-z]+-\\d{2}$"
+    },
+    "value": "ops-42"
+  },
+  {
+    "name": "pattern: no match",
+    "schema": {
+      "pattern": "^[a-z]+-\\d{2}$"
+    },
+    "value": "ops-4"
+  },
+  {
+    "name": "pattern: a class inside a bracket expression",
+    "schema": {
+      "pattern": "^[\\w.]+\\s[\\d-]+$"
+    },
+    "value": "a.b_c 1-2"
+  },
+  {
+    "name": "pattern: the opposite of a class",
+    "schema": {
+      "pattern": "^\\D+\\S$"
+    },
+    "value": "ab1"
+  },
+  {
+    "name": "pattern: a match anywhere in the string",
+    "schema": {
+      "pattern": "b+"
+    },
+    "value": "abbc"
+  },
+  {
+    "name": "pattern: an escaped dot",
+    "schema": {
+      "pattern": "^v\\d+\\.\\d+$"
+    },
+    "value": "v1x2"
+  },
+  {
+    "name": "minimum and maximum: on the bounds",
+    "schema": {
+      "properties": {
+        "a": {
+          "minimum": 1,
+          "maximum": 1
+        }
+      }
+    },
+    "value": {
+      "a": 1
+    }
+  },
+  {
+    "name": "minimum: below",
+    "schema": {
+      "minimum": 1.5
+    },
+    "value": 1
+  },
+  {
+    "name": "maximum: above",
+    "schema": {
+      "maximum": -2
+    },
+    "value": -1
+  },
+  {
+    "name": "exclusiveMinimum and exclusiveMaximum: on the bounds",
+    "schema": {
+      "properties": {
+        "a": {
+          "exclusiveMinimum": 1
+        },
+        "b": {
+          "exclusiveMaximum": 1
+        }
+      }
+    },
+    "value": {
+      "a": 1,
+      "b": 1
+    }
+  },
+  {
+    "name": "exclusiveMinimum and exclusiveMaximum: between",
+    "schema": {
+      "exclusiveMinimum": 0,
+      "exclusiveMaximum": 2
+    },
+    "value": 1
+  },
+  {
+    "name": "multipleOf: a multiple",
+    "schema": {
+      "multipleOf": 0.5
+    },
+    "value": 2.5
+  },
+  {
+    "name": "multipleOf: not a multiple",
+    "schema": {
+      "multipleOf": 3
+    },
+    "value": 7
+  },
+  {
+    "name": "multipleOf: a multiple below zero",
+    "schema": {
+      "multipleOf": 3
+    },
+    "value": -9
+  },
+  {
+    "name": "minimum: passed over for a string",
+    "schema": {
+      "minimum": 5
+    },
+    "value": "1"
+  },
+  {
+    "name": "required: every field held",
+    "schema": {
+      "required": [
+        "a",
+        "b"
+      ]
+    },
+    "value": {
+      "a": null,
+      "b": 0,
+      "c": 1
+    }
+  },
+  {
+    "name": "required: two fields missing, told in the schema's order",
+    "schema": {
+      "required": [
+        "z",
+        "a",
+        "m"
+      ]
+    },
+    "value": {
+      "a": 1
+    }
+  },
+  {
+    "name": "required: passed over for a list",
+    "schema": {
+      "required": [
+        "a"
+      ]
+    },
+    "value": []
+  },
+  {
+    "name": "properties: members checked at their own places",
+    "schema": {
+      "properties": {
+        "b": {
+          "type": "string"
+        },
+        "a": {
+          "properties": {
+            "deep": {
+              "type": "null"
+            }
+          }
+        }
+      }
+    },
+    "value": {
+      "a": {
+        "deep": 1
+      },
+      "b": 2
+    }
+  },
+  {
+    "name": "properties: a member the value does not hold",
+    "schema": {
+      "properties": {
+        "a": {
+          "type": "string"
+        }
+      }
+    },
+    "value": {}
+  },
+  {
+    "name": "properties: a key with a dot and a quote",
+    "schema": {
+      "properties": {
+        "a.b \"c\"": {
+          "type": "string"
+        }
+      }
+    },
+    "value": {
+      "a.b \"c\"": 1
+    }
+  },
+  {
+    "name": "patternProperties: the keys a pattern matches",
+    "schema": {
+      "patternProperties": {
+        "^x-": {
+          "type": "number"
+        },
+        "y$": {
+          "type": "string"
+        }
+      }
+    },
+    "value": {
+      "x-a": "no",
+      "x-y": 1,
+      "zy": 2,
+      "other": []
+    }
+  },
+  {
+    "name": "additionalProperties: false, with a property and a pattern",
+    "schema": {
+      "properties": {
+        "a": {}
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    },
+    "value": {
+      "a": 1,
+      "x-b": 2,
+      "c": 3,
+      "b": 4
+    }
+  },
+  {
+    "name": "additionalProperties: a schema",
+    "schema": {
+      "properties": {
+        "a": {}
+      },
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "value": {
+      "a": "any",
+      "b": 1,
+      "c": "no"
+    }
+  },
+  {
+    "name": "additionalProperties: true",
+    "schema": {
+      "additionalProperties": true
+    },
+    "value": {
+      "a": 1
+    }
+  },
+  {
+    "name": "additionalProperties: false over an empty map",
+    "schema": {
+      "additionalProperties": false
+    },
+    "value": {}
+  },
+  {
+    "name": "minItems and maxItems: within",
+    "schema": {
+      "minItems": 1,
+      "maxItems": 2
+    },
+    "value": [
+      1,
+      2
+    ]
+  },
+  {
+    "name": "minItems: too few",
+    "schema": {
+      "minItems": 1
+    },
+    "value": []
+  },
+  {
+    "name": "maxItems: too many",
+    "schema": {
+      "maxItems": 1
+    },
+    "value": [
+      1,
+      2
+    ]
+  },
+  {
+    "name": "uniqueItems: all differ",
+    "schema": {
+      "uniqueItems": true
+    },
+    "value": [
+      1,
+      "1",
+      [
+        1
+      ],
+      {
+        "a": 1
+      },
+      null,
+      true
+    ]
+  },
+  {
+    "name": "uniqueItems: two maps the same in another order of keys",
+    "schema": {
+      "uniqueItems": true
+    },
+    "value": [
+      {
+        "a": 1,
+        "b": 2
+      },
+      {
+        "b": 2,
+        "a": 1
+      }
+    ]
+  },
+  {
+    "name": "uniqueItems: 1 and 1.0 are the same",
+    "schema": {
+      "uniqueItems": true
+    },
+    "value": [
+      1,
+      1.0
+    ]
+  },
+  {
+    "name": "uniqueItems: false",
+    "schema": {
+      "uniqueItems": false
+    },
+    "value": [
+      1,
+      1
+    ]
+  },
+  {
+    "name": "items: each element at its index",
+    "schema": {
+      "items": {
+        "type": "number"
+      }
+    },
+    "value": [
+      1,
+      "a",
+      2,
+      null
+    ]
+  },
+  {
+    "name": "items: nested lists",
+    "schema": {
+      "items": {
+        "items": {
+          "maximum": 1
+        }
+      }
+    },
+    "value": [
+      [
+        0,
+        2
+      ],
+      [],
+      [
+        3
+      ]
+    ]
+  },
+  {
+    "name": "items: the schema false over an empty list",
+    "schema": {
+      "items": false
+    },
+    "value": []
+  },
+  {
+    "name": "items: the schema false over elements",
+    "schema": {
+      "items": false
+    },
+    "value": [
+      1
+    ]
+  },
+  {
+    "name": "the schema true",
+    "schema": true,
+    "value": {
+      "any": "thing"
+    }
+  },
+  {
+    "name": "the schema false",
+    "schema": false,
+    "value": 1
+  },
+  {
+    "name": "the empty schema",
+    "schema": {},
+    "value": [
+      1,
+      {
+        "a": null
+      }
+    ]
+  },
+  {
+    "name": "a keyword no one reads",
+    "schema": {
+      "format": "email",
+      "title": "x",
+      "minProperties": 3
+    },
+    "value": {}
+  },
+  {
+    "name": "allOf: every error kept",
+    "schema": {
+      "allOf": [
+        {
+          "type": "string"
+        },
+        {
+          "minimum": 3
+        },
+        {
+          "maximum": 0
+        }
+      ]
+    },
+    "value": 1
+  },
+  {
+    "name": "allOf: the same error twice is told once",
+    "schema": {
+      "allOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "value": 1
+  },
+  {
+    "name": "anyOf: one matches",
+    "schema": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "minimum": 1
+        }
+      ]
+    },
+    "value": 2
+  },
+  {
+    "name": "anyOf: none matches",
+    "schema": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "minimum": 3
+        }
+      ]
+    },
+    "value": 2
+  },
+  {
+    "name": "oneOf: exactly one matches",
+    "schema": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        }
+      ]
+    },
+    "value": 2
+  },
+  {
+    "name": "oneOf: two match",
+    "schema": {
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "minimum": 0
+        }
+      ]
+    },
+    "value": 2
+  },
+  {
+    "name": "oneOf: none matches",
+    "schema": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "value": 2
+  },
+  {
+    "name": "not: the value does not match",
+    "schema": {
+      "not": {
+        "type": "string"
+      }
+    },
+    "value": 2
+  },
+  {
+    "name": "not: the value matches",
+    "schema": {
+      "not": {
+        "type": "number"
+      }
+    },
+    "value": 2
+  },
+  {
+    "name": "composition nested under properties",
+    "schema": {
+      "properties": {
+        "a": {
+          "anyOf": [
+            {
+              "required": [
+                "x"
+              ]
+            },
+            {
+              "required": [
+                "y"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "value": {
+      "a": {
+        "z": 1
+      }
+    }
+  },
+  {
+    "name": "$ref: into $defs",
+    "schema": {
+      "properties": {
+        "a": {
+          "$ref": "#/$defs/name"
+        }
+      },
+      "$defs": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "value": {
+      "a": 1
+    }
+  },
+  {
+    "name": "$ref: beside its sibling keywords",
+    "schema": {
+      "$ref": "#/$defs/n",
+      "minimum": 5,
+      "$defs": {
+        "n": {
+          "type": "integer"
+        }
+      }
+    },
+    "value": 2.5
+  },
+  {
+    "name": "$ref: the whole document, over nested data",
+    "schema": {
+      "properties": {
+        "child": {
+          "$ref": "#"
+        },
+        "n": {
+          "type": "number"
+        }
+      }
+    },
+    "value": {
+      "n": 1,
+      "child": {
+        "n": "x",
+        "child": {
+          "n": null
+        }
+      }
+    }
+  },
+  {
+    "name": "$ref: a recursive list",
+    "schema": {
+      "$defs": {
+        "tree": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tree"
+          }
+        }
+      },
+      "$ref": "#/$defs/tree"
+    },
+    "value": [
+      [],
+      [
+        [],
+        [
+          1
+        ]
+      ]
+    ]
+  },
+  {
+    "name": "$ref: back to itself at the same place",
+    "schema": {
+      "$defs": {
+        "a": {
+          "$ref": "#/$defs/b"
+        },
+        "b": {
+          "$ref": "#/$defs/a"
+        }
+      },
+      "$ref": "#/$defs/a"
+    },
+    "value": 1
+  },
+  {
+    "name": "$ref: a fragment that names nothing",
+    "schema": {
+      "$ref": "#/$defs/missing"
+    },
+    "value": 1
+  },
+  {
+    "name": "$ref: a fragment that names no schema",
+    "schema": {
+      "$ref": "#/$defs/n",
+      "$defs": {
+        "n": 3
+      }
+    },
+    "value": 1
+  },
+  {
+    "name": "$ref: another document",
+    "schema": {
+      "$ref": "other.schema.json#/$defs/n"
+    },
+    "value": 1
+  },
+  {
+    "name": "$ref: not a string",
+    "schema": {
+      "$ref": 3
+    },
+    "value": 1
+  },
+  {
+    "name": "$ref: a slash and a tilde in a name",
+    "schema": {
+      "$ref": "#/$defs/a~1b~0c",
+      "$defs": {
+        "a/b~c": {
+          "type": "null"
+        }
+      }
+    },
+    "value": 1
+  },
+  {
+    "name": "$ref: an index into a list",
+    "schema": {
+      "$ref": "#/allOf/1",
+      "allOf": [
+        {},
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "value": 1
+  },
+  {
+    "name": "$ref: the schema true",
+    "schema": {
+      "$ref": "#/$defs/yes",
+      "$defs": {
+        "yes": true
+      }
+    },
+    "value": 1
+  },
+  {
+    "name": "a scalar document against a scalar's schema",
+    "schema": {
+      "type": "boolean",
+      "const": true
+    },
+    "value": false
+  },
+  {
+    "name": "an empty list against an object's schema",
+    "schema": {
+      "type": "object",
+      "required": [
+        "a"
+      ]
+    },
+    "value": []
+  },
+  {
+    "name": "a manifest, valid",
+    "schema": {
+      "type": "object",
+      "required": [
+        "org",
+        "repo"
+      ],
+      "properties": {
+        "org": {
+          "type": "string",
+          "minLength": 1
+        },
+        "repo": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "value": {
+      "org": "ksoft",
+      "repo": "strata",
+      "labels": {
+        "area": [
+          "silt",
+          "adrs"
+        ]
+      }
+    }
+  },
+  {
+    "name": "a manifest, wrong in five places",
+    "schema": {
+      "type": "object",
+      "required": [
+        "org",
+        "repo"
+      ],
+      "properties": {
+        "org": {
+          "type": "string",
+          "minLength": 1
+        },
+        "repo": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "value": {
+      "org": "",
+      "Repo": "strata",
+      "labels": {
+        "area": [
+          "silt",
+          3,
+          "silt"
+        ],
+        "kind": "x"
+      }
+    }
+  },
+  {
+    "name": "pattern: a repetition with a least and a most",
+    "schema": {
+      "pattern": "^a{2,3}$"
+    },
+    "value": "aaaa"
+  },
+  {
+    "name": "pattern: a repetition with a least and a most, within",
+    "schema": {
+      "pattern": "^a{2,3}$"
+    },
+    "value": "aaa"
+  },
+  {
+    "name": "pattern: a repetition with a least alone",
+    "schema": {
+      "pattern": "^[0-9a-f]{4,}$"
+    },
+    "value": "abc"
+  },
+  {
+    "name": "pattern: a repetition with a least alone, within",
+    "schema": {
+      "pattern": "^[0-9a-f]{4,}$"
+    },
+    "value": "0abc1"
+  },
+  {
+    "name": "pattern: a repetition of a group",
+    "schema": {
+      "pattern": "^(ab|c(d)){2}x{0}$"
+    },
+    "value": "cdab"
+  },
+  {
+    "name": "pattern: a repetition of a group, one short",
+    "schema": {
+      "pattern": "^(ab|c(d)){2}$"
+    },
+    "value": "cd"
+  },
+  {
+    "name": "pattern: a repetition of a class",
+    "schema": {
+      "pattern": "^\\d{4}-\\d{2}$"
+    },
+    "value": "2026-9"
+  },
+  {
+    "name": "pattern: a repetition of a character of several bytes",
+    "schema": {
+      "pattern": "^é{2}$"
+    },
+    "value": "éé"
+  },
+  {
+    "name": "pattern: a bracket expression opening on its closer",
+    "schema": {
+      "pattern": "^[]a]{2}[^]]$"
+    },
+    "value": "]ab"
+  },
+  {
+    "name": "pattern: braces that spell no repetition",
+    "schema": {
+      "pattern": "^a{,}b$"
+    },
+    "value": "a{,}b"
+  }
+]

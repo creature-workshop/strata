@@ -136,6 +136,15 @@ stub_date() {
   assert_output --partial "the clock could not be read"
 }
 
+@test "validate: every case answers as shellops' jq validator does, on the shell tier and the awk tier" {
+  run bash "$REPO/test/silt-validate.sh"
+  echo "$output"
+  assert_success
+  SILT_THRESHOLD=0 run bash "$REPO/test/silt-validate.sh"
+  echo "$output"
+  assert_success
+}
+
 @test "coverage: the goldens enter every function in shell/silt and run at least 95% of its lines" {
   run bash "$REPO/test/silt-coverage.sh"
   echo "$output"

@@ -40,13 +40,15 @@
     "shell/silt/truth.sh",
     "shell/silt/type.sh",
     "shell/silt/unique.sh",
+    "shell/silt/validate.sh",
     "shell/silt/walk.sh",
     "test/silt-exercise.sh",
     "test/silt-fuzz-report.sh",
     "test/silt-fuzz.sh",
     "test/silt-threshold.bench.sh",
     "test/silt-transcript.sh",
-    "test/silt-twins.sh"
+    "test/silt-twins.sh",
+    "test/silt-validate.sh"
   ],
   "exclude": [
     "shell/.ops"

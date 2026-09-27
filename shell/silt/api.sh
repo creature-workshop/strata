@@ -55,6 +55,7 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__difference the elements of a list another does not hold
   silt__intersect the elements of a list another holds too
   silt__merge     one map laid over another, one level deep
+  silt__validate  the errors a document meets against a JSON Schema
   silt__from_json the JSON on stdin as a document
   silt__to_json   a document as one line of JSON
   silt__from_yaml the YAML on stdin as a document
@@ -150,6 +151,7 @@ __silt__home || return 1
 . "$__silt__DIR/difference.sh"
 . "$__silt__DIR/intersect.sh"
 . "$__silt__DIR/merge.sh"
+. "$__silt__DIR/validate.sh"
 . "$__silt__DIR/translate.sh"
 . "$__silt__DIR/callback.sh"
 . "$__silt__DIR/gather.sh"
