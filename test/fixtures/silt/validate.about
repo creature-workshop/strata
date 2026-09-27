@@ -1,0 +1,5 @@
+A document checked against a JSON Schema that is itself a document. The
+answer is a list of what is wrong, each naming where in the value, and an
+empty list when nothing is. A time is checked as the string JSON would
+carry, and inf as the map JSON would. A schema that is broken, a pattern
+awk cannot spell, and a type JSON cannot carry are refused.

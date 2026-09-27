@@ -1,0 +1,1 @@
+{"type":"object","required":["org","at"],"properties":{"org":{"type":"string","pattern":"^[a-z]+$"},"at":{"type":"string","minLength":30},"ratio":{"type":"number","maximum":1},"tags":{"type":"array","items":{"$ref":"#/$defs/tag"},"uniqueItems":true}},"additionalProperties":false,"$defs":{"tag":{"enum":["silt","adrs"]}}}

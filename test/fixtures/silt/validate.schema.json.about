@@ -1,0 +1,2 @@
+A JSON Schema for a small manifest: two required fields, a pattern, a
+bound, a list whose items follow a $ref, and no other field allowed.

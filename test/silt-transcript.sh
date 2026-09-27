@@ -23,7 +23,8 @@
 # its answer in a register, "@<name>" in place of the document makes a call
 # read that register, and a writer's words may name one as "$<name>": obj,
 # arr and split take their words alone; push, set, concat, join, equals,
-# merge, difference, intersect, to_strh and to_strt take the document first;
+# merge, difference, intersect, validate, to_strh and to_strt take the
+# document first;
 # str and time take the rest of the line as their text; now takes nothing,
 # and its answer is written as the shape of a time, since the clock moves.
 
@@ -114,7 +115,7 @@ transcript__run_call() {
 
   # shellcheck disable=SC2086  # a writer's words are split on purpose
   case "${1%% *}" in
-    obj | arr | push | set | concat | join | split | equals | merge | difference | intersect | to_strh | to_strt) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
+    obj | arr | push | set | concat | join | split | equals | merge | difference | intersect | validate | to_strh | to_strt) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
     map | filter | find | any | all | project) transcript__run_collection "${1%% *}" $__transcript__run_call__rest ;;
     *) transcript__run_verb "${1%% *}" "$__transcript__run_call__rest" ;;
   esac

@@ -1,0 +1,116 @@
+## as s from_json validate.schema.json
+0."$defs":map
+1."tag":map
+2."enum":list
+3.0:str="silt"
+3.1:str="adrs"
+0."additionalProperties":bool=false
+0."properties":map
+1."at":map
+2."minLength":int=30
+2."type":str="string"
+1."org":map
+2."pattern":str="^[a-z]+$"
+2."type":str="string"
+1."ratio":map
+2."maximum":int=1
+2."type":str="number"
+1."tags":map
+2."items":map
+3."$ref":str="#/$defs/tag"
+2."type":str="array"
+2."uniqueItems":bool=true
+0."required":list
+1.0:str="org"
+1.1:str="at"
+0."type":str="object"
+## as at time 2026-09-22T08:10:04.5+02:00
+0.:time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+## as org str ksoft
+0.:str="ksoft"
+## as good obj org $org at $at
+0."org":str="ksoft"
+0."at":time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+## validate @good $s
+0.:list
+## as tags split silt,x,silt ,
+0.0:str="silt"
+0.1:str="x"
+0.2:str="silt"
+## as loud str KSoft
+0.:str="KSoft"
+## as bad obj org $loud ratio 0.:float=inf tags $tags extra 0.:null
+0."org":str="KSoft"
+0."ratio":float=inf
+0."tags":list
+1.0:str="silt"
+1.1:str="x"
+1.2:str="silt"
+0."extra":null
+## validate @bad $s
+0.0:str="$: missing required field 'at'"
+0.1:str="$.org: string \"KSoft\" does not match pattern ^[a-z]+$"
+0.2:str="$.ratio: expected number, got object"
+0.3:str="$.tags: array items are not unique"
+0.4:str="$.tags[1]: value x is not in enum [\"silt\",\"adrs\"]"
+0.5:str="$: unexpected property 'extra'"
+## as two set @good .ratio 0.:float=1.5
+0."org":str="ksoft"
+0."at":time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+0."ratio":float=1.5
+## validate @two $s
+0.0:str="$.ratio: value 1.5 exceeds maximum 1"
+## as number obj type $org
+0."type":str="ksoft"
+## as wants set @number .type 0.:str="number"
+0."type":str="number"
+## validate @org $wants
+0.0:str="$: expected number, got string"
+## as none arr
+0.:list
+## validate @none $wants
+0.0:str="$: expected number, got array"
+## validate @good 0.:bool=true
+0.:list
+## validate @good 0.:bool=false
+0.0:str="$: value disallowed by 'false' schema"
+## as n obj n 0.:int=3
+0."n":int=3
+## as three get @n .n
+0.:int=3
+## validate @good 0.:int=3
+!! 1 ERROR: silt: a schema is a map or a bool, not 3
+## as broken set @wants .minimum 0.:str="1"
+0."type":str="number"
+0."minimum":str="1"
+## validate @three $broken
+!! 1 ERROR: silt: a schema's minimum takes a number, not "1"
+## as list set @wants .enum 0.:int=1
+0."type":str="number"
+0."enum":int=1
+## validate @three $list
+!! 1 ERROR: silt: a schema's enum takes a list, not 1
+## as ahead obj pattern 0.:str="(?=a)"
+0."pattern":str="(?=a)"
+## validate @org $ahead
+!! 1 ERROR: silt: a pattern an extended regular expression cannot spell: (?=a)
+## as edge obj pattern 0.:str="\\\\bword"
+0."pattern":str="\\bword"
+## validate @org $edge
+!! 1 ERROR: silt: a pattern an extended regular expression cannot spell: \bword
+## as inside obj pattern 0.:str="[\\\\D]"
+0."pattern":str="[\\D]"
+## validate @org $inside
+!! 1 ERROR: silt: a pattern an extended regular expression cannot spell: [\D]
+## as zero obj multipleOf 0.:int=0
+0."multipleOf":int=0
+## validate @three $zero
+!! 1 ERROR: silt: a schema's multipleOf takes a number other than 0
+## as blob set @good .k 0.:blob=x
+0."org":str="ksoft"
+0."at":time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+0."k":blob=x
+## validate @blob $s
+!! 1 ERROR: silt: a type JSON has no spelling for: 0."k":blob=x
+## validate @good 3.0:int=1
+!! 1 ERROR: silt: a line deeper than the line above it holds: 3.0:int=1
