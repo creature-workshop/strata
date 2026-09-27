@@ -87,25 +87,25 @@ awk_starts() {
 }
 
 @test "from_strh: the map fixture's .strh twin reads back as the fixture" {
-  silt__from_strh doc < "$BATS_TEST_DIRNAME/fixtures/silt/map.strh"
+  silt__from_strh doc < "$BATS_TEST_DIRNAME/fixtures/silt/strh/map/map.strh"
   assert_equal "$doc" "$MAP"
 }
 
 @test "from_strt: the map fixture's .strt twin reads back as the fixture under its index" {
   silt__split index 'runner,count,ratio,clean,nothing,empty,none,tests,test/a.bats,status,reads,test/b.bats,a "quoted" key: with.dots,text,unicode' ,
-  silt__from_strt doc "$index" < "$BATS_TEST_DIRNAME/fixtures/silt/map.strt"
+  silt__from_strt doc "$index" < "$BATS_TEST_DIRNAME/fixtures/silt/strt/map/map.strt"
   assert_equal "$doc" "$MAP"
 }
 
 @test "to_strt: the map fixture under its index is its .strt twin" {
   silt__split index 'runner,count,ratio,clean,nothing,empty,none,tests,test/a.bats,status,reads,test/b.bats,a "quoted" key: with.dots,text,unicode' ,
   silt__to_strt terse "$MAP" "$index"
-  assert_equal "$terse" "$(cat "$BATS_TEST_DIRNAME/fixtures/silt/map.strt")"
+  assert_equal "$terse" "$(cat "$BATS_TEST_DIRNAME/fixtures/silt/strt/map/map.strt")"
 }
 
 @test "to_strh: the map fixture as document 1 under ADR.9's seeds is its .strh twin" {
   silt__to_strh stored "$MAP" 1299709 104729 1
-  assert_equal "$stored" "$(cat "$BATS_TEST_DIRNAME/fixtures/silt/map.strh")"
+  assert_equal "$stored" "$(cat "$BATS_TEST_DIRNAME/fixtures/silt/strh/map/map.strh")"
 }
 
 @test "to_strh: the header, document 0, draws the LIDs of ADR.9's vector" {

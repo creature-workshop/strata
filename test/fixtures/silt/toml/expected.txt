@@ -1,0 +1,1369 @@
+## as t from_toml awkward-toml/awkward.toml
+0."":str="an empty key"
+0."1234":str="a bare key of digits"
+0."arrays":map
+1."colors":list
+2.0:str="red"
+2.1:str="yellow"
+2.2:str="green"
+1."contributors":list
+2.0:str="Foo Bar <foo@example.com>"
+2.1:map
+3."email":str="bazqux@example.com"
+3."name":str="Baz Qux"
+3."url":str="https://example.com/bazqux"
+1."dotted":list
+2.0:map
+3."a":map
+4."b":int=1
+4."c":int=2
+1."empty":list
+1."integers":list
+2.0:int=1
+2.1:int=2
+2.2:int=3
+1."integers2":list
+2.0:int=1
+2.1:int=2
+2.2:int=3
+1."integers3":list
+2.0:int=1
+2.1:int=2
+1."nested_arrays_of_ints":list
+2.0:list
+3.0:int=1
+3.1:int=2
+2.1:list
+3.0:int=3
+3.1:int=4
+3.2:int=5
+1."nested_mixed_array":list
+2.0:list
+3.0:int=1
+3.1:int=2
+2.1:list
+3.0:str="a"
+3.1:str="b"
+3.2:str="c"
+1."numbers":list
+2.0:float=0.1
+2.1:float=0.2
+2.2:float=0.5
+2.3:int=1
+2.4:int=2
+2.5:int=5
+1."string_array":list
+2.0:str="all"
+2.1:str="strings"
+2.2:str="are the same"
+2.3:str="type"
+1."tables":list
+2.0:map
+2.1:map
+3."a":int=1
+0."bare_key-1":int=1
+0."booleans":map
+1."no":bool=false
+1."yes":bool=true
+0."floats":map
+1."flt1":map
+2."format":str="toml"
+2."spelling":str="+1.0"
+2."value":float=1.0
+1."flt2":float=3.1415
+1."flt3":float=-0.01
+1."flt4":float=5e+22
+1."flt5":float=1e06
+1."flt6":float=-2E-2
+1."flt7":float=6.626e-34
+1."flt8":map
+2."format":str="toml"
+2."spelling":str="224_617.445_991_228"
+2."value":float=224617.445991228
+1."negzero":float=-0.0
+1."zero":float=0.0
+0."fruit":map
+1."apple":map
+2."color":str="red"
+2."taste":map
+3."sweet":bool=true
+2."texture":map
+3."smooth":bool=true
+0."fruits":list
+1.0:map
+2."name":str="apple"
+2."physical":map
+3."color":str="red"
+3."shape":str="round"
+2."varieties":list
+3.0:map
+4."name":str="red delicious"
+3.1:map
+4."name":str="granny smith"
+1.1:map
+2."name":str="banana"
+2."varieties":list
+3.0:map
+4."name":str="plantain"
+0."integers":map
+1."big":int=9223372036854775807
+1."bin1":map
+2."format":str="toml"
+2."spelling":str="0b11010110"
+2."value":int=214
+1."hex1":map
+2."format":str="toml"
+2."spelling":str="0xDEADBEEF"
+2."value":int=3735928559
+1."hex2":map
+2."format":str="toml"
+2."spelling":str="0xdead_beef"
+2."value":int=3735928559
+1."int1":map
+2."format":str="toml"
+2."spelling":str="+99"
+2."value":int=99
+1."int2":int=42
+1."int3":int=0
+1."int4":int=-17
+1."int5":map
+2."format":str="toml"
+2."spelling":str="1_000"
+2."value":int=1000
+1."int6":map
+2."format":str="toml"
+2."spelling":str="5_349_221"
+2."value":int=5349221
+1."int7":map
+2."format":str="toml"
+2."spelling":str="53_49_221"
+2."value":int=5349221
+1."negzero":int=-0
+1."oct1":map
+2."format":str="toml"
+2."spelling":str="0o01234567"
+2."value":int=342391
+1."oct2":map
+2."format":str="toml"
+2."spelling":str="0o755"
+2."value":int=493
+1."small":int=-9223372036854775808
+0."literal key":int=3
+0."physical":map
+1."color":str="orange"
+1."shape":str="round"
+0."products":list
+1.0:map
+2."name":str="Hammer"
+2."sku":int=738594937
+1.1:map
+1.2:map
+2."color":str="gray"
+2."name":str="Nail"
+2."sku":int=284758393
+0."quoted key":int=2
+0."site":map
+1."google.com":bool=true
+0."strings":map
+1."apos15":str="Here are fifteen apostrophes: '''''''''''''''"
+1."basic":str="I'm a string. \"You can quote me\". Name\tJosé\nLocation\tSF."
+1."crlf":str="a\nb"
+1."escapes":str="\b\f\r\\ and a raw\ttab"
+1."folded":str="The quick brown fox jumps over the lazy dog."
+1."inner":str="\"This,\" she said, \"is just a pointless statement.\""
+1."multiline_basic":str="Roses are red\nViolets are blue"
+1."multiline_literal":str="The first newline is\ntrimmed in raw strings.\n   All other whitespace\n   is preserved.\n"
+1."quot15":str="Here are fifteen quotation marks: \"\"\"\"\"\"\"\"\"\"\"\"\"\"\""
+1."quotes":str="Here are fifteen quotation marks: \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"."
+1."regex":str="<\\i\\c*\\s*>"
+1."str7":str="'That,' she said, 'is still pointless.'"
+1."unicode":str="😀 and é"
+1."winpath":str="C:\\Users\\nodejs\\templates"
+0."tables":map
+1."dotted-header":map
+2."deep":map
+3."y":int=2
+2."z":int=3
+1."empty":map
+1."inline":map
+2."animal":map
+3."type":map
+4."name":str="pug"
+2."empty":map
+2."name":map
+3."first":str="Tom"
+3."last":str="Preston-Werner"
+2."point":map
+3."x":int=1
+3."y":int=2
+1."quoted.segment":map
+2."x":int=1
+1."spaced":map
+2."w":int=4
+0."times":map
+1."ld1":map
+2."format":str="toml"
+2."spelling":str="1979-05-27"
+1."ldt1":map
+2."format":str="toml"
+2."spelling":str="1979-05-27T07:32:00"
+1."ldt2":map
+2."format":str="toml"
+2."spelling":str="1979-05-27T00:32:00.999999"
+1."lt1":map
+2."format":str="toml"
+2."spelling":str="07:32:00"
+1."lt2":map
+2."format":str="toml"
+2."spelling":str="00:32:00.999999"
+0."title":str="TOML example"
+0."ünïcödé":str="a key that is not bare"
+## as j from_json awkward-toml-value/awkward-toml-value.json
+0."":str="an empty key"
+0."1234":str="a bare key of digits"
+0."arrays":map
+1."colors":list
+2.0:str="red"
+2.1:str="yellow"
+2.2:str="green"
+1."contributors":list
+2.0:str="Foo Bar <foo@example.com>"
+2.1:map
+3."email":str="bazqux@example.com"
+3."name":str="Baz Qux"
+3."url":str="https://example.com/bazqux"
+1."dotted":list
+2.0:map
+3."a":map
+4."b":int=1
+4."c":int=2
+1."empty":list
+1."integers":list
+2.0:int=1
+2.1:int=2
+2.2:int=3
+1."integers2":list
+2.0:int=1
+2.1:int=2
+2.2:int=3
+1."integers3":list
+2.0:int=1
+2.1:int=2
+1."nested_arrays_of_ints":list
+2.0:list
+3.0:int=1
+3.1:int=2
+2.1:list
+3.0:int=3
+3.1:int=4
+3.2:int=5
+1."nested_mixed_array":list
+2.0:list
+3.0:int=1
+3.1:int=2
+2.1:list
+3.0:str="a"
+3.1:str="b"
+3.2:str="c"
+1."numbers":list
+2.0:float=0.1
+2.1:float=0.2
+2.2:float=0.5
+2.3:int=1
+2.4:int=2
+2.5:int=5
+1."string_array":list
+2.0:str="all"
+2.1:str="strings"
+2.2:str="are the same"
+2.3:str="type"
+1."tables":list
+2.0:map
+2.1:map
+3."a":int=1
+0."bare_key-1":int=1
+0."booleans":map
+1."no":bool=false
+1."yes":bool=true
+0."floats":map
+1."flt1":map
+2."format":str="toml"
+2."spelling":str="+1.0"
+2."value":float=1.0
+1."flt2":float=3.1415
+1."flt3":float=-0.01
+1."flt4":float=5e+22
+1."flt5":float=1e06
+1."flt6":float=-2E-2
+1."flt7":float=6.626e-34
+1."flt8":map
+2."format":str="toml"
+2."spelling":str="224_617.445_991_228"
+2."value":float=224617.445991228
+1."negzero":float=-0.0
+1."zero":float=0.0
+0."fruit":map
+1."apple":map
+2."color":str="red"
+2."taste":map
+3."sweet":bool=true
+2."texture":map
+3."smooth":bool=true
+0."fruits":list
+1.0:map
+2."name":str="apple"
+2."physical":map
+3."color":str="red"
+3."shape":str="round"
+2."varieties":list
+3.0:map
+4."name":str="red delicious"
+3.1:map
+4."name":str="granny smith"
+1.1:map
+2."name":str="banana"
+2."varieties":list
+3.0:map
+4."name":str="plantain"
+0."integers":map
+1."big":int=9223372036854775807
+1."bin1":map
+2."format":str="toml"
+2."spelling":str="0b11010110"
+2."value":int=214
+1."hex1":map
+2."format":str="toml"
+2."spelling":str="0xDEADBEEF"
+2."value":int=3735928559
+1."hex2":map
+2."format":str="toml"
+2."spelling":str="0xdead_beef"
+2."value":int=3735928559
+1."int1":map
+2."format":str="toml"
+2."spelling":str="+99"
+2."value":int=99
+1."int2":int=42
+1."int3":int=0
+1."int4":int=-17
+1."int5":map
+2."format":str="toml"
+2."spelling":str="1_000"
+2."value":int=1000
+1."int6":map
+2."format":str="toml"
+2."spelling":str="5_349_221"
+2."value":int=5349221
+1."int7":map
+2."format":str="toml"
+2."spelling":str="53_49_221"
+2."value":int=5349221
+1."negzero":int=-0
+1."oct1":map
+2."format":str="toml"
+2."spelling":str="0o01234567"
+2."value":int=342391
+1."oct2":map
+2."format":str="toml"
+2."spelling":str="0o755"
+2."value":int=493
+1."small":int=-9223372036854775808
+0."literal key":int=3
+0."physical":map
+1."color":str="orange"
+1."shape":str="round"
+0."products":list
+1.0:map
+2."name":str="Hammer"
+2."sku":int=738594937
+1.1:map
+1.2:map
+2."color":str="gray"
+2."name":str="Nail"
+2."sku":int=284758393
+0."quoted key":int=2
+0."site":map
+1."google.com":bool=true
+0."strings":map
+1."apos15":str="Here are fifteen apostrophes: '''''''''''''''"
+1."basic":str="I'm a string. \"You can quote me\". Name\tJosé\nLocation\tSF."
+1."crlf":str="a\nb"
+1."escapes":str="\b\f\r\\ and a raw\ttab"
+1."folded":str="The quick brown fox jumps over the lazy dog."
+1."inner":str="\"This,\" she said, \"is just a pointless statement.\""
+1."multiline_basic":str="Roses are red\nViolets are blue"
+1."multiline_literal":str="The first newline is\ntrimmed in raw strings.\n   All other whitespace\n   is preserved.\n"
+1."quot15":str="Here are fifteen quotation marks: \"\"\"\"\"\"\"\"\"\"\"\"\"\"\""
+1."quotes":str="Here are fifteen quotation marks: \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"."
+1."regex":str="<\\i\\c*\\s*>"
+1."str7":str="'That,' she said, 'is still pointless.'"
+1."unicode":str="😀 and é"
+1."winpath":str="C:\\Users\\nodejs\\templates"
+0."tables":map
+1."dotted-header":map
+2."deep":map
+3."y":int=2
+2."z":int=3
+1."empty":map
+1."inline":map
+2."animal":map
+3."type":map
+4."name":str="pug"
+2."empty":map
+2."name":map
+3."first":str="Tom"
+3."last":str="Preston-Werner"
+2."point":map
+3."x":int=1
+3."y":int=2
+1."quoted.segment":map
+2."x":int=1
+1."spaced":map
+2."w":int=4
+0."times":map
+1."ld1":map
+2."format":str="toml"
+2."spelling":str="1979-05-27"
+1."ldt1":map
+2."format":str="toml"
+2."spelling":str="1979-05-27T07:32:00"
+1."ldt2":map
+2."format":str="toml"
+2."spelling":str="1979-05-27T00:32:00.999999"
+1."lt1":map
+2."format":str="toml"
+2."spelling":str="07:32:00"
+1."lt2":map
+2."format":str="toml"
+2."spelling":str="00:32:00.999999"
+0."title":str="TOML example"
+0."ünïcödé":str="a key that is not bare"
+## equals @t $j
+true
+## to_json @t
+{"":"an empty key","1234":"a bare key of digits","arrays":{"colors":["red","yellow","green"],"contributors":["Foo Bar <foo@example.com>",{"email":"bazqux@example.com","name":"Baz Qux","url":"https://example.com/bazqux"}],"dotted":[{"a":{"b":1,"c":2}}],"empty":[],"integers":[1,2,3],"integers2":[1,2,3],"integers3":[1,2],"nested_arrays_of_ints":[[1,2],[3,4,5]],"nested_mixed_array":[[1,2],["a","b","c"]],"numbers":[0.1,0.2,0.5,1,2,5],"string_array":["all","strings","are the same","type"],"tables":[{},{"a":1}]},"bare_key-1":1,"booleans":{"no":false,"yes":true},"floats":{"flt1":{"format":"toml","spelling":"+1.0","value":1.0},"flt2":3.1415,"flt3":-0.01,"flt4":5e+22,"flt5":1e06,"flt6":-2E-2,"flt7":6.626e-34,"flt8":{"format":"toml","spelling":"224_617.445_991_228","value":224617.445991228},"negzero":-0.0,"zero":0.0},"fruit":{"apple":{"color":"red","taste":{"sweet":true},"texture":{"smooth":true}}},"fruits":[{"name":"apple","physical":{"color":"red","shape":"round"},"varieties":[{"name":"red delicious"},{"name":"granny smith"}]},{"name":"banana","varieties":[{"name":"plantain"}]}],"integers":{"big":9223372036854775807,"bin1":{"format":"toml","spelling":"0b11010110","value":214},"hex1":{"format":"toml","spelling":"0xDEADBEEF","value":3735928559},"hex2":{"format":"toml","spelling":"0xdead_beef","value":3735928559},"int1":{"format":"toml","spelling":"+99","value":99},"int2":42,"int3":0,"int4":-17,"int5":{"format":"toml","spelling":"1_000","value":1000},"int6":{"format":"toml","spelling":"5_349_221","value":5349221},"int7":{"format":"toml","spelling":"53_49_221","value":5349221},"negzero":-0,"oct1":{"format":"toml","spelling":"0o01234567","value":342391},"oct2":{"format":"toml","spelling":"0o755","value":493},"small":-9223372036854775808},"literal key":3,"physical":{"color":"orange","shape":"round"},"products":[{"name":"Hammer","sku":738594937},{},{"color":"gray","name":"Nail","sku":284758393}],"quoted key":2,"site":{"google.com":true},"strings":{"apos15":"Here are fifteen apostrophes: '''''''''''''''","basic":"I'm a string. \"You can quote me\". Name\tJosé\nLocation\tSF.","crlf":"a\nb","escapes":"\b\f\r\\ and a raw\ttab","folded":"The quick brown fox jumps over the lazy dog.","inner":"\"This,\" she said, \"is just a pointless statement.\"","multiline_basic":"Roses are red\nViolets are blue","multiline_literal":"The first newline is\ntrimmed in raw strings.\n   All other whitespace\n   is preserved.\n","quot15":"Here are fifteen quotation marks: \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"","quotes":"Here are fifteen quotation marks: \"\"\"\"\"\"\"\"\"\"\"\"\"\"\".","regex":"<\\i\\c*\\s*>","str7":"'That,' she said, 'is still pointless.'","unicode":"😀 and é","winpath":"C:\\Users\\nodejs\\templates"},"tables":{"dotted-header":{"deep":{"y":2},"z":3},"empty":{},"inline":{"animal":{"type":{"name":"pug"}},"empty":{},"name":{"first":"Tom","last":"Preston-Werner"},"point":{"x":1,"y":2}},"quoted.segment":{"x":1},"spaced":{"w":4}},"times":{"ld1":{"format":"toml","spelling":"1979-05-27"},"ldt1":{"format":"toml","spelling":"1979-05-27T07:32:00"},"ldt2":{"format":"toml","spelling":"1979-05-27T00:32:00.999999"},"lt1":{"format":"toml","spelling":"07:32:00"},"lt2":{"format":"toml","spelling":"00:32:00.999999"}},"title":"TOML example","ünïcödé":"a key that is not bare"}
+## to_toml @t
+"" = "an empty key"
+1234 = "a bare key of digits"
+bare_key-1 = 1
+"literal key" = 3
+"quoted key" = 2
+title = "TOML example"
+"ünïcödé" = "a key that is not bare"
+
+[arrays]
+colors = ["red", "yellow", "green"]
+contributors = ["Foo Bar <foo@example.com>", { email = "bazqux@example.com", name = "Baz Qux", url = "https://example.com/bazqux" }]
+empty = []
+integers = [1, 2, 3]
+integers2 = [1, 2, 3]
+integers3 = [1, 2]
+nested_arrays_of_ints = [[1, 2], [3, 4, 5]]
+nested_mixed_array = [[1, 2], ["a", "b", "c"]]
+numbers = [0.1, 0.2, 0.5, 1, 2, 5]
+string_array = ["all", "strings", "are the same", "type"]
+
+[[arrays.dotted]]
+
+[arrays.dotted.a]
+b = 1
+c = 2
+
+[[arrays.tables]]
+
+[[arrays.tables]]
+a = 1
+
+[booleans]
+no = false
+yes = true
+
+[floats]
+flt2 = 3.1415
+flt3 = -0.01
+flt4 = 5e+22
+flt5 = 1e06
+flt6 = -2E-2
+flt7 = 6.626e-34
+negzero = -0.0
+zero = 0.0
+
+[floats.flt1]
+format = "toml"
+spelling = "+1.0"
+value = 1.0
+
+[floats.flt8]
+format = "toml"
+spelling = "224_617.445_991_228"
+value = 224617.445991228
+
+[fruit]
+
+[fruit.apple]
+color = "red"
+
+[fruit.apple.taste]
+sweet = true
+
+[fruit.apple.texture]
+smooth = true
+
+[[fruits]]
+name = "apple"
+
+[fruits.physical]
+color = "red"
+shape = "round"
+
+[[fruits.varieties]]
+name = "red delicious"
+
+[[fruits.varieties]]
+name = "granny smith"
+
+[[fruits]]
+name = "banana"
+
+[[fruits.varieties]]
+name = "plantain"
+
+[integers]
+big = 9223372036854775807
+int2 = 42
+int3 = 0
+int4 = -17
+negzero = -0
+small = -9223372036854775808
+
+[integers.bin1]
+format = "toml"
+spelling = "0b11010110"
+value = 214
+
+[integers.hex1]
+format = "toml"
+spelling = "0xDEADBEEF"
+value = 3735928559
+
+[integers.hex2]
+format = "toml"
+spelling = "0xdead_beef"
+value = 3735928559
+
+[integers.int1]
+format = "toml"
+spelling = "+99"
+value = 99
+
+[integers.int5]
+format = "toml"
+spelling = "1_000"
+value = 1000
+
+[integers.int6]
+format = "toml"
+spelling = "5_349_221"
+value = 5349221
+
+[integers.int7]
+format = "toml"
+spelling = "53_49_221"
+value = 5349221
+
+[integers.oct1]
+format = "toml"
+spelling = "0o01234567"
+value = 342391
+
+[integers.oct2]
+format = "toml"
+spelling = "0o755"
+value = 493
+
+[physical]
+color = "orange"
+shape = "round"
+
+[[products]]
+name = "Hammer"
+sku = 738594937
+
+[[products]]
+
+[[products]]
+color = "gray"
+name = "Nail"
+sku = 284758393
+
+[site]
+"google.com" = true
+
+[strings]
+apos15 = "Here are fifteen apostrophes: '''''''''''''''"
+basic = "I'm a string. \"You can quote me\". Name\tJosé\nLocation\tSF."
+crlf = "a\nb"
+escapes = "\b\f\r\\ and a raw\ttab"
+folded = "The quick brown fox jumps over the lazy dog."
+inner = "\"This,\" she said, \"is just a pointless statement.\""
+multiline_basic = "Roses are red\nViolets are blue"
+multiline_literal = "The first newline is\ntrimmed in raw strings.\n   All other whitespace\n   is preserved.\n"
+quot15 = "Here are fifteen quotation marks: \"\"\"\"\"\"\"\"\"\"\"\"\"\"\""
+quotes = "Here are fifteen quotation marks: \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"."
+regex = "<\\i\\c*\\s*>"
+str7 = "'That,' she said, 'is still pointless.'"
+unicode = "😀 and é"
+winpath = "C:\\Users\\nodejs\\templates"
+
+[tables]
+
+[tables.dotted-header]
+z = 3
+
+[tables.dotted-header.deep]
+y = 2
+
+[tables.empty]
+
+[tables.inline]
+
+[tables.inline.animal]
+
+[tables.inline.animal.type]
+name = "pug"
+
+[tables.inline.empty]
+
+[tables.inline.name]
+first = "Tom"
+last = "Preston-Werner"
+
+[tables.inline.point]
+x = 1
+y = 2
+
+[tables."quoted.segment"]
+x = 1
+
+[tables.spaced]
+w = 4
+
+[times]
+
+[times.ld1]
+format = "toml"
+spelling = "1979-05-27"
+
+[times.ldt1]
+format = "toml"
+spelling = "1979-05-27T07:32:00"
+
+[times.ldt2]
+format = "toml"
+spelling = "1979-05-27T00:32:00.999999"
+
+[times.lt1]
+format = "toml"
+spelling = "07:32:00"
+
+[times.lt2]
+format = "toml"
+spelling = "00:32:00.999999"
+## as w from_toml written/written.toml
+0."":str="an empty key"
+0."1234":str="a bare key of digits"
+0."arrays":map
+1."colors":list
+2.0:str="red"
+2.1:str="yellow"
+2.2:str="green"
+1."contributors":list
+2.0:str="Foo Bar <foo@example.com>"
+2.1:map
+3."email":str="bazqux@example.com"
+3."name":str="Baz Qux"
+3."url":str="https://example.com/bazqux"
+1."dotted":list
+2.0:map
+3."a":map
+4."b":int=1
+4."c":int=2
+1."empty":list
+1."integers":list
+2.0:int=1
+2.1:int=2
+2.2:int=3
+1."integers2":list
+2.0:int=1
+2.1:int=2
+2.2:int=3
+1."integers3":list
+2.0:int=1
+2.1:int=2
+1."nested_arrays_of_ints":list
+2.0:list
+3.0:int=1
+3.1:int=2
+2.1:list
+3.0:int=3
+3.1:int=4
+3.2:int=5
+1."nested_mixed_array":list
+2.0:list
+3.0:int=1
+3.1:int=2
+2.1:list
+3.0:str="a"
+3.1:str="b"
+3.2:str="c"
+1."numbers":list
+2.0:float=0.1
+2.1:float=0.2
+2.2:float=0.5
+2.3:int=1
+2.4:int=2
+2.5:int=5
+1."string_array":list
+2.0:str="all"
+2.1:str="strings"
+2.2:str="are the same"
+2.3:str="type"
+1."tables":list
+2.0:map
+2.1:map
+3."a":int=1
+0."bare_key-1":int=1
+0."booleans":map
+1."no":bool=false
+1."yes":bool=true
+0."floats":map
+1."flt1":map
+2."format":str="toml"
+2."spelling":str="+1.0"
+2."value":float=1.0
+1."flt2":float=3.1415
+1."flt3":float=-0.01
+1."flt4":float=5e+22
+1."flt5":float=1e06
+1."flt6":float=-2E-2
+1."flt7":float=6.626e-34
+1."flt8":map
+2."format":str="toml"
+2."spelling":str="224_617.445_991_228"
+2."value":float=224617.445991228
+1."negzero":float=-0.0
+1."zero":float=0.0
+0."fruit":map
+1."apple":map
+2."color":str="red"
+2."taste":map
+3."sweet":bool=true
+2."texture":map
+3."smooth":bool=true
+0."fruits":list
+1.0:map
+2."name":str="apple"
+2."physical":map
+3."color":str="red"
+3."shape":str="round"
+2."varieties":list
+3.0:map
+4."name":str="red delicious"
+3.1:map
+4."name":str="granny smith"
+1.1:map
+2."name":str="banana"
+2."varieties":list
+3.0:map
+4."name":str="plantain"
+0."integers":map
+1."big":int=9223372036854775807
+1."bin1":map
+2."format":str="toml"
+2."spelling":str="0b11010110"
+2."value":int=214
+1."hex1":map
+2."format":str="toml"
+2."spelling":str="0xDEADBEEF"
+2."value":int=3735928559
+1."hex2":map
+2."format":str="toml"
+2."spelling":str="0xdead_beef"
+2."value":int=3735928559
+1."int1":map
+2."format":str="toml"
+2."spelling":str="+99"
+2."value":int=99
+1."int2":int=42
+1."int3":int=0
+1."int4":int=-17
+1."int5":map
+2."format":str="toml"
+2."spelling":str="1_000"
+2."value":int=1000
+1."int6":map
+2."format":str="toml"
+2."spelling":str="5_349_221"
+2."value":int=5349221
+1."int7":map
+2."format":str="toml"
+2."spelling":str="53_49_221"
+2."value":int=5349221
+1."negzero":int=-0
+1."oct1":map
+2."format":str="toml"
+2."spelling":str="0o01234567"
+2."value":int=342391
+1."oct2":map
+2."format":str="toml"
+2."spelling":str="0o755"
+2."value":int=493
+1."small":int=-9223372036854775808
+0."literal key":int=3
+0."physical":map
+1."color":str="orange"
+1."shape":str="round"
+0."products":list
+1.0:map
+2."name":str="Hammer"
+2."sku":int=738594937
+1.1:map
+1.2:map
+2."color":str="gray"
+2."name":str="Nail"
+2."sku":int=284758393
+0."quoted key":int=2
+0."site":map
+1."google.com":bool=true
+0."strings":map
+1."apos15":str="Here are fifteen apostrophes: '''''''''''''''"
+1."basic":str="I'm a string. \"You can quote me\". Name\tJosé\nLocation\tSF."
+1."crlf":str="a\nb"
+1."escapes":str="\b\f\r\\ and a raw\ttab"
+1."folded":str="The quick brown fox jumps over the lazy dog."
+1."inner":str="\"This,\" she said, \"is just a pointless statement.\""
+1."multiline_basic":str="Roses are red\nViolets are blue"
+1."multiline_literal":str="The first newline is\ntrimmed in raw strings.\n   All other whitespace\n   is preserved.\n"
+1."quot15":str="Here are fifteen quotation marks: \"\"\"\"\"\"\"\"\"\"\"\"\"\"\""
+1."quotes":str="Here are fifteen quotation marks: \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"."
+1."regex":str="<\\i\\c*\\s*>"
+1."str7":str="'That,' she said, 'is still pointless.'"
+1."unicode":str="😀 and é"
+1."winpath":str="C:\\Users\\nodejs\\templates"
+0."tables":map
+1."dotted-header":map
+2."deep":map
+3."y":int=2
+2."z":int=3
+1."empty":map
+1."inline":map
+2."animal":map
+3."type":map
+4."name":str="pug"
+2."empty":map
+2."name":map
+3."first":str="Tom"
+3."last":str="Preston-Werner"
+2."point":map
+3."x":int=1
+3."y":int=2
+1."quoted.segment":map
+2."x":int=1
+1."spaced":map
+2."w":int=4
+0."times":map
+1."ld1":map
+2."format":str="toml"
+2."spelling":str="1979-05-27"
+1."ldt1":map
+2."format":str="toml"
+2."spelling":str="1979-05-27T07:32:00"
+1."ldt2":map
+2."format":str="toml"
+2."spelling":str="1979-05-27T00:32:00.999999"
+1."lt1":map
+2."format":str="toml"
+2."spelling":str="07:32:00"
+1."lt2":map
+2."format":str="toml"
+2."spelling":str="00:32:00.999999"
+0."title":str="TOML example"
+0."ünïcödé":str="a key that is not bare"
+## equals @t $w
+true
+## to_toml @w
+"" = "an empty key"
+1234 = "a bare key of digits"
+bare_key-1 = 1
+"literal key" = 3
+"quoted key" = 2
+title = "TOML example"
+"ünïcödé" = "a key that is not bare"
+
+[arrays]
+colors = ["red", "yellow", "green"]
+contributors = ["Foo Bar <foo@example.com>", { email = "bazqux@example.com", name = "Baz Qux", url = "https://example.com/bazqux" }]
+empty = []
+integers = [1, 2, 3]
+integers2 = [1, 2, 3]
+integers3 = [1, 2]
+nested_arrays_of_ints = [[1, 2], [3, 4, 5]]
+nested_mixed_array = [[1, 2], ["a", "b", "c"]]
+numbers = [0.1, 0.2, 0.5, 1, 2, 5]
+string_array = ["all", "strings", "are the same", "type"]
+
+[[arrays.dotted]]
+
+[arrays.dotted.a]
+b = 1
+c = 2
+
+[[arrays.tables]]
+
+[[arrays.tables]]
+a = 1
+
+[booleans]
+no = false
+yes = true
+
+[floats]
+flt2 = 3.1415
+flt3 = -0.01
+flt4 = 5e+22
+flt5 = 1e06
+flt6 = -2E-2
+flt7 = 6.626e-34
+negzero = -0.0
+zero = 0.0
+
+[floats.flt1]
+format = "toml"
+spelling = "+1.0"
+value = 1.0
+
+[floats.flt8]
+format = "toml"
+spelling = "224_617.445_991_228"
+value = 224617.445991228
+
+[fruit]
+
+[fruit.apple]
+color = "red"
+
+[fruit.apple.taste]
+sweet = true
+
+[fruit.apple.texture]
+smooth = true
+
+[[fruits]]
+name = "apple"
+
+[fruits.physical]
+color = "red"
+shape = "round"
+
+[[fruits.varieties]]
+name = "red delicious"
+
+[[fruits.varieties]]
+name = "granny smith"
+
+[[fruits]]
+name = "banana"
+
+[[fruits.varieties]]
+name = "plantain"
+
+[integers]
+big = 9223372036854775807
+int2 = 42
+int3 = 0
+int4 = -17
+negzero = -0
+small = -9223372036854775808
+
+[integers.bin1]
+format = "toml"
+spelling = "0b11010110"
+value = 214
+
+[integers.hex1]
+format = "toml"
+spelling = "0xDEADBEEF"
+value = 3735928559
+
+[integers.hex2]
+format = "toml"
+spelling = "0xdead_beef"
+value = 3735928559
+
+[integers.int1]
+format = "toml"
+spelling = "+99"
+value = 99
+
+[integers.int5]
+format = "toml"
+spelling = "1_000"
+value = 1000
+
+[integers.int6]
+format = "toml"
+spelling = "5_349_221"
+value = 5349221
+
+[integers.int7]
+format = "toml"
+spelling = "53_49_221"
+value = 5349221
+
+[integers.oct1]
+format = "toml"
+spelling = "0o01234567"
+value = 342391
+
+[integers.oct2]
+format = "toml"
+spelling = "0o755"
+value = 493
+
+[physical]
+color = "orange"
+shape = "round"
+
+[[products]]
+name = "Hammer"
+sku = 738594937
+
+[[products]]
+
+[[products]]
+color = "gray"
+name = "Nail"
+sku = 284758393
+
+[site]
+"google.com" = true
+
+[strings]
+apos15 = "Here are fifteen apostrophes: '''''''''''''''"
+basic = "I'm a string. \"You can quote me\". Name\tJosé\nLocation\tSF."
+crlf = "a\nb"
+escapes = "\b\f\r\\ and a raw\ttab"
+folded = "The quick brown fox jumps over the lazy dog."
+inner = "\"This,\" she said, \"is just a pointless statement.\""
+multiline_basic = "Roses are red\nViolets are blue"
+multiline_literal = "The first newline is\ntrimmed in raw strings.\n   All other whitespace\n   is preserved.\n"
+quot15 = "Here are fifteen quotation marks: \"\"\"\"\"\"\"\"\"\"\"\"\"\"\""
+quotes = "Here are fifteen quotation marks: \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"."
+regex = "<\\i\\c*\\s*>"
+str7 = "'That,' she said, 'is still pointless.'"
+unicode = "😀 and é"
+winpath = "C:\\Users\\nodejs\\templates"
+
+[tables]
+
+[tables.dotted-header]
+z = 3
+
+[tables.dotted-header.deep]
+y = 2
+
+[tables.empty]
+
+[tables.inline]
+
+[tables.inline.animal]
+
+[tables.inline.animal.type]
+name = "pug"
+
+[tables.inline.empty]
+
+[tables.inline.name]
+first = "Tom"
+last = "Preston-Werner"
+
+[tables.inline.point]
+x = 1
+y = 2
+
+[tables."quoted.segment"]
+x = 1
+
+[tables.spaced]
+w = 4
+
+[times]
+
+[times.ld1]
+format = "toml"
+spelling = "1979-05-27"
+
+[times.ldt1]
+format = "toml"
+spelling = "1979-05-27T07:32:00"
+
+[times.ldt2]
+format = "toml"
+spelling = "1979-05-27T00:32:00.999999"
+
+[times.lt1]
+format = "toml"
+spelling = "07:32:00"
+
+[times.lt2]
+format = "toml"
+spelling = "00:32:00.999999"
+## as r from_toml crlf/crlf.toml
+0."crlf":str="a\r\nb"
+0."list":list
+1.0:int=1
+## to_toml @r
+crlf = "a\r\nb"
+list = [1]
+## as c from_toml comment/comment.toml
+0.:map
+## to_toml @c
+
+## as p from_toml leap-second/leap-second.toml
+0."t":time-rfc3339-utc=2026-06-30T23:59:60.000000000Z
+## to_toml @p
+t = 2026-06-30T23:59:60.000000000Z
+## as m from_toml specials/specials.toml
+0."floats":map
+1."sf1":float=inf
+1."sf2":map
+2."format":str="toml"
+2."spelling":str="+inf"
+2."value":float=inf
+1."sf3":float=-inf
+1."sf4":float=nan
+1."sf5":map
+2."format":str="toml"
+2."spelling":str="+nan"
+2."value":float=nan
+1."sf6":map
+2."format":str="toml"
+2."spelling":str="-nan"
+2."value":float=nan
+0."times":map
+1."odt1":time-rfc3339-utc=1979-05-27T07:32:00.000000000Z
+1."odt2":time-rfc3339-utc=1979-05-27T07:32:00.000000000Z
+1."odt3":time-rfc3339-utc=1979-05-27T07:32:00.999999000Z
+1."odt4":time-rfc3339-utc=1979-05-27T07:32:00.000000000Z
+1."odt5":time-rfc3339-utc=1979-05-27T07:32:00.000000000Z
+1."odt6":time-rfc3339-utc=1980-01-01T00:30:00.000000000Z
+1."odt7":time-rfc3339-utc=2000-02-29T23:30:00.000000000Z
+1."odt9":time-rfc3339-utc=2026-01-01T00:00:00.123456789Z
+## to_json @m
+{"floats":{"sf1":{"format":"strata","spelling":"inf"},"sf2":{"format":"toml","spelling":"+inf","value":{"format":"strata","spelling":"inf"}},"sf3":{"format":"strata","spelling":"-inf"},"sf4":{"format":"strata","spelling":"nan"},"sf5":{"format":"toml","spelling":"+nan","value":{"format":"strata","spelling":"nan"}},"sf6":{"format":"toml","spelling":"-nan","value":{"format":"strata","spelling":"nan"}}},"times":{"odt1":"1979-05-27T07:32:00.000000000Z","odt2":"1979-05-27T07:32:00.000000000Z","odt3":"1979-05-27T07:32:00.999999000Z","odt4":"1979-05-27T07:32:00.000000000Z","odt5":"1979-05-27T07:32:00.000000000Z","odt6":"1980-01-01T00:30:00.000000000Z","odt7":"2000-02-29T23:30:00.000000000Z","odt9":"2026-01-01T00:00:00.123456789Z"}}
+## to_toml @m
+[floats]
+sf1 = inf
+sf3 = -inf
+sf4 = nan
+
+[floats.sf2]
+format = "toml"
+spelling = "+inf"
+value = inf
+
+[floats.sf5]
+format = "toml"
+spelling = "+nan"
+value = nan
+
+[floats.sf6]
+format = "toml"
+spelling = "-nan"
+value = nan
+
+[times]
+odt1 = 1979-05-27T07:32:00.000000000Z
+odt2 = 1979-05-27T07:32:00.000000000Z
+odt3 = 1979-05-27T07:32:00.999999000Z
+odt4 = 1979-05-27T07:32:00.000000000Z
+odt5 = 1979-05-27T07:32:00.000000000Z
+odt6 = 1980-01-01T00:30:00.000000000Z
+odt7 = 2000-02-29T23:30:00.000000000Z
+odt9 = 2026-01-01T00:00:00.123456789Z
+## as a from_json awkward-json/awkward.json
+0."":str="an empty key"
+0."a \"quoted\" key: with.dots\nand a line":str="every mark a line is split on"
+0."clean":bool=true
+0."commit":null
+0."count":int=3
+0."entry":list
+1.0:str="nested"
+1.1:list
+2.0:str="arrays"
+2.1:list
+0."item":str="a key the mapping keeps"
+0."ratio":float=-1.5e3
+0."recorded_at":str="2026-09-18T20:00:00Z"
+0."suites":map
+1."unit":map
+2."runner":str="bats"
+2."tests":map
+3."test/a.bats":map
+4."notes":map
+4."probes":list
+4."reads":list
+5.0:str="lib/a.sh"
+5.1:str="test/a.bats"
+4."status":str="passed"
+0."text":str="a \"quote\", a \\ backslash,\na line\tand a tab"
+0."tracer":str="strace"
+## to_toml @a
+"" = "an empty key"
+"a \"quoted\" key: with.dots\nand a line" = "every mark a line is split on"
+clean = true
+commit = { format = "strata", spelling = "null" }
+count = 3
+entry = ["nested", ["arrays", []]]
+item = "a key the mapping keeps"
+ratio = -1.5e3
+recorded_at = "2026-09-18T20:00:00Z"
+text = "a \"quote\", a \\ backslash,\na line\tand a tab"
+tracer = "strace"
+
+[suites]
+
+[suites.unit]
+runner = "bats"
+
+[suites.unit.tests]
+
+[suites.unit.tests."test/a.bats"]
+probes = []
+reads = ["lib/a.sh", "test/a.bats"]
+status = "passed"
+
+[suites.unit.tests."test/a.bats".notes]
+## as n from_yaml numbers/numbers.yaml
+0."dot":map
+1."format":str="yaml"
+1."spelling":str="1."
+1."value":float=1.0
+0."hex":map
+1."format":str="yaml"
+1."spelling":str="0x1F"
+1."value":int=31
+0."inf":map
+1."format":str="yaml"
+1."spelling":str="-.inf"
+1."value":float=-inf
+0."lead":map
+1."format":str="yaml"
+1."spelling":str=".5"
+1."value":float=0.5
+0."nan":map
+1."format":str="yaml"
+1."spelling":str=".NaN"
+1."value":float=nan
+0."negzero":int=-0
+0."nothing":null
+0."octal":map
+1."format":str="yaml"
+1."spelling":str="0o17"
+1."value":int=15
+0."plain":float=1e5
+0."plus":map
+1."format":str="yaml"
+1."spelling":str="+5"
+1."value":int=5
+0."underscore":str="1_000"
+0."upper":float=1.0E+05
+0."yes":bool=true
+0."zero":float=0.0
+0."zeros":map
+1."format":str="yaml"
+1."spelling":str="007"
+1."value":int=7
+## to_toml @n
+negzero = -0
+nothing = { format = "strata", spelling = "null" }
+plain = 1e5
+underscore = "1_000"
+upper = 1.0E+05
+yes = true
+zero = 0.0
+
+[dot]
+format = "yaml"
+spelling = "1."
+value = 1.0
+
+[hex]
+format = "yaml"
+spelling = "0x1F"
+value = 31
+
+[inf]
+format = "yaml"
+spelling = "-.inf"
+value = -inf
+
+[lead]
+format = "yaml"
+spelling = ".5"
+value = 0.5
+
+[nan]
+format = "yaml"
+spelling = ".NaN"
+value = nan
+
+[octal]
+format = "yaml"
+spelling = "0o17"
+value = 15
+
+[plus]
+format = "yaml"
+spelling = "+5"
+value = 5
+
+[zeros]
+format = "yaml"
+spelling = "007"
+value = 7
+## as s from_json scalar/scalar.json
+0.:str="x"
+## to_toml @s
+!! 1 ERROR: silt: line 1: a document TOML cannot spell, its root being no table: 0.:str="x"
+## as l arr $s $s
+0.0:str="x"
+0.1:str="x"
+## to_toml @l
+!! 1 ERROR: silt: line 1: a document TOML cannot spell, its root being no table: 0.0:str="x"
+## from_toml repeated/repeated.toml
+!! 1 ERROR: silt: toml line 2: a key its table already holds: a
+## from_toml redefined/redefined.toml
+!! 1 ERROR: silt: toml line 4: a table header for a table defined already: a
+## from_toml dotted-header/dotted-header.toml
+!! 1 ERROR: silt: toml line 4: a table header for a table a dotted key defined: apple
+## from_toml array-header/array-header.toml
+!! 1 ERROR: silt: toml line 4: a table header for an array of tables: a
+## from_toml open/open.toml
+!! 1 ERROR: silt: toml line 1: a basic string that never closes
+## from_toml escape/escape.toml
+!! 1 ERROR: silt: toml line 1: an escape TOML has no name for: \q
+## from_toml trailing/trailing.toml
+!! 1 ERROR: silt: toml line 1: text after the value: b = 2
+## from_toml leading-zero/leading-zero.toml
+!! 1 ERROR: silt: toml line 1: not a TOML value: 007
+## from_toml inline-lines/inline-lines.toml
+!! 1 ERROR: silt: toml line 1: an inline table that runs over lines
+## from_toml date/date.toml
+!! 1 ERROR: silt: toml line 1: a day its month has not
+## from_toml fraction/fraction.toml
+!! 1 ERROR: silt: toml line 1: a fraction past nine digits
+## from_toml big/big.toml
+!! 1 ERROR: silt: an int outside 64 bits: 18446744073709551615
+## from_toml control/control.toml
+!! 1 ERROR: silt: toml line 1: a control character inside a basic string

@@ -1,0 +1,5 @@
+## as h from_toml hex-escape/hex-escape.toml
+0."control":str="one\u0001two"
+0."letter":str="A and B"
+## to_json @h
+{"control":"one\u0001two","letter":"A and B"}

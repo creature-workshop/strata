@@ -1,0 +1,1 @@
+numbers YAML spells and JSON does not
