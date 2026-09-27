@@ -2,7 +2,8 @@
 
 : <<'MODULE'
 SILT, structured inline live text: a Strata document carried between shell
-functions without its id column, and read here without starting a process.
+functions without its id column (ADR.32@strata), read here without starting a
+process.
 
 A document is lines, one node each: "<depth>.<key>:<type>" for a collection
 or a null, "<depth>.<key>:<type>=<value>" for a leaf (ADR.2@strata). It is
