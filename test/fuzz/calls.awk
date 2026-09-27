@@ -195,12 +195,11 @@ function scalar_calls(i) {
   scalar_verb_calls("@d", SILT[i], "getpath(" JQ[i] ")")
 }
 
-# The calls over a path whose value is a collection: the value as JSON, its
-# length, its values, the verbs over each, and for a map its keys, its
-# entries and the root merged with it, for a list a slice of it, its first
-# and last element where it holds one, its unique values and its
-# intersection with itself.
-function collection_calls(i) {
+# Prints the calls that apply to every collection, a map or a list: read
+# the value, write it as JSON, count its members, run the verbs that loop
+# over its members, list its values, and write it on one line and read it
+# back.
+function any_collection_calls(i) {
   print "as s" i " get @d " SILT[i]
   print "to_json @s" i " => getpath(" JQ[i] ") | tojson"
   print "len @s" i " => getpath(" JQ[i] ") | length"
@@ -209,34 +208,57 @@ function collection_calls(i) {
   print "as l" i " values @s" i
   print "to_json @l" i " => getpath(" JQ[i] ") | [.[]] | tojson"
   print "line @s" i " => \"one line: true\\nidentity: true\""
+}
 
-  if (TYPE[i] == "object") {
-    print "as k" i " keys @s" i
-    print "join @k" i " , => getpath(" JQ[i] ") | keys | join(\",\")"
-    print "as n" i " entries @s" i
-    print "to_json @n" i " => getpath(" JQ[i] ") | to_entries | tojson"
+# Prints the calls that apply to a map: its keys, its entries, and the root
+# merged with it when the root is a map too.
+function map_calls(i) {
+  print "as k" i " keys @s" i
+  print "join @k" i " , => getpath(" JQ[i] ") | keys | join(\",\")"
+  print "as n" i " entries @s" i
+  print "to_json @n" i " => getpath(" JQ[i] ") | to_entries | tojson"
+
+  if (root == "object") {
+    print "as m" i " merge @d $s" i
+    print "to_json @m" i " => . + getpath(" JQ[i] ") | tojson"
   }
-  if (TYPE[i] == "array") {
-    print "as c" i " slice @s" i " 1 3"
-    print "to_json @c" i " => getpath(" JQ[i] ") | .[1:3] | tojson"
-  }
-  if (TYPE[i] == "array" && holds_member(JQ[i])) {
+}
+
+# Prints the calls that take part of a list: a slice, and the first and
+# last element. The first and last element are only asked for when the
+# list has a member, because an empty list has neither.
+function list_part_calls(i) {
+  print "as c" i " slice @s" i " 1 3"
+  print "to_json @c" i " => getpath(" JQ[i] ") | .[1:3] | tojson"
+
+  if (holds_member(JQ[i])) {
     print "as a" i " first @s" i
     print "to_json @a" i " => getpath(" JQ[i] ") | .[0] | tojson"
     print "as z" i " last @s" i
     print "to_json @z" i " => getpath(" JQ[i] ") | .[-1] | tojson"
   }
-  if (TYPE[i] == "object" && root == "object") {
-    print "as m" i " merge @d $s" i
-    print "to_json @m" i " => . + getpath(" JQ[i] ") | tojson"
-  }
-  if (TYPE[i] == "array") {
-    print "as u" i " unique @s" i
-    print "to_json @u" i " => getpath(" JQ[i] ") | reduce .[] as $x ([]; if any(.[]; . == $x) then . else . + [$x] end) | tojson"
-    print "as i" i " intersect @s" i " $s" i
-    print "to_json @i" i " => getpath(" JQ[i] ") | tojson"
-    print "as e" i " difference @s" i " $s" i
-    print "to_json @e" i " => [] | tojson"
+}
+
+# Prints the calls that treat a list as a set: its unique values, and its
+# intersection and difference with itself.
+function list_set_calls(i) {
+  print "as u" i " unique @s" i
+  print "to_json @u" i " => getpath(" JQ[i] ") | reduce .[] as $x ([]; if any(.[]; . == $x) then . else . + [$x] end) | tojson"
+  print "as i" i " intersect @s" i " $s" i
+  print "to_json @i" i " => getpath(" JQ[i] ") | tojson"
+  print "as e" i " difference @s" i " $s" i
+  print "to_json @e" i " => [] | tojson"
+}
+
+# Prints the calls for a path whose value is a map or a list.
+function collection_calls(i) {
+  any_collection_calls(i)
+
+  if (TYPE[i] == "object") {
+    map_calls(i)
+  } else {
+    list_part_calls(i)
+    list_set_calls(i)
   }
 }
 
