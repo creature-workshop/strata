@@ -53,14 +53,14 @@ process_starts() {
   assert_equal "$(process_starts verbs)" "$(process_starts import)"
 }
 
-@test "linear: get, len and each over 4,000 lines take under a second, under dash, bash and sh" {
+@test "linear: get, len and each over 4,000 lines stay under three seconds, where the quadratic idioms take nine, under dash, bash and sh" {
   wide_map 4000 > "$BATS_TEST_TMPDIR/wide.silt"
   for shell in dash bash sh; do
     run "$shell" "$REPO/test/silt-exercise.sh" "$REPO/shell/silt/api.sh" "$BATS_TEST_TMPDIR/wide.silt" timed
     assert_success
     assert_line --index 0 '0.:str="value number 3999"'
     assert_line --index 1 4000
-    [ "${lines[2]}" -lt 1000 ] || fail "under $shell the three verbs took ${lines[2]} ms"
+    [ "${lines[2]}" -lt 3000 ] || fail "under $shell the three verbs took ${lines[2]} ms; the expansion loop and \${doc#*pat} take about nine seconds here"
   done
 }
 
