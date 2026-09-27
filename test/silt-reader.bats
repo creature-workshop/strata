@@ -5,8 +5,8 @@
 # can carry: the answer variable's check, the process and timing cases, which
 # run test/silt-exercise.sh under strace and under the clock, the coverage
 # gate, test/silt-coverage.sh, which reads bash's trace of the goldens, the
-# shape check, test/silt-shape.sh, and the run with shellops absent,
-# test/silt-alone.sh.
+# shape check, test/silt-shape.sh, and the check that SILT works without
+# shellops, test/silt-without-shellops.sh.
 
 bats_require_minimum_version 1.5.0
 
@@ -146,8 +146,8 @@ stub_date() {
   assert_success
 }
 
-@test "alone: every golden runs with shellops absent, and nothing under shell/silt names it (ADR.33@strata)" {
-  run bash "$REPO/test/silt-alone.sh"
+@test "SILT works without shellops: no file mentions it, and every golden test passes with it removed (ADR.33@strata)" {
+  run bash "$REPO/test/silt-without-shellops.sh"
   echo "$output"
   assert_success
 }
