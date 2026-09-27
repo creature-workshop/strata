@@ -1,0 +1,1 @@
+A list of four elements: a str, a map with a list inside it, a null and a list. The calls take the last and the first element with the rest of the list, and the first elements up to a count. They also run on a list of one element, on the empty list, and on values that are not lists.

@@ -63,6 +63,10 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__first     the first element of a list
   silt__last      the last element of a list
   silt__slice     the elements of a list from one index up to another
+  silt__pop       the last element of a list, and the list without it
+  silt__shift     the first element of a list, and the list without it
+  silt__take      the first elements of a list, as many as asked
+  silt__take_last the last elements of a list, as many as asked
   silt__sum       the sum of a list of numbers
   silt__values    a map's values as a list
   silt__entries   a map as a list of its keys and values
@@ -168,6 +172,7 @@ __silt__home || return 1
 . "$__silt__DIR/canon.sh"
 . "$__silt__DIR/first.sh"
 . "$__silt__DIR/slice.sh"
+. "$__silt__DIR/ends.sh"
 . "$__silt__DIR/sum.sh"
 . "$__silt__DIR/values.sh"
 . "$__silt__DIR/entries.sh"
