@@ -16,3 +16,15 @@ as ys from_yaml -s unsorted-yaml/unsorted.yaml
 to_json @ys
 as ts from_toml --sort unsorted-toml/unsorted.toml
 to_json @ts
+to_json --sort @j
+to_yaml -s @j
+to_toml --sort @t
+to_strh --sort @j 1299709 104729 1
+to_strh @j 1299709 104729 1
+as index arr 0.:str="b" 0.:str="a" 0.:str="10" 0.:str="2" 0.:str="z" 0.:str="y"
+to_strt --sort @j $index
+to_strt @j $index
+from_strh unsorted-strh/unsorted.strh
+from_strh --sort unsorted-strh/unsorted.strh
+from_strt unsorted-strt/unsorted.strt $index
+from_strt -s unsorted-strt/unsorted.strt $index

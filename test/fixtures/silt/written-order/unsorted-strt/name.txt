@@ -1,0 +1,1 @@
+A .strt document with its keys out of sorted order

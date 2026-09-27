@@ -16,9 +16,7 @@
 # and read-register the text a register holds; get, string, has and pluck
 # take the document and a path; string-or takes a default word, then the path;
 # from_json, from_yaml, from_toml and from_strh take a file, beside the calls
-# file unless absolute, and read it on stdin, from_json, from_yaml and
-# from_toml with -s or --sort in front of the file when the call sorts, and
-# from_strt such a file and
+# file unless absolute, and read it on stdin, and from_strt such a file and
 # then the register holding the corpus's keys; unwrap takes the literal; wrap
 # and transcript__roundtrip take text read through printf %b, so a line can
 # spell a newline or a control character; each takes an extra argument for
@@ -107,12 +105,21 @@ transcript__argument_of() {
   printf '%s' "${__transcript__argument_of__rest# }"
 }
 
-# Runs one call: its verb on the document it names, "@<register>" first or
+# Runs one call: its verb, with -s or --sort when the call gives a
+# translator that flag as its first word, on the document it names, "@<register>" first or
 # the fileset's, with the rest of the line as its argument. A writer's
 # arguments are words, and a word "$<register>" is that register's document.
 transcript__run_call() {
   DOCUMENT_FOR_CALL="$DOCUMENT"
+  FLAG=''
   __transcript__run_call__rest="$(transcript__argument_of "$1")"
+
+  case "$__transcript__run_call__rest" in
+    -s | '-s '* | --sort | '--sort '*)
+      FLAG="${__transcript__run_call__rest%% *}"
+      __transcript__run_call__rest="$(transcript__argument_of "$__transcript__run_call__rest")"
+      ;;
+  esac
 
   case "$__transcript__run_call__rest" in
     @*)
@@ -155,6 +162,7 @@ transcript__run_writer() {
 
   case "$__transcript__run_writer__verb" in
     obj | arr | split) transcript__capture "silt__$__transcript__run_writer__verb" ANSWER "$@" ;;
+    to_strh | to_strt) transcript__translate "$__transcript__run_writer__verb" "$DOCUMENT_FOR_CALL" "$@" ;;
     *) transcript__capture "silt__$__transcript__run_writer__verb" ANSWER "$DOCUMENT_FOR_CALL" "$@" ;;
   esac
 }
@@ -183,7 +191,8 @@ transcript__run_with_callback() {
 # Dispatches a reader verb, with the document where the verb takes one.
 transcript__run_verb() {
   case "$1" in
-    type | scalar | len | keys | canon | unique | is_true | is_false | is_zero | to_json | to_yaml | to_toml) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
+    type | scalar | len | keys | canon | unique | is_true | is_false | is_zero) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
+    to_json | to_yaml | to_toml) transcript__translate "$1" "$DOCUMENT_FOR_CALL" ;;
     first | last | sum | values | entries) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
     slice) transcript__capture silt__slice ANSWER "$DOCUMENT_FOR_CALL" "${2%% *}" "${2#* }" ;;
     read) transcript__capture silt__read ANSWER "$(transcript__unescape "$2")" ;;
@@ -192,9 +201,8 @@ transcript__run_verb() {
     line) transcript__line ;;
     get | string | has | pluck) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
     string-or) transcript__capture silt__string ANSWER "$DOCUMENT_FOR_CALL" "$(transcript__argument_of "$2")" "$(transcript__unescape "${2%% *}")" ;;
-    from_json | from_yaml | from_toml) transcript__read_file "$1" "$2" ;;
-    from_strh) transcript__capture silt__from_strh ANSWER < "$(transcript__file_of "$2")" ;;
-    from_strt) transcript__capture silt__from_strt ANSWER "$(transcript__register_of "${2#* }")" < "$(transcript__file_of "${2%% *}")" ;;
+    from_json | from_yaml | from_toml | from_strh) transcript__translate "$1" < "$(transcript__file_of "$2")" ;;
+    from_strt) transcript__translate from_strt "$(transcript__register_of "${2#* }")" < "$(transcript__file_of "${2%% *}")" ;;
     unwrap) transcript__capture silt__unwrap ANSWER "$2" ;;
     wrap) transcript__capture silt__wrap ANSWER "$(transcript__unescape "$2")" ;;
     str) transcript__capture silt__str ANSWER "$(transcript__unescape "$2")" ;;
@@ -209,13 +217,17 @@ transcript__run_verb() {
   esac
 }
 
-# Runs a reader of JSON, YAML or TOML on the file the call names, with the
-# flag -s or --sort when the call has it in front of the file.
-transcript__read_file() {
-  case "$2" in
-    '-s '* | '--sort '*) transcript__capture "silt__$1" "${2%% *}" ANSWER < "$(transcript__file_of "${2#* }")" ;;
-    *) transcript__capture "silt__$1" ANSWER < "$(transcript__file_of "$2")" ;;
-  esac
+# Runs a translator with the flag the call gave, if it gave one, in front
+# of the variable's name.
+transcript__translate() {
+  __transcript__translate__verb="$1"
+  shift
+
+  if [ -n "$FLAG" ]; then
+    transcript__capture "silt__$__transcript__translate__verb" "$FLAG" ANSWER "$@"
+  else
+    transcript__capture "silt__$__transcript__translate__verb" ANSWER "$@"
+  fi
 }
 
 # A file a call reads by name: as given when absolute, else beside the calls file.

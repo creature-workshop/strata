@@ -17,9 +17,10 @@ import fc from "fast-check";
 import { KEYS, PIECES } from "./vocabulary.mjs";
 
 // Text with the characters taken out that jq escapes and JSON.stringify
-// leaves raw, or that no line can carry: NUL, DEL and the C1 controls.
+// leaves raw, or that no line can carry: NUL, DEL and the C1 controls. It
+// also takes out U+FFFE and U+FFFF, which yq does not read.
 function withoutUnsafe(text) {
-  return text.replace(/[\u0000\u007f-\u009f]/g, "");
+  return text.replace(/[\u0000\u007f-\u009f\ufffe\uffff]/g, "");
 }
 
 const pieces = fc.array(fc.constantFrom(...PIECES), { minLength: 1, maxLength: 3 }).map((parts) => parts.join(" "));

@@ -144,7 +144,7 @@ function scalar_verb_calls(doc, path, at, __n) {
 }
 
 # The calls every case makes over the root: read it, write it back, read it
-# with --sort and compare with the value jq sorts, read it
+# and write it with --sort and compare both with the value jq sorts, read it
 # again through the .strh and the .strt node wrote, the .strt under the index
 # node shuffled, and through YAML in both styles yq writes unless -v yaml=0
 # says yq could not spell the value, and through TOML when -v toml=1 says
@@ -155,7 +155,8 @@ function root_calls() {
   print "as c canon @d"
   print "equals @d $c => true"
   print "as s from_json --sort value.json"
-  print "to_json @s => walk(if type == \"object\" then to_entries | sort_by(.key) | from_entries else . end) | tojson"
+  print "to_json @s => " SORTED_JSON
+  print "to_json --sort @d => " SORTED_JSON
   print "as h from_strh value.strh"
   print "equals @d $h => true"
   print "as i from_json index.json"
@@ -307,6 +308,7 @@ BEGIN {
   PATHS = 0
   EACH_CALLS = 0
   SCALAR_CALLS = 0
+  SORTED_JSON = "walk(if type == \"object\" then to_entries | sort_by(.key) | from_entries else . end) | tojson"
 }
 
 END {
