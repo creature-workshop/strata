@@ -24,7 +24,8 @@
 # read that register, and a writer's words may name one as "$<name>": obj,
 # arr and split take their words alone; push, set, concat, join, equals,
 # merge, difference, intersect, to_strh and to_strt take the document first;
-# str takes the rest of the line as its text.
+# str and time take the rest of the line as their text; now takes nothing,
+# and its answer is written as the shape of a time, since the clock moves.
 
 set -u
 
@@ -181,6 +182,8 @@ transcript__run_verb() {
     unwrap) transcript__capture silt__unwrap ANSWER "$2" ;;
     wrap) transcript__capture silt__wrap ANSWER "$(transcript__unescape "$2")" ;;
     str) transcript__capture silt__str ANSWER "$(transcript__unescape "$2")" ;;
+    time) transcript__capture silt__time ANSWER "$2" ;;
+    now) transcript__now ;;
     roundtrip) transcript__roundtrip "$(transcript__unescape "$2")" ;;
     each) transcript__capture silt__each transcript__note "$DOCUMENT_FOR_CALL" "$2" ;;
     each-until) transcript__capture silt__each transcript__until_key "$DOCUMENT_FOR_CALL" "$2" ;;
@@ -205,6 +208,17 @@ transcript__capture() {
 # Text spelled with printf escapes, as the characters it means.
 transcript__unescape() {
   printf '%b' "$1"
+}
+
+# now, written as the shape its answer takes: a time line with every digit
+# of the instant as 9, or the answer itself when it has another shape.
+transcript__now() {
+  transcript__capture silt__now ANSWER
+  case "$ANSWER" in
+    0.:time-rfc3339-utc=[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9].[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]Z)
+      ANSWER='0.:time-rfc3339-utc=9999-99-99T99:99:99.999999999Z'
+      ;;
+  esac
 }
 
 # wrap then unwrap: the literal, then whether the text came back unchanged.

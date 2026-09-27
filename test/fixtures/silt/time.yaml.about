@@ -1,0 +1,2 @@
+A YAML map with the same instant quoted and plain. Read back, both are
+strings: YAML has a timestamp, but nothing says a key takes a time.

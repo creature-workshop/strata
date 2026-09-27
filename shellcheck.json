@@ -35,6 +35,7 @@
     "shell/silt/str.sh",
     "shell/silt/string.sh",
     "shell/silt/text.sh",
+    "shell/silt/time.sh",
     "shell/silt/translate.sh",
     "shell/silt/truth.sh",
     "shell/silt/type.sh",

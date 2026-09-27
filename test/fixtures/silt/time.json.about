@@ -1,0 +1,3 @@
+A JSON object whose one member is a string that spells an instant exactly as
+a time is written. Read back, it is a string, because nothing in JSON says
+the member is a time.

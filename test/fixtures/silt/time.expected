@@ -1,0 +1,97 @@
+## as t time 2026-09-22T08:10:04.5+02:00
+0.:time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+## as u time 2026-09-22T06:10:04.500Z
+0.:time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+## time 2026-09-22t06:10:04.5z
+0.:time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+## time 2026-09-22 06:10:04.500000000Z
+0.:time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+## type @t
+time-rfc3339-utc
+## scalar @t
+2026-09-22T06:10:04.500000000Z
+## equals @t $u
+true
+## time 2026-01-01T01:30:00+02:00
+0.:time-rfc3339-utc=2025-12-31T23:30:00.000000000Z
+## time 2025-12-31T23:30:00-01:00
+0.:time-rfc3339-utc=2026-01-01T00:30:00.000000000Z
+## time 2024-02-28T23:00:00-01:30
+0.:time-rfc3339-utc=2024-02-29T00:30:00.000000000Z
+## time 2024-03-01T00:10:00+00:20
+0.:time-rfc3339-utc=2024-02-29T23:50:00.000000000Z
+## time 1900-02-28T23:00:00-01:00
+0.:time-rfc3339-utc=1900-03-01T00:00:00.000000000Z
+## time 2024-01-01T00:00:00-00:01
+0.:time-rfc3339-utc=2024-01-01T00:01:00.000000000Z
+## time 2026-06-30T23:59:60.123456789Z
+0.:time-rfc3339-utc=2026-06-30T23:59:60.123456789Z
+## time 0000-01-01T00:00:00Z
+0.:time-rfc3339-utc=0000-01-01T00:00:00.000000000Z
+## time 2026-09-22T06:10:04
+!! 1 ERROR: silt: no offset, so no instant: 2026-09-22T06:10:04
+## time 2026-09-22T06:10:04.1234567891Z
+!! 1 ERROR: silt: a fraction past nine digits: 2026-09-22T06:10:04.1234567891Z
+## time 2026-09-22T06:10:04.Z
+!! 1 ERROR: silt: not an RFC 3339 date-time: 2026-09-22T06:10:04.Z
+## time 2026-09-22T06:10:04.5xZ
+!! 1 ERROR: silt: not an RFC 3339 date-time: 2026-09-22T06:10:04.5xZ
+## time 2026-09-22T06:10:04Zjunk
+!! 1 ERROR: silt: not an RFC 3339 date-time: 2026-09-22T06:10:04Zjunk
+## time 2026-09-22T00:00:00+0200
+!! 1 ERROR: silt: not an RFC 3339 date-time: 2026-09-22T00:00:00+0200
+## time 2026-09-22T00:00:00+24:00
+!! 1 ERROR: silt: an offset outside -23:59 to +23:59: 2026-09-22T00:00:00+24:00
+## time 2026-09-22T00:00:00+02:60
+!! 1 ERROR: silt: an offset outside -23:59 to +23:59: 2026-09-22T00:00:00+02:60
+## time 2026-13-01T00:00:00Z
+!! 1 ERROR: silt: a month outside 01 to 12: 2026-13-01T00:00:00Z
+## time 2026-00-10T00:00:00Z
+!! 1 ERROR: silt: a month outside 01 to 12: 2026-00-10T00:00:00Z
+## time 2023-02-29T00:00:00Z
+!! 1 ERROR: silt: a day its month has not: 2023-02-29T00:00:00Z
+## time 2026-09-00T00:00:00Z
+!! 1 ERROR: silt: a day its month has not: 2026-09-00T00:00:00Z
+## time 2026-09-22T24:00:00Z
+!! 1 ERROR: silt: an hour outside 00 to 23: 2026-09-22T24:00:00Z
+## time 2026-09-22T23:60:00Z
+!! 1 ERROR: silt: a minute outside 00 to 59: 2026-09-22T23:60:00Z
+## time 2026-09-22T23:59:61Z
+!! 1 ERROR: silt: a second outside 00 to 60: 2026-09-22T23:59:61Z
+## time 0000-01-01T00:00:00+00:01
+!! 1 ERROR: silt: a date outside the years RFC 3339 spells: 0000-01-01T00:00:00+00:01
+## time 9999-12-31T23:59:59-00:01
+!! 1 ERROR: silt: a date outside the years RFC 3339 spells: 9999-12-31T23:59:59-00:01
+## time yesterday
+!! 1 ERROR: silt: not an RFC 3339 date-time: yesterday
+## time
+!! 1 ERROR: silt: not an RFC 3339 date-time: 
+## now
+0.:time-rfc3339-utc=9999-99-99T99:99:99.999999999Z
+## to_json @t
+"2026-09-22T06:10:04.500000000Z"
+## as m obj at $t
+0."at":time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+## to_json @m
+{"at":"2026-09-22T06:10:04.500000000Z"}
+## as back from_json time.json
+0."at":str="2026-09-22T06:10:04.500000000Z"
+## equals @back $m
+false
+## to_yaml @m
+at: "2026-09-22T06:10:04.500000000Z"
+## to_toml @m
+at = 2026-09-22T06:10:04.500000000Z
+## from_yaml time.yaml
+0."at":str="2026-09-22T06:10:04.500000000Z"
+0."plain":str="2026-09-22T06:10:04.500000000Z"
+## as toml from_toml time.toml
+0."at":time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+## equals @toml $m
+true
+## as index split at ,
+0.0:str="at"
+## as strh to_strh @m 1299709 104729 1
+67e924b179c7e1f3 0."at":time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+## to_strt @m $index
+0.@0:-7=2026-09-22T06:10:04.500000000Z
