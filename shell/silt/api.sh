@@ -24,8 +24,8 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__scalar    the value text of a scalar document
   silt__string    the text at a path, a str unquoted
   silt__has       whether a path holds a value
-  silt__let       fields of a document assigned to variables
-  silt__unlet     the variables of silt__let unset
+  silt__bind      fields of a document assigned to variables
+  silt__unbind    the variables of silt__bind unset
   silt__with      a command run with fields assigned to variables
   silt__len       the number of members
   silt__keys      the members' keys, as a list document
@@ -158,7 +158,7 @@ __silt__home || return 1
 . "$__silt__DIR/scalar.sh"
 . "$__silt__DIR/string.sh"
 . "$__silt__DIR/has.sh"
-. "$__silt__DIR/let.sh"
+. "$__silt__DIR/bind.sh"
 . "$__silt__DIR/len.sh"
 . "$__silt__DIR/keys.sh"
 . "$__silt__DIR/each.sh"

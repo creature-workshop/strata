@@ -1,11 +1,11 @@
 #!/bin/sh
 
 : <<'MODULE'
-silt__let, silt__unlet and silt__with: fields of a document assigned to
+silt__bind, silt__unbind and silt__with: fields of a document assigned to
 shell variables.
 
-silt__let assigns the variables and the caller releases them with
-silt__unlet. silt__with assigns them for one command and releases them
+silt__bind assigns the variables and the caller releases them with
+silt__unbind. silt__with assigns them for one command and releases them
 when the command returns, so the caller has nothing to remember.
 
 Each key is a name, or several names joined by dots to read a path. The
@@ -23,7 +23,7 @@ Assigns a field of a document to a variable, for each key given. Refuses a
 prefix or a key that cannot be part of a variable name, and two keys that
 give the same variable. When it refuses, it assigns nothing.
 
-  silt__let __close__ "$issue" id state.type
+  silt__bind __close__ "$issue" id state.type
     ->  __close__id=42  __close__state_type=started
 
 args:
@@ -31,33 +31,33 @@ args:
   $2  The document
   $@  The keys
 PUB_FUN
-silt__let() {
-  __silt__let__prefix="${1:-}"
-  __silt__let__doc="${2:-}"
+silt__bind() {
+  __silt__bind__prefix="${1:-}"
+  __silt__bind__doc="${2:-}"
   shift "$(($# < 2 ? $# : 2))"
 
-  __silt__name_keys "$__silt__let__prefix" "$@" || return 1
+  __silt__name_keys "$__silt__bind__prefix" "$@" || return 1
 
-  for __silt__let__key in "$@"; do
-    __silt__bind "$__silt__let__prefix" "$__silt__let__doc" "$__silt__let__key" || return 1
+  for __silt__bind__key in "$@"; do
+    __silt__bind_key "$__silt__bind__prefix" "$__silt__bind__doc" "$__silt__bind__key" || return 1
   done
 }
 
 : <<'PUB_FUN'
-Unsets the variable that each key gives. It is the pair of silt__let, and
+Unsets the variable that each key gives. It is the pair of silt__bind, and
 takes the same prefix and keys.
 
-  silt__unlet __close__ id state.type
+  silt__unbind __close__ id state.type
 
 args:
   $1  The prefix of the variables' names
   $@  The keys
 PUB_FUN
-silt__unlet() {
-  __silt__unlet__prefix="${1:-}"
+silt__unbind() {
+  __silt__unbind__prefix="${1:-}"
   shift "$(($# < 1 ? $# : 1))"
 
-  __silt__name_keys "$__silt__unlet__prefix" "$@" || return 1
+  __silt__name_keys "$__silt__unbind__prefix" "$@" || return 1
   __silt__release "$__silt__NAMES"
 }
 
@@ -110,7 +110,7 @@ __silt__run_with() {
   eval "__silt__with__names_$__silt__WITHS=\$__silt__NAMES"
 
   while [ "$__silt__KEYS" -gt 0 ]; do
-    __silt__bind "$__silt__run_with__prefix" "$__silt__run_with__doc" "$1" || return 1
+    __silt__bind_key "$__silt__run_with__prefix" "$__silt__run_with__doc" "$1" || return 1
     __silt__KEYS=$((__silt__KEYS - 1))
     shift
   done
@@ -261,15 +261,15 @@ args:
   $2  The document
   $3  The key
 FUN
-__silt__bind() {
+__silt__bind_key() {
   __silt__underscored "$3"
-  __silt__bind__name="$1$__silt__UNDERSCORED"
+  __silt__bind_key__name="$1$__silt__UNDERSCORED"
 
-  __silt__bind__value=''
-  silt__get __silt__bind__value "$2" ".$3" || return 1
-  __silt__bound_text "$__silt__bind__value" || return 1
+  __silt__bind_key__value=''
+  silt__get __silt__bind_key__value "$2" ".$3" || return 1
+  __silt__bound_text "$__silt__bind_key__value" || return 1
 
-  eval "$__silt__bind__name=\$__silt__ANSWER"
+  eval "$__silt__bind_key__name=\$__silt__ANSWER"
 }
 
 : <<'FUN'

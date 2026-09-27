@@ -1,60 +1,60 @@
-## let id name done ratio
+## bind id name done ratio
 BOUND_id=42
 BOUND_name=close the $issue "now"
 BOUND_done=false
 BOUND_ratio=1.5
-after unlet:
+after unbind:
 BOUND_id=unset
 BOUND_name=unset
 BOUND_done=unset
 BOUND_ratio=unset
-## let nothing missing
+## bind nothing missing
 BOUND_nothing=
 BOUND_missing=
-after unlet:
+after unbind:
 BOUND_nothing=unset
 BOUND_missing=unset
-## let state tags empty
+## bind state tags empty
 BOUND_state=0."type":str="started"
 0."since":map
 1."day":int=3
 BOUND_tags=0.0:str="x"
 0.1:str="y"
 BOUND_empty=0.:list
-after unlet:
+after unbind:
 BOUND_state=unset
 BOUND_tags=unset
 BOUND_empty=unset
-## let state.type state.since.day state.missing state.type.deeper
+## bind state.type state.since.day state.missing state.type.deeper
 BOUND_state_type=started
 BOUND_state_since_day=3
 BOUND_state_missing=
 BOUND_state_type_deeper=
-after unlet:
+after unbind:
 BOUND_state_type=unset
 BOUND_state_since_day=unset
 BOUND_state_missing=unset
 BOUND_state_type_deeper=unset
-## let id id
+## bind id id
 !! 1 ERROR: silt: two keys give the variable BOUND_id
-## let state.type state_type
+## bind state.type state_type
 !! 1 ERROR: silt: two keys give the variable BOUND_state_type
-## let a-b
+## bind a-b
 !! 1 ERROR: silt: a key is names joined by dots, and 'a-b' is not; read that field with silt__get
-## let .id
+## bind .id
 !! 1 ERROR: silt: a key is names joined by dots, and '.id' is not; read that field with silt__get
-## let id.
+## bind id.
 !! 1 ERROR: silt: a key is names joined by dots, and 'id.' is not; read that field with silt__get
-## let state..type
+## bind state..type
 !! 1 ERROR: silt: a key is names joined by dots, and 'state..type' is not; read that field with silt__get
-## let
+## bind
 
-after unlet:
+after unbind:
 ## as scalar str text
 0.:str="text"
-## let @scalar id
+## bind @scalar id
 BOUND_id=
-after unlet:
+after unbind:
 BOUND_id=unset
 ## with id name state.type -- transcript__show_bound id name state.type
 BOUND_id=42

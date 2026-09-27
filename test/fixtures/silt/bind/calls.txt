@@ -1,19 +1,19 @@
-# let: each kind of value
-let id name done ratio
-let nothing missing
-let state tags empty
-let state.type state.since.day state.missing state.type.deeper
+# bind: each kind of value
+bind id name done ratio
+bind nothing missing
+bind state tags empty
+bind state.type state.since.day state.missing state.type.deeper
 
-# let: what it refuses
-let id id
-let state.type state_type
-let a-b
-let .id
-let id.
-let state..type
-let
+# bind: what it refuses
+bind id id
+bind state.type state_type
+bind a-b
+bind .id
+bind id.
+bind state..type
+bind
 as scalar str text
-let @scalar id
+bind @scalar id
 
 # with: the variables exist while the command runs
 with id name state.type -- transcript__show_bound id name state.type
