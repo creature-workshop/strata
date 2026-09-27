@@ -8,7 +8,14 @@
 # Usage: <shell> test/silt-transcript.sh <api.sh> <calls> [<document>]
 #
 # A call is a verb and one argument; a blank line or a # line is skipped.
-# type, scalar, len, keys, canon, unique, is_true, is_false, is_zero, references,
+# type takes the document and, when given, a path; defined, empty and not
+# take the document, and defined-word, empty-word and not-word take the
+# rest of the line as the value, which can be nothing; bool takes a word
+# and null takes nothing; option and option_is take the map of options, a
+# key and a text, and option-bare the map and a key; succeeds and fails
+# take a command, and succeeds-reading and fails-reading take one word for
+# the command to read on stdin and then the command.
+# scalar, len, keys, canon, unique, is_true, is_false, is_zero, references,
 # to_json, to_yaml, to_toml, first, last, sum, values and entries take the
 # document; slice takes it and two indices; line takes it and answers
 # whether to_line wrote it on one line and from_line read it back; to_line
@@ -191,7 +198,17 @@ transcript__run_with_callback() {
 # Dispatches a reader verb, with the document where the verb takes one.
 transcript__run_verb() {
   case "$1" in
-    type | scalar | len | keys | canon | unique | is_true | is_false | is_zero | references) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
+    type) transcript__type "$2" ;;
+    scalar | len | keys | canon | unique | is_true | is_false | is_zero | references) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
+    defined | empty | not) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
+    defined-word | empty-word | not-word) transcript__capture "silt__${1%-word}" ANSWER "$2" ;;
+    bool) transcript__capture silt__bool ANSWER "$2" ;;
+    null) transcript__capture silt__null ANSWER ;;
+    option) transcript__capture silt__option ANSWER "$DOCUMENT_FOR_CALL" "${2%% *}" "$(transcript__argument_of "$2")" ;;
+    option-bare) transcript__capture silt__option ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
+    option_is) transcript__capture silt__option_is ANSWER "$DOCUMENT_FOR_CALL" "${2%% *}" "$(transcript__argument_of "$2")" ;;
+    succeeds | fails) transcript__run_command "$1" "$2" ;;
+    succeeds-reading | fails-reading) transcript__run_command_reading "${1%-reading}" "${2%% *}" "$(transcript__argument_of "$2")" ;;
     to_json | to_yaml | to_toml) transcript__translate "$1" "$DOCUMENT_FOR_CALL" ;;
     first | last | sum | values | entries) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
     slice) transcript__capture silt__slice ANSWER "$DOCUMENT_FOR_CALL" "${2%% *}" "${2#* }" ;;
@@ -215,6 +232,37 @@ transcript__run_verb() {
     each-nested) transcript__capture silt__each transcript__note_nested "$DOCUMENT_FOR_CALL" '' ;;
     *) STATUS=127 ;;
   esac
+}
+
+# Runs type on the document, and at the path when the call gives one.
+transcript__type() {
+  if [ -n "$1" ]; then
+    transcript__capture silt__type ANSWER "$DOCUMENT_FOR_CALL" "$1"
+  else
+    transcript__capture silt__type ANSWER "$DOCUMENT_FOR_CALL"
+  fi
+}
+
+# Runs succeeds or fails on a command, which is the words of the call. The
+# command reads nothing, so that it cannot read the calls file.
+transcript__run_command() {
+  # shellcheck disable=SC2086  # the command's words are split on purpose
+  transcript__capture "silt__$1" ANSWER $2 < /dev/null
+}
+
+# Runs succeeds or fails on a command that reads one line of text on stdin.
+transcript__run_command_reading() {
+  printf '%s\n' "$2" > "$STDERR.stdin"
+  # shellcheck disable=SC2086  # the command's words are split on purpose
+  transcript__capture "silt__$1" ANSWER $3 < "$STDERR.stdin"
+  rm -f "$STDERR.stdin"
+}
+
+# A command for succeeds and fails that runs a verb of its own: it exits
+# with 0 when the document of the call is a list.
+transcript__document_is_list() {
+  silt__type DOCUMENT_KIND "$DOCUMENT_FOR_CALL"
+  [ "$DOCUMENT_KIND" = list ]
 }
 
 # Runs a translator with the flag the call gave, if it gave one, in front

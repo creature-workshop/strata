@@ -1,0 +1,1 @@
+A map of options with a value of each kind: text, a number, a null, both bools, an empty list, an empty map, and a list and a map with members. The calls ask whether each value is defined, empty or the opposite bool, read options with and without a default, build bools and the null, and turn the exit status of a command into true or false.

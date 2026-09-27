@@ -1,0 +1,11 @@
+0."arrays":str="union"
+0."a.b":int=3
+0."nothing":null
+0."flag":bool=true
+0."off":bool=false
+0."none":list
+0."bare":map
+0."tests":list
+1.0:str="a"
+0."nested":map
+1."depth":float=1.5

@@ -141,6 +141,7 @@ function scalar_verb_calls(doc, path, at, __n) {
   print "is_true @v" __n " => " at " == true"
   print "is_false @v" __n " => " at " == false"
   print "is_zero @v" __n " => " at " == 0"
+  print "defined @v" __n " => " at " != null"
 }
 
 # The calls every case makes over the root: read it, write it back, read it
@@ -197,6 +198,20 @@ function scalar_calls(i) {
   print "string @d " SILT[i] " => getpath(" JQ[i] ")"
   print "has @d " SILT[i] " => true"
   scalar_verb_calls("@d", SILT[i], "getpath(" JQ[i] ")")
+
+  if (TYPE[i] == "boolean") {
+    print "as b" i " get @d " SILT[i]
+    print "as o" i " not @b" i
+    print "to_json @o" i " => getpath(" JQ[i] ") | not | tojson"
+  }
+}
+
+# Prints a call of type at the path. jq gives one name to every number, so
+# a number has no call.
+function type_calls(i) {
+  if (TYPE[i] != "number") {
+    print "type @d " SILT[i] " => \"" SILT_TYPE[TYPE[i]] "\""
+  }
 }
 
 # Prints the calls that apply to every collection, a map or a list: read
@@ -207,6 +222,8 @@ function any_collection_calls(i) {
   print "as s" i " get @d " SILT[i]
   print "to_json @s" i " => getpath(" JQ[i] ") | tojson"
   print "len @s" i " => getpath(" JQ[i] ") | length"
+  print "empty @s" i " => getpath(" JQ[i] ") | length == 0"
+  print "defined @s" i " => true"
   each_calls("@s" i, "getpath(" JQ[i] ")", JQ[i])
 
   print "as l" i " values @s" i
@@ -283,6 +300,7 @@ function path_calls(i) {
   } else {
     scalar_calls(i)
   }
+  type_calls(i)
 
   if (pick(3) == 0 && index(SILT[i], " ") == 0 && index(SILT[i], "\\") == 0) {
     set_calls(i)
@@ -308,6 +326,11 @@ BEGIN {
   PATHS = 0
   EACH_CALLS = 0
   SCALAR_CALLS = 0
+  SILT_TYPE["object"] = "map"
+  SILT_TYPE["array"] = "list"
+  SILT_TYPE["string"] = "str"
+  SILT_TYPE["boolean"] = "bool"
+  SILT_TYPE["null"] = "null"
   SORTED_JSON = "walk(if type == \"object\" then to_entries | sort_by(.key) | from_entries else . end) | tojson"
 }
 
