@@ -7,9 +7,10 @@
 # Reads a line into DEPTH, KEY, TYPE, VALUE and LEAF, the way the shell's
 # parse does: the key a quoted literal under a map, bare digits under a list,
 # empty on a keyless line; LEAF 1 when the line carries a value. Refuses a
-# line with no depth, and a quoted key that never closes.
+# line that does not open with its depth, a .strh line with its id still on
+# among them, and a quoted key that never closes.
 function parse(line, __rest, __head) {
-  if (index(line, ".") == 0) {
+  if (line !~ /^[0-9]+\./) {
     refuse("not a SILT line: " line)
   }
 
@@ -196,6 +197,61 @@ function utf8(code) {
   return sprintf("%c%c%c%c", 240 + int(code / 262144), 128 + int(code / 4096) % 64, 128 + int(code / 64) % 64, 128 + code % 64)
 }
 
+# The JSON string literal that spells the text, the way silt__wrap spells
+# it: the quotes on, a quote and a backslash escaped, a control character
+# by its letter where JSON has one and as \u00XX otherwise, and every other
+# character as it is.
+function wrap(text, __out, __i) {
+  __out = ""
+
+  for (__i = 1; __i <= length(text); __i++) {
+    __out = __out escape_char(substr(text, __i, 1))
+  }
+
+  return "\"" __out "\""
+}
+
+# One character as a JSON string literal spells it.
+function escape_char(c) {
+  if (c == "\"") {
+    return "\\\""
+  }
+  if (c == "\\") {
+    return "\\\\"
+  }
+  if (c == "\n") {
+    return "\\n"
+  }
+  if (c == "\t") {
+    return "\\t"
+  }
+  if (c == "\r") {
+    return "\\r"
+  }
+  if (c == "\b") {
+    return "\\b"
+  }
+  if (c == "\f") {
+    return "\\f"
+  }
+  if (c < " ") {
+    return sprintf("\\u%04x", control_code(c))
+  }
+
+  return c
+}
+
+# The code of a control character, found by spelling each in turn.
+function control_code(c, __code) {
+  for (__code = 1; __code < 32; __code++) {
+    if (sprintf("%c", __code) == c) {
+      return __code
+    }
+  }
+
+  return 0
+}
+
 # The text of a scalar line the way silt__string reads it: a str unwrapped,
 # a null as the word null, any other as its value.
 function scalar_text(line) {
@@ -212,8 +268,10 @@ function scalar_text(line) {
 }
 
 # Ends the run the way the shell's refusal does: the message on stderr with
-# the library's prefix, and status 1.
+# the library's prefix, and status 1. REFUSED tells an END block that the
+# run ended this way, since exit from a rule still runs END.
 function refuse(message) {
   printf "ERROR: silt: %s\n", message > "/dev/stderr"
+  REFUSED = 1
   exit 1
 }

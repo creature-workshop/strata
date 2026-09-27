@@ -1,0 +1,45 @@
+# A document with every construct the reader takes.
+---
+stages: [build, test]          # a flow sequence
+variables:
+  GIT_DEPTH: 1
+  ratio: -1.5e3
+  version: "1.0"               # quoted, so a string
+  plain version: 1.2.3
+  empty map: {}
+  empty list: []
+  nothing:
+  tilde: ~
+  clean: true
+  'single ''quoted'' key': it's plain
+  url: http://example.com/a#b
+  "escaped": "a \"quote\",\ta tab\nand a line"
+  flow: {a: 1, b: [x, "y, z"], c: }
+jobs:
+- name: test                   # a sequence at its key's own indentation
+  script:
+    - echo "hi"
+    - |
+      one
+        two # not a comment
+
+      three
+    - >-
+      folded
+      onto one line
+
+      and a second
+  needs: []
+- name: deploy
+  rules:
+    - - nested
+      - sequence
+    -
+      if: $CI_COMMIT_TAG
+  keep: |+
+    kept
+
+  strip: |-
+    stripped
+"on": push
+...

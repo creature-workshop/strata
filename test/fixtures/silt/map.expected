@@ -162,3 +162,27 @@ unicode tag: 0.:str="café 😀"
 runner
 count
 !! 3 
+## to_json
+{"runner":"bats","count":3,"ratio":-1.5e3,"clean":true,"nothing":null,"empty":{},"none":[],"tests":{"test/a.bats":{"status":"passed","reads":["lib/a.sh","test/a.bats"]},"test/b.bats":{"status":"failed","reads":[]}},"a \"quoted\" key: with.dots":"every mark a line is split on","text":"a \"quote\", a \\ backslash,\na line\tand a tab","unicode":"café 😀"}
+## to_yaml
+runner: bats
+count: 3
+ratio: -1.5e3
+clean: true
+nothing: null
+empty: {}
+none: []
+tests:
+  test/a.bats:
+    status: passed
+    reads:
+      - lib/a.sh
+      - test/a.bats
+  test/b.bats:
+    status: failed
+    reads: []
+"a \"quoted\" key: with.dots": every mark a line is split on
+text: |-
+  a "quote", a \ backslash,
+  a line	and a tab
+unicode: "café 😀"

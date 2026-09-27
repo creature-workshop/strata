@@ -3,3 +3,5 @@ scalar
 len
 string
 has .x
+to_json
+to_yaml

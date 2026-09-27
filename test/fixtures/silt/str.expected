@@ -12,3 +12,7 @@ bats
 false
 ## keys
 !! 1 ERROR: silt: str has no keys
+## to_json
+"bats"
+## to_yaml
+bats

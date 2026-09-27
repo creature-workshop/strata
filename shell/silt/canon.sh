@@ -26,7 +26,7 @@ silt__canon() {
   __silt__canon__out="$__silt__OUT"
 
   __silt__ANSWER=''
-  __silt__hand_off "$2" canon || return 1
+  __silt__hand_off "$2" 'order canon' || return 1
 
   __silt__OUT="$__silt__canon__out"
   __silt__answer

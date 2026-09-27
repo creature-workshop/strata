@@ -7,3 +7,8 @@ map
 ## get
 0.:map
 ## scalar
+
+## to_json
+{}
+## to_yaml
+{}

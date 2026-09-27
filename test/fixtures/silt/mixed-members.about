@@ -1,0 +1,3 @@
+A document whose top level holds an index and then a key is neither a list
+nor a map, and to_json refuses it naming the line, rather than writing JSON
+that no reader could take back.

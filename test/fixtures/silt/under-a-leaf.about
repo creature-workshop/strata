@@ -1,0 +1,2 @@
+A leaf takes no children, so a line one level deeper than an int has no
+place in the tree, and to_json refuses it naming the line.

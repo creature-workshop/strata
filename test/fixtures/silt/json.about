@@ -1,0 +1,8 @@
+from_json reads a JSON document into SILT with every map in canonical
+order, copying a string's literal and a number's text as they were written,
+and to_json writes the same JSON back, so a canonical JSON document is the
+same bytes after the round trip. Every awkward case is in awkward.json: an
+empty key, a key with every mark a line splits on, null, nested lists, an
+empty map and an empty list, and a float. from_json refuses a map that holds
+a key twice, text that is not one JSON value, an int outside 64 bits, and a
+raw control character inside a string, naming the line.

@@ -120,18 +120,19 @@ __silt__walk_done() {
 }
 
 : <<'FUN'
-Runs one awk program of the tier over the document on stdin, the line
-library loaded ahead of it, and appends what it printed to __silt__ANSWER,
+Runs awk programs of the tier over the document on stdin, the line library
+loaded ahead of them, and appends what they printed to __silt__ANSWER,
 where the walk's callback would have put it, keeping a copy in
 __silt__HANDED_OUT with __silt__HANDED true. Keys, paths and numbers reach
-the program through SILT_* in the environment, a second document through
+the programs through SILT_* in the environment, a second document through
 the spill file SILT_SPILL names; the document itself rides stdin, so no
-value ever meets the argument cap. The program's status is the walk's, and
-its refusal reaches stderr the way the shell's does.
+value ever meets the argument cap. The programs' status is the walk's, and
+a refusal reaches stderr the way the shell's does.
 
 args:
   $1  The document
-  $2  The program's name under shell/silt/awk, without .awk
+  $2  The programs' names under shell/silt/awk, without .awk, separated by
+      spaces
 FUN
 __silt__hand_off() {
   __silt__HANDED=true
@@ -140,20 +141,33 @@ __silt__hand_off() {
 }
 
 : <<'FUN'
-Runs one awk program of the tier over stdin, the line library loaded ahead
-of it, with the registers it reads in its environment.
+Runs awk programs of the tier over stdin, the line library loaded ahead of
+them and each in the order named, with the registers they read in their
+environment.
 
 args:
-  $1  The program's name under shell/silt/awk, without .awk
+  $@  The programs' names under shell/silt/awk, without .awk; one argument
+      may name several, separated by spaces
 FUN
 __silt__tier() {
+  # shellcheck disable=SC2048,SC2086  # the names are split on purpose
+  set -- $*
+
+  __silt__tier__count=$#
+  while [ "$__silt__tier__count" -gt 0 ]; do
+    # structs-lint: allow -- SILT sits beneath structs, so the -f list is built in the positionals
+    set -- "$@" -f "$__silt__DIR/awk/$1.awk"
+    shift
+    __silt__tier__count=$((__silt__tier__count - 1))
+  done
+
   SILT_SEGMENTS="${__silt__SEGMENTS-}" \
     SILT_SEPARATOR="${__silt__SEPARATOR-}" \
     SILT_DEPTH="${__silt__NEST_DEPTH-}" \
     SILT_INDEX="${__silt__INDEX-}" \
     SILT_KIND="${__silt__PARENT_KIND-}" \
     SILT_SPILL="${__silt__SPILL-}" \
-    awk -f "$__silt__DIR/awk/lines.awk" -f "$__silt__DIR/awk/$1.awk"
+    awk -f "$__silt__DIR/awk/lines.awk" "$@"
 }
 
 : <<'FUN'

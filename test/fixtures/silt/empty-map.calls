@@ -3,3 +3,5 @@ len
 keys
 get
 scalar
+to_json
+to_yaml

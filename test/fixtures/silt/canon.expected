@@ -73,3 +73,19 @@ false
 0.1:int=1
 ## equals @l1 $l1
 true
+## to_json
+{"zeta":1,"alpha":{"b":2,"a":[{"y":null,"x":true},9]},"Zed":"capital sorts first","a \"quoted\" key":3,"é":4,"e":5,"😀":6,"￿":7}
+## to_yaml
+zeta: 1
+alpha:
+  b: 2
+  a:
+    - "y": null
+      x: true
+    - 9
+Zed: capital sorts first
+"a \"quoted\" key": 3
+"é": 4
+e: 5
+"😀": 6
+"￿": 7
