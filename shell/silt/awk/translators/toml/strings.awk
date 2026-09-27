@@ -87,12 +87,13 @@ function refuse_unclosed(c, what) {
 }
 
 # The character the escape the reader stands on names, the reader moved
-# past it: a letter's character, or the code point of a \u or a \U as
-# UTF-8. Refuses a letter TOML gives no meaning, a \u or a \U short of its
-# hex digits, and a code that is no Unicode scalar value.
+# past it: a letter's character, or the code point of a \x, a \u or a \U
+# as UTF-8; \x is TOML 1.1's and read here because yq writes it. Refuses a
+# letter TOML gives no meaning, an escape short of its hex digits, and a
+# code that is no Unicode scalar value.
 function read_toml_escape(__letter, __width, __hex) {
   __letter = peek_at(1)
-  __width = (__letter == "u") ? 4 : ((__letter == "U") ? 8 : 0)
+  __width = hex_escape_width(__letter)
 
   if (__width == 0) {
     step_by(2)
@@ -106,6 +107,22 @@ function read_toml_escape(__letter, __width, __hex) {
 
   step_by(2 + __width)
   return utf8(scalar_value(hex(__hex)))
+}
+
+# How many hex digits the escape a letter opens takes: two for \x, four
+# for \u, eight for \U, and none for any other letter.
+function hex_escape_width(letter) {
+  if (letter == "x") {
+    return 2
+  }
+  if (letter == "u") {
+    return 4
+  }
+  if (letter == "U") {
+    return 8
+  }
+
+  return 0
 }
 
 # The character a one-letter escape names in a basic string. Refuses a

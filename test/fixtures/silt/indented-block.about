@@ -1,0 +1,1 @@
+A block scalar whose first line starts with a space needs its indentation in the header, |2-, since the reader cannot take it from the first line. The digit and the chomping sign come in either order. The fuzzer found the reader refusing what yq writes for such a string.

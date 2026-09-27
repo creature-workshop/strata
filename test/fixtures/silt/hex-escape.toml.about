@@ -1,0 +1,1 @@
+A basic string holding \x escapes, the two-digit form TOML 1.1 adds and yq writes for a control character, beside a \u escape. Found by the fuzzer (seed 34 of the third run), which had the reader refuse what yq wrote.

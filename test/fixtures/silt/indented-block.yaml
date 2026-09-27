@@ -1,0 +1,11 @@
+# Block scalars with an indentation indicator, in either order with the chomping sign.
+lead: |2-
+   two
+
+  breaks
+keep: |+2
+  kept
+
+fold: >2
+   deep
+  shallow

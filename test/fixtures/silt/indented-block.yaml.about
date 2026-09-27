@@ -1,0 +1,1 @@
+Literal and folded blocks whose header carries an indentation digit, which YAML needs when the first line starts with a space, with the chomping sign before and after the digit. yq writes the first form for such a string; found by the fuzzer (seed 215).

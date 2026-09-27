@@ -1,0 +1,1 @@
+A plain scalar that ends in a tilde or in the word null but holds more is a string; only a tilde, the word null in its three spellings, or nothing at all is null. The fuzzer found the reader taking "No null" for null under mawk, whose regular expressions read an empty branch inside an alternation as a pattern that matches anywhere.

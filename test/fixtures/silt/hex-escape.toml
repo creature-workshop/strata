@@ -1,0 +1,3 @@
+# A basic string with the two-digit hex escape of TOML 1.1, which yq writes for a control character.
+control = "one\x01two"
+letter = "\x41 and \u0042"

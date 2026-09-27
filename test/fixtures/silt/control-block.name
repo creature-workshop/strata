@@ -1,0 +1,1 @@
+control block: a string with a control character is never a literal block

@@ -1,8 +1,53 @@
 {
+  "go-install": {
+    "yq": {
+      "pkg": "github.com/mikefarah/yq/v4",
+      "version": "4.53.6"
+    }
+  },
   "npm": {
     "likec4": {
-      "version": "1.59.3",
-      "bin": "bin/likec4.mjs"
+      "bin": "bin/likec4.mjs",
+      "version": "1.59.3"
+    }
+  },
+  "script": {
+    "fnm": {
+      "needs": [
+        "curl",
+        "ca-certificates",
+        "unzip"
+      ],
+      "version": "1.39.0"
+    },
+    "node": {
+      "needs": [
+        "fnm"
+      ],
+      "version": "24.20.0"
+    }
+  },
+  "system": {
+    "ca-certificates": {
+      "version": "latest"
+    },
+    "curl": {
+      "version": "latest"
+    },
+    "dash": {
+      "version": "latest"
+    },
+    "git": {
+      "version": "latest"
+    },
+    "jq": {
+      "version": "1.7.1"
+    },
+    "mawk": {
+      "version": "latest"
+    },
+    "unzip": {
+      "version": "latest"
     }
   }
 }

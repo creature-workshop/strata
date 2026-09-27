@@ -1,0 +1,8 @@
+# One issue on a team, inside a project, with a title and a Markdown
+# description; answers with the issue's identifier and url.
+mutation($teamId: String!, $projectId: String!, $title: String!, $description: String!) {
+  issueCreate(input: { teamId: $teamId, projectId: $projectId, title: $title, description: $description }) {
+    success
+    issue { id identifier url }
+  }
+}

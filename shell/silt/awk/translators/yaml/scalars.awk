@@ -11,9 +11,11 @@
 #   plain_kind("1.5")   ->  number     plain_kind("1.2.3")  ->  str
 #   plain_kind("~")     ->  null       plain_kind("yes")    ->  str
 
-# The kind of value a plain scalar names: null, bool, number or str.
+# The kind of value a plain scalar names: null, bool, number or str. The
+# empty text is tested apart, since an empty branch inside an alternation
+# is read by mawk as an empty pattern, which matches anywhere.
 function plain_kind(text) {
-  if (text ~ /^(|~|null|Null|NULL)$/) {
+  if (text == "" || text ~ /^(~|null|Null|NULL)$/) {
     return "null"
   }
   if (text ~ /^(true|True|TRUE|false|False|FALSE)$/) {
@@ -197,10 +199,11 @@ function is_plain_safe(text) {
 
 # Whether a string can be written as a literal block and read back as the
 # same string: it runs over lines, opens on a line that holds something and
-# does not start with a space, and has no carriage return and no line of
+# does not start with a space, holds no control character but the line
+# break and the tab, which a block cannot carry raw, and has no line of
 # spaces alone, which a block cannot tell from an empty one.
 function is_block_safe(text) {
-  if (index(text, "\n") == 0 || text ~ /\r/) {
+  if (index(text, "\n") == 0 || has_control(text)) {
     return 0
   }
   if (text ~ /^[ \n]/ || text ~ /(^|\n)[ \t]+(\n|$)/) {
@@ -208,4 +211,17 @@ function is_block_safe(text) {
   }
 
   return 1
+}
+
+# Whether the text holds a control character other than a line break or a
+# tab.
+function has_control(text, __i, __c) {
+  for (__i = 1; __i <= length(text); __i++) {
+    __c = substr(text, __i, 1)
+    if (__c < " " && __c != "\n" && __c != "\t") {
+      return 1
+    }
+  }
+
+  return 0
 }

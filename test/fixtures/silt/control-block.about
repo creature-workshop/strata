@@ -1,0 +1,1 @@
+to_yaml writes a string that runs over lines as a literal block only when a block can carry it: a control character other than a tab or a line break cannot be written raw, so such a string keeps its JSON literal. The fuzzer found to_yaml writing a block yq could not read.

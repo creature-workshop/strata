@@ -11,6 +11,15 @@
 # which hygiene requires.
 # `shell--lint` and `shell--test` check and run the shell under `shell/`, the
 # SILT library first, with the bats the vendored shellops carries.
+# `silt-fuzz` runs test/silt-fuzz.sh over a few hundred seeds against jq and
+# yq on a pipeline schedule, or by hand from the web, never on a merge
+# request; the workflow lets those two sources through for it, and the other
+# jobs gate themselves. Its tools come from ops.lock through cli/install, the
+# seeds start at the hour, so every night draws new values and a failure
+# names its seed, and the failing cases stay as artifacts for 90 days. When
+# it fails, `silt-fuzz-report` files them as one issue in the Fuzzer project
+# of the Strata team through shellops' Linear client, pointing back at the
+# run.
 
 include:
   - component: $CI_SERVER_FQDN/ksoft/creatures/forge--code-review-hygiene@0.19.1
@@ -27,6 +36,8 @@ workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web"
 
 stages:
   - governance
@@ -37,3 +48,41 @@ stages:
 ksoft/govern/update-labels:
   rules:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+silt-fuzz:
+  extends: .shellops
+  stage: validation
+  needs: []
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web"
+  script:
+    - $SHELLOPS_DIR/cli/install dash mawk yq node
+    - npm ci --prefix test/fuzz --no-audit --no-fund
+    - |
+      failed=0
+      SILT_THRESHOLD=1000000 bash test/silt-fuzz.sh --seeds 300 --from "$(date +%s | cut -c1-8)" --keep fuzz-failures/shell || failed=1
+      SILT_THRESHOLD=0 bash test/silt-fuzz.sh --seeds 300 --from "$(date +%s | cut -c2-9)" --keep fuzz-failures/awk || failed=1
+      exit "$failed"
+  artifacts:
+    when: always
+    paths:
+      - fuzz-failures/
+    expire_in: 90 days
+
+silt-fuzz-report:
+  extends: .shellops
+  stage: cleanup
+  needs:
+    - job: silt-fuzz
+      artifacts: true
+  when: on_failure
+  variables:
+    LINEAR_API_KEY: "$LINEAR_API_KEY"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web"
+  script:
+    - bash test/silt-fuzz-report.sh fuzz-failures

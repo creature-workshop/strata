@@ -1,0 +1,1 @@
+TOML 1.0 spells an escaped character as \uXXXX or \UXXXXXXXX; TOML 1.1 adds \xHH, and yq writes that form for a control character. The reader takes all three, so what yq writes reads back as the value. The fuzzer found the refusal.

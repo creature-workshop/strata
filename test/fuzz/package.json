@@ -1,0 +1,10 @@
+{
+  "name": "silt-fuzz",
+  "private": true,
+  "description": "The value generator of test/silt-fuzz.sh: fast-check draws a JSON value from a seed.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "fast-check": "3.23.2"
+  }
+}
