@@ -173,3 +173,11 @@ stub_date() {
   echo "$output"
   assert_success
 }
+
+@test "silt__take: logs a warning and returns the whole list when the count is more than the list has" {
+  run bash -c ". '$REPO/shell/silt/api.sh' && silt__take taken '0.0:int=1' 3 && printf '%s\n' \"\$taken\""
+  echo "$output"
+  assert_success
+  assert_line --partial 'take asked for 3 elements and the list has 1'
+  assert_line '0.0:int=1'
+}

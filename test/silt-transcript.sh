@@ -10,7 +10,10 @@
 # A call is a verb and one argument; a blank line or a # line is skipped.
 # type, scalar, len, keys, canon, unique, is_true, is_false, is_zero, references,
 # to_json, to_yaml, to_toml, first, last, sum, values and entries take the
-# document; slice takes it and two indices; line takes it and answers
+# document; pop and shift take it and answer the element and the rest, and
+# pop-rest and shift-rest answer the rest alone, and pop-element and
+# shift-element call the verb without a variable for the rest;
+# take takes it and a count; slice takes it and two indices; line takes it and answers
 # whether to_line wrote it on one line and from_line read it back; to_line
 # and from_line take the document; read takes text read through printf %b,
 # and read-register the text a register holds; get, string, has and pluck
@@ -194,6 +197,10 @@ transcript__run_verb() {
     type | scalar | len | keys | canon | unique | is_true | is_false | is_zero | references) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
     to_json | to_yaml | to_toml) transcript__translate "$1" "$DOCUMENT_FOR_CALL" ;;
     first | last | sum | values | entries) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
+    take) transcript__capture silt__take ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
+    pop | shift) transcript__take_end "$1" ;;
+    pop-element | shift-element) transcript__capture "silt__${1%-element}" ANSWER "$DOCUMENT_FOR_CALL" ;;
+    pop-rest | shift-rest) transcript__capture "silt__${1%-rest}" ELEMENT ANSWER "$DOCUMENT_FOR_CALL" ;;
     slice) transcript__capture silt__slice ANSWER "$DOCUMENT_FOR_CALL" "${2%% *}" "${2#* }" ;;
     read) transcript__capture silt__read ANSWER "$(transcript__unescape "$2")" ;;
     read-register) transcript__capture silt__read ANSWER "$DOCUMENT_FOR_CALL" ;;
@@ -227,6 +234,17 @@ transcript__translate() {
     transcript__capture "silt__$__transcript__translate__verb" "$FLAG" ANSWER "$@"
   else
     transcript__capture "silt__$__transcript__translate__verb" ANSWER "$@"
+  fi
+}
+
+# Runs pop or shift, and answers both values: the element under "element:"
+# and the rest of the list under "rest:".
+transcript__take_end() {
+  ELEMENT=''
+  REST=''
+  transcript__capture "silt__$1" ELEMENT REST "$DOCUMENT_FOR_CALL"
+  if [ "$STATUS" -eq 0 ]; then
+    ANSWER="element:$__silt__NL$ELEMENT${__silt__NL}rest:$__silt__NL$REST"
   fi
 }
 
