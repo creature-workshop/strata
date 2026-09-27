@@ -1,0 +1,1 @@
+A map of three maps. The calls build one value from the members with a callback: a list of the keys, a count, and a count made by a callback that runs reduce itself. They run a command with the elements of a list as its arguments. They also show the indexed forms of structs written with each, map and find, whose callbacks receive the index of a list as the key.

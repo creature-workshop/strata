@@ -31,6 +31,8 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__keys      the members' keys, as a list document
   silt__each      a callback per member, with its key and its value
   silt__map       every member's value replaced by what a callback answers
+  silt__reduce    one value built from the members by a callback
+  silt__apply     a command run with a list's elements as its arguments
   silt__filter    the members a predicate keeps
   silt__find      the first member's value a predicate takes
   silt__any       whether a predicate takes any member
@@ -190,6 +192,8 @@ __silt__home || return 1
 . "$__silt__DIR/callback.sh"
 . "$__silt__DIR/gather.sh"
 . "$__silt__DIR/map.sh"
+. "$__silt__DIR/reduce.sh"
+. "$__silt__DIR/apply.sh"
 . "$__silt__DIR/filter.sh"
 . "$__silt__DIR/find.sh"
 . "$__silt__DIR/any.sh"

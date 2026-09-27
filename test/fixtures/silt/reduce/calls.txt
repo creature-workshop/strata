@@ -1,0 +1,32 @@
+# reduce
+reduce keys_so_far
+reduce add --from 0.:int=0
+reduce add --from 0.:int=10 5
+reduce add_members --from 0.:int=0
+as files get .unit.files
+reduce @files keys_so_far
+reduce @files keys_so_far --from 0.0:str="first"
+as none get .none
+reduce @none keys_so_far
+reduce @none add --from 0.:int=7
+reduce answers_nothing
+reduce add --from
+as runner get .unit.runner
+reduce @runner keys_so_far
+
+# apply
+apply @files transcript__arguments
+apply @files transcript__arguments fixed --
+as mixed arr 0.:int=1 0.:bool=true 0.:null 0.:str="x"
+apply @mixed transcript__arguments
+as empty arr
+apply @empty transcript__arguments only
+apply @files false
+apply @files
+apply transcript__arguments
+
+# the indexed forms of structs: a callback receives the index as the key
+each @files
+map @files str_of_key
+find @files key_is 1
+find @files key_is 5

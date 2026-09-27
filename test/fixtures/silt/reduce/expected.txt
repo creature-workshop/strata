@@ -1,0 +1,71 @@
+## reduce keys_so_far
+0.0:str="unit"
+0.1:str="lint"
+0.2:str="none"
+## reduce add --from 0.:int=0
+0.:int=3
+## reduce add --from 0.:int=10 5
+0.:int=25
+## reduce add_members --from 0.:int=0
+0.:int=3
+## as files get .unit.files
+0.0:str="a.bats"
+0.1:str="b c.bats"
+## reduce @files keys_so_far
+0.0:str="0"
+0.1:str="1"
+## reduce @files keys_so_far --from 0.0:str="first"
+0.0:str="first"
+0.1:str="0"
+0.2:str="1"
+## as none get .none
+0.:map
+## reduce @none keys_so_far
+0.:list
+## reduce @none add --from 0.:int=7
+0.:int=7
+## reduce answers_nothing
+!! 1 ERROR: silt: no document answered for unit
+## reduce add --from
+!! 1 ERROR: silt: --from takes a document
+## as runner get .unit.runner
+0.:str="bats"
+## reduce @runner keys_so_far
+!! 1 ERROR: silt: str has no members
+## apply @files transcript__arguments
+[a.bats]
+[b c.bats]
+## apply @files transcript__arguments fixed --
+[fixed]
+[--]
+[a.bats]
+[b c.bats]
+## as mixed arr 0.:int=1 0.:bool=true 0.:null 0.:str="x"
+0.0:int=1
+0.1:bool=true
+0.2:null
+0.3:str="x"
+## apply @mixed transcript__arguments
+[1]
+[true]
+[null]
+[x]
+## as empty arr
+0.:list
+## apply @empty transcript__arguments only
+[only]
+## apply @files false
+!! 1 
+## apply @files
+!! 1 ERROR: silt: apply takes a command
+## apply transcript__arguments
+!! 1 ERROR: silt: apply takes a list, not a map
+## each @files
+0: 0.:str="a.bats"
+1: 0.:str="b c.bats"
+## map @files str_of_key
+0.0:str="0"
+0.1:str="1"
+## find @files key_is 1
+0.:str="b c.bats"
+## find @files key_is 5

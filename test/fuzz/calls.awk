@@ -94,7 +94,8 @@ function plain_text(literal, __text) {
 
 # The verbs over each, run over a collection: <doc> names it for a call, <at>
 # is the jq expression for the value there, and <parent> its path as getpath
-# takes it, for what it holds. map and filter take the transcript's
+# takes it, for what it holds. reduce builds a list of the keys and a count
+# of the members. map and filter take the transcript's
 # callbacks, which read the member with the reader verbs; find only where a
 # list member exists, since it answers nothing otherwise; pluck with a key
 # drawn from the value's own, and has_at and project with it where it is one
@@ -108,6 +109,10 @@ function each_calls(doc, at, parent, __n, __key, __text) {
   print "to_json @g" __n " => " at " | tojson"
   print "as f" __n " filter " doc " is_list"
   print "to_json @f" __n " => " at " | (if type == \"array\" then map(select(type == \"array\")) else with_entries(select(.value | type == \"array\")) end) | tojson"
+  print "as rk" __n " reduce " doc " keys_so_far"
+  print "to_json @rk" __n " => " at " | [keys_unsorted[] | tostring] | tojson"
+  print "as rc" __n " reduce " doc " add --from 0.:int=0"
+  print "to_json @rc" __n " => " at " | length"
   print "any " doc " is_list => " at " | any(.[]; type == \"array\")"
   print "all " doc " is_list => " at " | all(.[]; type == \"array\")"
 
