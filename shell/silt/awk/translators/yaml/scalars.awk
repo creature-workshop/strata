@@ -1,7 +1,8 @@
 # What a YAML scalar is, shared by the reader and the writer so the writer
 # quotes exactly the strings the reader would read as something else: which
 # value a plain scalar names, the text a quoted one holds, and which strings
-# may be written plain or as a literal block.
+# may be written plain or as a literal block. Loaded after awk/lines.awk and
+# translators/numbers.awk.
 #
 # A plain scalar is read by YAML's core schema: a null ("", "~", "null"), a
 # bool ("true", "false"), a number as the schema spells one, and a string
@@ -63,49 +64,6 @@ function adr_number(text) {
   }
 
   return decimal_form(text)
-}
-
-# The digits of a number in <base> as a decimal int.
-function from_base(digits, base, __value, __i) {
-  __value = 0
-
-  for (__i = 1; __i <= length(digits); __i++) {
-    __value = __value * base + index("0123456789abcdef", tolower(substr(digits, __i, 1))) - 1
-  }
-
-  return sprintf("%d", __value)
-}
-
-# A decimal number's text in ADR.20's form: its sign only when minus, its
-# integer part without leading zeros, its fraction with a digit after the
-# point, and its exponent as written.
-function decimal_form(text, __sign, __exponent, __whole, __fraction, __at) {
-  __sign = (text ~ /^-/) ? "-" : ""
-  sub(/^[-+]/, "", text)
-
-  __exponent = ""
-  __at = match(text, /[eE]/)
-  if (__at > 0) {
-    __exponent = substr(text, __at)
-    text = substr(text, 1, __at - 1)
-  }
-
-  __whole = text
-  __fraction = ""
-  if (index(text, ".") > 0) {
-    __whole = substr(text, 1, index(text, ".") - 1)
-    __fraction = "." substr(text, index(text, ".") + 1)
-  }
-  if (__fraction == ".") {
-    __fraction = ".0"
-  }
-
-  sub(/^0+/, "", __whole)
-  if (__whole == "") {
-    __whole = "0"
-  }
-
-  return __sign __whole __fraction __exponent
 }
 
 # The character a double-quoted escape's letter names. Refuses a letter

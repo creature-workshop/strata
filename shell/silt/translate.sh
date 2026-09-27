@@ -1,9 +1,10 @@
 #!/bin/sh
 
 : <<'MODULE'
-The translators: a JSON or a YAML document read into SILT, and a SILT
-document written out as either. Each is one awk start, the document in on
-stdin, and each answers with every map in canonical order.
+The translators: a JSON, a YAML or a TOML document read into SILT, and a
+SILT document written out as any of the three. Each is one awk start, the
+document in on stdin, and each reader answers with every map in canonical
+order.
 MODULE
 
 : <<'PUB_FUN'
@@ -76,7 +77,7 @@ silt__from_yaml() {
   __silt__from_yaml__out="$__silt__OUT"
 
   __silt__ANSWER=''
-  __silt__translate_stdin 'order translators/write translators/yaml/lines translators/yaml/scalars translators/yaml/values translators/yaml/flow translators/yaml/blocks translators/yaml/tree translators/yaml/from' || return 1
+  __silt__translate_stdin 'order translators/write translators/numbers translators/yaml/lines translators/yaml/scalars translators/yaml/values translators/yaml/flow translators/yaml/blocks translators/yaml/tree translators/yaml/from' || return 1
 
   __silt__OUT="$__silt__from_yaml__out"
   __silt__answer
@@ -101,9 +102,70 @@ silt__to_yaml() {
   __silt__to_yaml__out="$__silt__OUT"
 
   __silt__ANSWER=''
-  __silt__hand_off "$2" 'translators/yaml/lines translators/yaml/scalars translators/yaml/to' || return 1
+  __silt__hand_off "$2" 'translators/numbers translators/yaml/lines translators/yaml/scalars translators/yaml/to' || return 1
 
   __silt__OUT="$__silt__to_yaml__out"
+  __silt__answer
+}
+
+: <<'PUB_FUN'
+Answers the TOML document on stdin as a SILT document: every construct of
+TOML 1.0, the four string forms, integers in four bases, floats, booleans,
+date-times, arrays, inline tables, tables and arrays of tables. An offset
+date-time is a time in UTC with nine fraction digits; a number spelled
+outside ADR.20's patterns, and a local date-time, which names no instant,
+become the map ADR.20 gives a spelling Strata cannot carry. Refuses what
+TOML forbids, naming the line: a key or a table defined twice, a table a
+dotted key defined given a header, an inline table that runs over lines,
+text after a value, a string that never closes, an escape TOML has no name
+for, a control character, a date with a day its month has not, a fraction
+past nine digits, and an int outside 64 bits.
+
+  silt__from_toml doc < Cargo.toml   ->  doc='0."package":map
+  1."name":str="tool"
+  1."version":str="1.2.3"'
+
+args:
+  $1  The name of the variable to answer in
+PUB_FUN
+silt__from_toml() {
+  __silt__out "$1" || return 1
+  __silt__from_toml__out="$__silt__OUT"
+
+  __silt__ANSWER=''
+  __silt__translate_stdin 'order translators/write translators/numbers translators/toml/text translators/toml/strings translators/toml/tree translators/toml/times translators/toml/scalars translators/toml/values translators/toml/from' || return 1
+
+  __silt__OUT="$__silt__from_toml__out"
+  __silt__answer
+}
+
+: <<'PUB_FUN'
+Answers the document as TOML, a map document being a table: a table's
+pairs first, "key = value" with an array or an inline table on one line,
+then each map under its header and each list of maps as an array of
+tables. A str is a basic string, a number and a bool are as written, a time
+is an offset date-time, and a null, which TOML has no spelling for, is the
+map ADR.20 gives a value the target cannot carry. The empty map is the
+empty document. Refuses a document whose root is a list or a scalar, and
+one that is not well formed, naming the line. The value survives a trip
+back through silt__from_toml.
+
+  silt__to_toml text '0."package":map
+  1."name":str="tool"'   ->  text='[package]
+  name = "tool"'
+
+args:
+  $1  The name of the variable to answer in
+  $2  The document
+PUB_FUN
+silt__to_toml() {
+  __silt__out "$1" || return 1
+  __silt__to_toml__out="$__silt__OUT"
+
+  __silt__ANSWER=''
+  __silt__hand_off "$2" 'translators/toml/spell translators/toml/to' || return 1
+
+  __silt__OUT="$__silt__to_toml__out"
   __silt__answer
 }
 

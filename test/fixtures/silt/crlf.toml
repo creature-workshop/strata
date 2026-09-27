@@ -1,0 +1,4 @@
+crlf = "a\r\nb"
+list = [
+  1,
+]

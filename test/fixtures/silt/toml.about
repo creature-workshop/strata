@@ -1,0 +1,17 @@
+from_toml reads every construct of TOML 1.0 into SILT with every map in
+canonical order: the four string forms, integers in four bases, floats,
+booleans, date-times, arrays, inline tables, tables and arrays of tables.
+It reads awkward.toml to the same SILT as from_json reads its JSON twin,
+awkward-toml-value.json. An offset date-time is a time in UTC with nine
+fraction digits; a number spelled outside ADR.20's patterns, 0x1F or
+1_000, and a local date-time, which names no instant, become the map that
+keeps the spelling. to_toml writes the value back, a table's pairs first
+and its tables under headers, and what it writes reads back as the same
+value and writes the same again; a null, which TOML cannot spell, becomes
+the map ADR.20 gives it, and a root that is a list or a scalar is refused.
+What TOML forbids from_toml refuses, naming the line: a key or a table
+defined twice, a header for a table a dotted key defined or for an array
+of tables, a string that never closes, an escape TOML has no name for,
+text after a value, a leading zero, an inline table that runs over lines,
+a day its month has not, a fraction past nine digits, an int outside 64
+bits, and a control character.

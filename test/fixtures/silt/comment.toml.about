@@ -1,0 +1,1 @@
+A document that holds nothing but a comment, which is the empty table, and comes back from to_toml as the empty document.

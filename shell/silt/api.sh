@@ -46,6 +46,8 @@ tier, which answers the same call the same way.
   silt__to_json   a document as one line of JSON
   silt__from_yaml the YAML on stdin as a document
   silt__to_yaml   a document as YAML in block style
+  silt__from_toml the TOML on stdin as a document
+  silt__to_toml   a document as TOML, its tables under headers
 
 A path names members from the top: ".a.b" the member b of the member a,
 ".a[2]" the third element of the list a, ".[0]" the first element of a list

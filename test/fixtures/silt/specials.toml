@@ -1,0 +1,20 @@
+# The values TOML spells and JSON cannot: the infinities and nan, and the
+# offset date-times, which Strata reads as instants in UTC.
+
+[floats]
+sf1 = inf
+sf2 = +inf
+sf3 = -inf
+sf4 = nan
+sf5 = +nan
+sf6 = -nan
+
+[times]
+odt1 = 1979-05-27T07:32:00Z
+odt2 = 1979-05-27T00:32:00-07:00
+odt3 = 1979-05-27T00:32:00.999999-07:00
+odt4 = 1979-05-27 07:32:00Z              # a space for the T
+odt5 = 1979-05-27t07:32:00z              # lower case
+odt6 = 1979-12-31T23:30:00-01:00         # rolls into the next year
+odt7 = 2000-03-01T00:30:00+01:00         # rolls back over a leap day
+odt9 = 2026-01-01T00:00:00.123456789+00:00

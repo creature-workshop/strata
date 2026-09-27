@@ -1,0 +1,1 @@
+An array of tables, then a plain table header under the same key, which TOML forbids and the reader refuses, naming the line.
