@@ -16,8 +16,9 @@
 # then the register holding the corpus's keys; unwrap takes the literal; wrap
 # and transcript__roundtrip take text read through printf %b, so a line can
 # spell a newline or a control character; each takes an extra argument for
-# its callback, each-until the key at which the callback returns 3, and
-# each-string a path its callback reads. map, filter, find, any and all take
+# its callback, each-until the key at which the callback returns 3,
+# each-string a path its callback reads, and each-nested nothing: its
+# callback runs each again on every member that is a map or a list. map, filter, find, any and all take
 # the name of one of the callbacks below, without its prefix, and the extras
 # after it; project takes its keys. A call written "as <name> <call>" keeps
 # its answer in a register, "@<name>" in place of the document makes a call
@@ -190,6 +191,7 @@ transcript__run_verb() {
     each) transcript__capture silt__each transcript__note "$DOCUMENT_FOR_CALL" "$2" ;;
     each-until) transcript__capture silt__each transcript__until_key "$DOCUMENT_FOR_CALL" "$2" ;;
     each-string) transcript__capture silt__each transcript__note_string "$DOCUMENT_FOR_CALL" "$2" ;;
+    each-nested) transcript__capture silt__each transcript__note_nested "$DOCUMENT_FOR_CALL" '' ;;
     *) STATUS=127 ;;
   esac
 }
@@ -268,6 +270,81 @@ transcript__until_key() {
 transcript__note_string() {
   silt__string TEXT "$2" "$3" || return 1
   ANSWER="$ANSWER${ANSWER:+$__silt__NL}$1: $TEXT"
+}
+
+# A callback for each: notes the path to the member, then runs each again
+# on the member if it is a map or a list.
+transcript__note_nested() {
+  ANSWER="$ANSWER${ANSWER:+$__silt__NL}$3$1"
+
+  silt__type KIND "$2" || return 1
+  case "$KIND" in
+    map | list) silt__each transcript__note_nested "$2" "$3$1/" ;;
+  esac
+}
+
+# A callback for each: adds one to the count in the variable named.
+transcript__count_up() {
+  eval "$3=\$(($3 + 1))"
+}
+
+# A callback for map: the number of members, counted by running each.
+transcript__count_members() {
+  COUNTED=0
+  silt__each transcript__count_up "$3" COUNTED || return 1
+  transcript__answer "$1" "0.:int=$COUNTED"
+}
+
+# A callback for map: the length of each member of the member.
+transcript__lengths_of() {
+  silt__map "$1" "$3" transcript__len_as_int
+}
+
+# A callback for map: transcript__lengths_of, one level further down.
+transcript__lengths_two_deep() {
+  silt__map "$1" "$3" transcript__lengths_of
+}
+
+# A callback for map: the members of the member that are lists.
+transcript__lists_of() {
+  silt__filter "$1" "$3" transcript__is_list
+}
+
+# A predicate: whether any member of the member is a list.
+transcript__has_list() {
+  silt__any "$1" "$3" transcript__is_list
+}
+
+# A predicate: whether every member of the member is a list.
+transcript__all_are_lists() {
+  silt__all "$1" "$3" transcript__is_list
+}
+
+# A predicate: whether the member is a list that holds more elements than
+# the number given.
+transcript__longer_than() {
+  silt__type KIND "$3" || return 1
+  LENGTH=0
+  if [ "$KIND" = list ]; then
+    silt__len LENGTH "$3" || return 1
+  fi
+
+  if [ "$LENGTH" -gt "$4" ]; then
+    transcript__answer "$1" true
+  else
+    transcript__answer "$1" false
+  fi
+}
+
+# A predicate: whether any member of the member holds more members than the
+# number given, found by running find.
+transcript__holds_more_than() {
+  silt__find FOUND "$3" transcript__longer_than "$4" || return 1
+  if [ -n "$FOUND" ]; then
+    transcript__answer "$1" true
+  else
+    transcript__answer "$1" false
+  fi
 }
 
 # Assigns an answer to the variable a callback was told to answer in.

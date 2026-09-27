@@ -1,0 +1,6 @@
+A callback that runs a loop of its own. The document is a map of maps of
+lists, so a loop over it can be nested three levels deep. Each verb that
+takes a callback is nested inside another one, and each loop must finish
+with its own callback, its own extra arguments and its own result. One
+call fails inside the innermost loop, and the failure must end the loops
+around it.
