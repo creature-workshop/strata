@@ -45,3 +45,13 @@ as passing filter @tests string_is .status passed
 as passing_keys keys @passing
 join @passing_keys , => [.tests | to_entries[] | select(.value.status == "passed") | .key] | join(",")
 to_json @tests => .tests | tojson
+as dup push @reads $r
+as dup2 push @dup $r
+as u unique @dup2
+to_json @u => .tests["test/a.bats"].reads + ["bats"] | tojson
+as d difference @dup2 $reads
+to_json @d => ["bats","bats"] | tojson
+as i intersect @dup2 $reads
+to_json @i => .tests["test/a.bats"].reads | tojson
+as m merge @built $grown
+to_json @m => {runner: "bats", count: 3} + {runner: "bats", count: 3, tests: {reads: ["lib/a.sh", "test/a.bats"]}} | tojson

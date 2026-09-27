@@ -1,0 +1,19 @@
+type
+unique
+as other arr 0.:int=1 0.:str="a"
+difference $other
+intersect $other
+difference $other
+as none arr
+intersect $none
+difference $none
+unique @none
+as m1 obj a 0.:int=1 b 0.:int=2 c 0.:int=3
+as m2 obj b 0.:str="two" d 0.:int=4
+merge @m1 $m2
+merge @m2 $m1
+as empty obj
+merge @m1 $empty
+merge @empty $empty
+merge $m1
+unique @m1
