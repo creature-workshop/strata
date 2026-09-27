@@ -1,0 +1,1 @@
+A decimal integer spelled with leading zeros, which TOML forbids and the reader refuses as no value it knows.

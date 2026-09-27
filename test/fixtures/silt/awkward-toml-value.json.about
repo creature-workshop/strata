@@ -1,0 +1,1 @@
+The value of awkward.toml as from_json reads it, every map in canonical order, so that from_toml and from_json agree on it: a time is its UTC spelling, and a number spelled outside ADR.20 or a local date-time is the map that keeps the spelling.

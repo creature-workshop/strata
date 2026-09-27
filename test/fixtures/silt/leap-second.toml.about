@@ -1,0 +1,1 @@
+An offset date-time whose second is 60, which RFC 3339 spells for a leap second and the reader keeps, folding the offset into the clock and the date around it.

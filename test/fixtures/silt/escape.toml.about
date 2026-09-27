@@ -1,0 +1,1 @@
+A basic string with a backslash before a letter TOML gives no meaning, which the reader refuses, naming the line.

@@ -1,0 +1,1 @@
+An inline table whose pairs sit on two lines, which TOML 1.0 forbids and the reader refuses, naming the line.

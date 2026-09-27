@@ -1,0 +1,1 @@
+The infinities and nan, with and without a sign, and offset date-times with Z and with offsets that carry the clock over midnight, a year and a leap day, in every spelling TOML allows: T, t or a space, upper or lower case, with a fraction or none. to_json writes each as the map or the string JSON can hold, and to_toml writes them back as TOML spells them.

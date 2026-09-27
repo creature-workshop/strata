@@ -1,0 +1,1 @@
+A basic string holding a raw control character, which TOML forbids and the reader refuses, naming the line.

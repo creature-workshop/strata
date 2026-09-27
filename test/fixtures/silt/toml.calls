@@ -1,0 +1,38 @@
+as t from_toml awkward.toml
+as j from_json awkward-toml-value.json
+equals @t $j
+to_json @t
+to_toml @t
+as w from_toml written.toml
+equals @t $w
+to_toml @w
+as r from_toml crlf.toml
+to_toml @r
+as c from_toml comment.toml
+to_toml @c
+as p from_toml leap-second.toml
+to_toml @p
+as m from_toml specials.toml
+to_json @m
+to_toml @m
+as a from_json awkward.json
+to_toml @a
+as n from_yaml numbers.yaml
+to_toml @n
+as s from_json scalar.json
+to_toml @s
+as l arr $s $s
+to_toml @l
+from_toml repeated.toml
+from_toml redefined.toml
+from_toml dotted-header.toml
+from_toml array-header.toml
+from_toml open.toml
+from_toml escape.toml
+from_toml trailing.toml
+from_toml leading-zero.toml
+from_toml inline-lines.toml
+from_toml date.toml
+from_toml fraction.toml
+from_toml big.toml
+from_toml control.toml
