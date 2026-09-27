@@ -1,0 +1,1 @@
+A map with a value of each kind: an int, a str that holds a dollar sign and quotes, a bool, a float, a null, a map with a map inside it, a list and an empty list. The calls assign fields to variables with let and release them with unlet. They also run a command with fields assigned by with, and show that with puts every variable back when the command returns.

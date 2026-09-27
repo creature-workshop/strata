@@ -1,0 +1,13 @@
+0."id":int=42
+0."name":str="close the $issue \"now\""
+0."done":bool=false
+0."ratio":float=1.5
+0."nothing":null
+0."state":map
+1."type":str="started"
+1."since":map
+2."day":int=3
+0."tags":list
+1.0:str="x"
+1.1:str="y"
+0."empty":list

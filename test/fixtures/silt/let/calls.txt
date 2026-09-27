@@ -1,0 +1,29 @@
+# let: each kind of value
+let id name done ratio
+let nothing missing
+let state tags empty
+let state.type state.since.day state.missing state.type.deeper
+
+# let: what it refuses
+let id id
+let state.type state_type
+let a-b
+let .id
+let id.
+let state..type
+let
+as scalar str text
+let @scalar id
+
+# with: the variables exist while the command runs
+with id name state.type -- transcript__show_bound id name state.type
+with id -- transcript__with_again
+with id -- true
+with id -- false
+with -- transcript__show_bound id
+
+# with: what it refuses
+with id name
+with id --
+with id id -- true
+with a-b -- true
