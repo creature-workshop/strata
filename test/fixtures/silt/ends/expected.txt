@@ -53,6 +53,39 @@ rest:
 !! 1 ERROR: silt: take takes an index of 0 or more, not 'x'
 ## take
 !! 1 ERROR: silt: take takes an index of 0 or more, not ''
+## take_last 0
+0.:list
+## take_last 1
+0.0:list
+1.0:int=7
+## take_last 3
+0.0:map
+1."k":int=1
+1."deep":list
+2.0:null
+0.1:null
+0.2:list
+1.0:int=7
+## take_last 4
+0.0:str="a"
+0.1:map
+1."k":int=1
+1."deep":list
+2.0:null
+0.2:null
+0.3:list
+1.0:int=7
+## take_last 9
+0.0:str="a"
+0.1:map
+1."k":int=1
+1."deep":list
+2.0:null
+0.2:null
+0.3:list
+1.0:int=7
+## take_last x
+!! 1 ERROR: silt: take_last takes an index of 0 or more, not 'x'
 ## as one arr 0.:int=5
 0.0:int=5
 ## pop @one
@@ -87,6 +120,8 @@ rest:
 0.:list
 ## take @none 3
 0.:list
+## take_last @none 2
+0.:list
 ## as m obj k 0.:int=1
 0."k":int=1
 ## pop @m
@@ -99,6 +134,8 @@ rest:
 !! 1 ERROR: silt: shift takes a list, not a map
 ## take @m 1
 !! 1 ERROR: silt: take takes a list, not a map
+## take_last @m 1
+!! 1 ERROR: silt: take_last takes a list, not a map
 ## as s str text
 0.:str="text"
 ## pop @s

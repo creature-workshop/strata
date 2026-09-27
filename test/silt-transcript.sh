@@ -20,7 +20,7 @@
 # document; pop and shift take it and answer the element and the rest, and
 # pop-rest and shift-rest answer the rest alone, and pop-element and
 # shift-element call the verb without a variable for the rest;
-# take takes it and a count; slice takes it and two indices; line takes it and answers
+# take and take_last take it and a count; slice takes it and two indices; line takes it and answers
 # whether to_line wrote it on one line and from_line read it back; to_line
 # and from_line take the document; read takes text read through printf %b,
 # and read-register the text a register holds; get, string, has and pluck
@@ -214,7 +214,7 @@ transcript__run_verb() {
     succeeds-reading | fails-reading) transcript__run_command_reading "${1%-reading}" "${2%% *}" "$(transcript__argument_of "$2")" ;;
     to_json | to_yaml | to_toml) transcript__translate "$1" "$DOCUMENT_FOR_CALL" ;;
     first | last | sum | values | entries) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
-    take) transcript__capture silt__take ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
+    take | take_last) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
     pop | shift) transcript__take_end "$1" ;;
     pop-element | shift-element) transcript__capture "silt__${1%-element}" ANSWER "$DOCUMENT_FOR_CALL" ;;
     pop-rest | shift-rest) transcript__capture "silt__${1%-rest}" ELEMENT ANSWER "$DOCUMENT_FOR_CALL" ;;

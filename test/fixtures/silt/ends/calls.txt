@@ -8,6 +8,12 @@ take 4
 take 9
 take x
 take
+take_last 0
+take_last 1
+take_last 3
+take_last 4
+take_last 9
+take_last x
 
 # one element
 as one arr 0.:int=5
@@ -23,6 +29,7 @@ pop-element @none
 shift-element @none
 take @none 0
 take @none 3
+take_last @none 2
 
 # not a list
 as m obj k 0.:int=1
@@ -31,5 +38,6 @@ shift @m
 pop-element @m
 shift-element @m
 take @m 1
+take_last @m 1
 as s str text
 pop @s

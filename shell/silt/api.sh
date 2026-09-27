@@ -66,6 +66,7 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__pop       the last element of a list, and the list without it
   silt__shift     the first element of a list, and the list without it
   silt__take      the first elements of a list, as many as asked
+  silt__take_last the last elements of a list, as many as asked
   silt__sum       the sum of a list of numbers
   silt__values    a map's values as a list
   silt__entries   a map as a list of its keys and values

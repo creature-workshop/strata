@@ -1,8 +1,8 @@
 #!/bin/sh
 
 : <<'MODULE'
-silt__pop, silt__shift and silt__take: a list with elements taken from
-either end.
+silt__pop, silt__shift, silt__take and silt__take_last: a list with
+elements taken from either end.
 MODULE
 
 : <<'PUB_FUN'
@@ -96,4 +96,32 @@ silt__take() {
   fi
 
   silt__slice "$1" "$2" 0 "$3"
+}
+
+: <<'PUB_FUN'
+Answers the last <count> elements of a list, numbered from 0. When the list
+has fewer, it answers the whole list and logs a warning. Refuses a document
+that is not a list, and a count that is not a whole number of 0 or more.
+
+  silt__take_last doc '0.0:str="a"
+  0.1:str="b"' 1   ->  doc='0.0:str="b"'
+
+args:
+  $1  Name of the variable that receives the result
+  $2  The list
+  $3  How many elements to take
+PUB_FUN
+silt__take_last() {
+  __silt__require_list "${2:-}" take_last || return 1
+  __silt__require_index "${3:-}" take_last || return 1
+
+  __silt__take_last__count=0
+  silt__len __silt__take_last__count "$2" || return 1
+  __silt__take_last__from=$((__silt__take_last__count - $3))
+  if [ "$__silt__take_last__from" -lt 0 ]; then
+    warn "silt: take_last asked for $3 elements and the list has $__silt__take_last__count"
+    __silt__take_last__from=0
+  fi
+
+  silt__slice "$1" "$2" "$__silt__take_last__from" "$__silt__take_last__count"
 }

@@ -246,7 +246,7 @@ function map_calls(i) {
 }
 
 # Prints the calls that take part of a list: a slice, the first two
-# elements, the list without its last and without its first element, and
+# elements, the last two elements, the list without its last and without its first element, and
 # the first and last element. The first and last element are only asked for when the
 # list has a member, because an empty list has neither.
 function list_part_calls(i) {
@@ -254,6 +254,8 @@ function list_part_calls(i) {
   print "to_json @c" i " => getpath(" JQ[i] ") | .[1:3] | tojson"
   print "as y" i " take @s" i " 2"
   print "to_json @y" i " => getpath(" JQ[i] ") | .[:2] | tojson"
+  print "as tl" i " take_last @s" i " 2"
+  print "to_json @tl" i " => getpath(" JQ[i] ") | .[-2:] | tojson"
   print "as r" i " pop-rest @s" i
   print "to_json @r" i " => getpath(" JQ[i] ") | .[:-1] | tojson"
   print "as h" i " shift-rest @s" i
