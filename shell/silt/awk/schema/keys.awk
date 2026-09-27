@@ -1,11 +1,16 @@
-# The key of a schema document: the path that a reference uses to name it.
+# Functions that split a "$ref" into its parts and work out which schema
+# document it refers to. Every schema document has a key, which is its
+# path. A reference to another document gives the path of that document,
+# relative to the document that contains the reference.
+#
 # This file contains functions only, and needs no other file.
 #
 #   joined_key("schemas/a.json", "../b.json")   ->  b.json
 #   joined_key("", "common/types.json")         ->  common/types.json
 
-# Returns the part of a reference before the "#", which names a document.
-# It is empty when the reference is to the document that contains it.
+# Returns the part of a reference before the "#", which identifies a
+# document. It is empty when the reference is to the document that contains
+# it.
 function document_part(ref, __at) {
   __at = index(ref, "#")
 
@@ -42,8 +47,8 @@ function add_segment(segment) {
   SEGMENT_OF_KEY[++SEGMENTS_OF_KEY] = segment
 }
 
-# Returns the key of the document that a reference names. The reference is
-# relative to the document that contains it, whose key is <base>: the last
+# Returns the key of the document that a reference refers to. The reference
+# is relative to the document that contains it, whose key is <base>: the last
 # segment of <base> is replaced by the reference.
 function joined_key(base, uri, __part, __count, __i, __key) {
   SEGMENTS_OF_KEY = 0

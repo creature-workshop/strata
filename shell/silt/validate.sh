@@ -82,7 +82,7 @@ silt__references() {
 }
 
 : <<'FUN'
-Writes each of the other schema documents to a file of its own, and lists
+Writes each of the other schema documents to its own file, and lists
 the keys and the files in __silt__DOCUMENTS: one line for a key, and the
 next line for its file. awk reads the documents from the files, so that no
 document is passed as an argument. Fails if a key has no document after it.

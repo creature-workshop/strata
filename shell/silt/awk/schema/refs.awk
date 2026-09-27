@@ -1,8 +1,9 @@
-# Resolves a schema's $ref. The part of a reference before "#" names a
-# document, and the part after it is a JSON pointer into that document.
+# Resolves a schema's $ref. The part of a reference before "#" identifies
+# a document, and the part after it is a JSON pointer into that document.
 #
 # A reference with nothing before the "#" is to the document that contains
-# it. Any other reference names another document, in one of two ways:
+# it. Any other reference is to another document, which it identifies in
+# one of two ways:
 #
 #   - by its key, which is a path relative to the document that contains
 #     the reference,
@@ -81,8 +82,9 @@ function document_with_id(id, __doc, __root) {
   return 0
 }
 
-# Returns the number of the document that a reference names, or 0 if that
-# document was not supplied. The key is tried first, and then the "$id".
+# Returns the number of the document that a reference refers to, or 0 if
+# that document was not supplied. The function looks for a document with
+# that key first, and then for a document that declares it as its "$id".
 function document_for(uri, __key) {
   if (uri == "") {
     return DOC
@@ -112,8 +114,9 @@ function validate_in(doc, schema, value, path, seen, __outer) {
 #   ref    The reference as written, for example "#/$defs/name".
 #   seen   The schemas already followed for this value, each written as
 #          "\n<key#pointer>\n". Used to detect circular references. The
-#          brackets keep two entries side by side from looking like an
-#          empty entry, which is the root of the schema.
+#          brackets are needed because the root of the schema is written
+#          as an empty entry. Without them, two entries next to each other
+#          would look like an empty entry between them.
 function follow_ref(ref, value, path, seen, __doc, __fragment, __target, __visit) {
   __fragment = pointer_part(ref)
   __doc = document_for(document_part(ref))

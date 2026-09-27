@@ -7,7 +7,7 @@
 #
 #   0."$ref":str="types.json#/$defs/name"   ->  0.0:str="types.json"
 
-# Records the key of the document that a "$ref" line names, if it names
+# Records the key of the document that a "$ref" line refers to, if that is
 # another document.
 function record_reference(line, __uri) {
   parse(line)
