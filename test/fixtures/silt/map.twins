@@ -22,3 +22,9 @@ string @grown .tests.reads[0] => null | {runner: "bats", count: 3, tests: {reads
 as parts split a,b,c ,
 join @parts \040-\040 => null | "a,b,c" | split(",") | join(" - ")
 unwrap "\/\b\f" => null | "\/\b\f"
+as canonical canon
+as canonical_keys keys @canonical
+join @canonical_keys , => keys | join(",")
+as canonical_reads get @canonical .tests
+as canonical_reads_keys keys @canonical_reads
+join @canonical_reads_keys , => .tests | keys | join(",")

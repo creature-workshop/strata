@@ -1,0 +1,16 @@
+type
+as c canon
+keys @c
+get @c .alpha
+as c2 canon @c
+equals @c $c2
+as r str x
+as one obj a $r b 0.:int=1
+as two obj b 0.:int=1 a $r
+equals @one $two
+equals @one $r
+as l1 arr $r 0.:int=1
+as l2 arr 0.:int=1 $r
+equals @l1 $l2
+canon @l1
+equals @l1 $l1
