@@ -1,28 +1,39 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2119  # bare @obj is the structs empty constructor
 # Files the failing cases of a fuzz run as one Linear issue in the Fuzzer
-# project of the Strata team: the title counts the seeds, the description
-# links the pipeline, the job and its artifacts and then holds each failing
-# case, its value and what differed, and a link card points back at the
-# job. The cases are read from the directory test/silt-fuzz.sh kept them
-# under, one directory per tier and one per seed inside it. With --print the
-# issue is written to stdout and nothing is filed.
+# project of the Strata team, through shellops' Linear client: the title
+# counts the seeds, the description links the pipeline, the job and its
+# artifacts and then holds each failing case, its value and what differed,
+# and a link card points back at the job. The cases are read from the
+# directory test/silt-fuzz.sh kept them under, one directory per tier and
+# one per seed inside it. With --print the issue is written to stdout and
+# nothing is filed.
 #
 # Usage: test/silt-fuzz-report.sh <kept directory> [--print]
 #
+#   SHELLOPS_DIR, PROJ     Where shellops is and the repository root, as
+#                          every shellops caller sets them; the vendored
+#                          shell/.ops and this repository unless given
 #   LINEAR_API_KEY         The key the issue is filed with
 #   SILT_FUZZ_TEAM_ID      The team, Strata unless given
 #   SILT_FUZZ_PROJECT_ID   The project, Fuzzer unless given
-#   CI_PIPELINE_URL, CI_JOB_URL, CI_JOB_ID, CI_PROJECT_URL
+#   CI_PIPELINE_URL, CI_JOB_URL, CI_JOB_ID
 #                          The run the issue points back at, when set
 
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export SHELLOPS_DIR="${SHELLOPS_DIR:-$REPO/shell/.ops}"
+export PROJ="${PROJ:-$REPO}"
+. "$SHELLOPS_DIR/.envrc"
+import "$SHELLOPS_DIR/lib/linear/api.sh"
+
 FUZZ="$REPO/test/fuzz"
 ENDPOINT="https://api.linear.app/graphql"
 TEAM_ID="${SILT_FUZZ_TEAM_ID:-52ffd0f6-7628-45f4-9e3b-d3e97e7ca906}"
 PROJECT_ID="${SILT_FUZZ_PROJECT_ID:-e244fe05-6b2d-40cf-8d88-384733e06e3b}"
 FULL_CASES=10
+CASE_CHARS=2000
 FENCE='```'
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
@@ -125,20 +136,21 @@ write_run_links() {
 write_case() {
   local dir="$1" tier="$2" seed="$3"
   printf '## seed %s, %s tier\n\n' "$seed" "$tier"
-  printf 'Value:\n\n%sjson\n%s\n%s\n\n' "$FENCE" "$(head -c 4000 "$dir/value.json")" "$FENCE"
+  printf 'Value:\n\n%sjson\n%s\n%s\n\n' "$FENCE" "$(head -c "$CASE_CHARS" "$dir/value.json")" "$FENCE"
   if [ -s "$dir/report" ]; then
-    printf 'What differed:\n\n%s\n%s\n%s\n\n' "$FENCE" "$(head -c 4000 "$dir/report")" "$FENCE"
+    printf 'What differed:\n\n%s\n%s\n%s\n\n' "$FENCE" "$(head -c "$CASE_CHARS" "$dir/report")" "$FENCE"
   fi
 }
 
-# Files the issue and its link card, and prints the issue's url.
+# Files the issue and its link card, and prints the issue's identifier and
+# url.
 file_issue() {
   require_key
   local issue
   issue="$(create_issue)"
-  printf '%s\n' "$(jq -r '.identifier + " " + .url' <<< "$issue")"
+  printf '%s %s\n' "$(@get "$issue" '.identifier')" "$(@get "$issue" '.url')"
   if [ -n "${CI_JOB_URL:-}" ]; then
-    attach_run "$(jq -r '.id' <<< "$issue")"
+    attach_run "$(@get "$issue" '.id')"
   fi
 }
 
@@ -149,41 +161,33 @@ require_key() {
   fi
 }
 
-# Creates the issue from the title and the description written, and prints
-# the issue object Linear answers with.
+# Creates the issue inside the project from the title and the description
+# written, through shellops' GraphQL client and the mutation beside this
+# script, since the client's own issue-create names no project. Prints the
+# issue object Linear answers with.
 create_issue() {
-  jq -n \
-    --rawfile query "$FUZZ/issue-create.graphql" \
-    --arg teamId "$TEAM_ID" \
-    --arg projectId "$PROJECT_ID" \
-    --rawfile title "$WORK/title" \
-    --rawfile description "$WORK/description.md" \
-    '{query: $query, variables: {teamId: $teamId, projectId: $projectId, title: ($title | rtrimstr("\n")), description: $description}}' > "$WORK/create.json"
-  post "$WORK/create.json" | jq -e '.data.issueCreate | select(.success) | .issue'
+  local variables data
+  variables="$(@obj \
+    '.teamId' "$TEAM_ID" \
+    '.projectId' "$PROJECT_ID" \
+    '.title' "$(cat "$WORK/title")" \
+    '.description' "$(cat "$WORK/description.md")"
+  )"
+  data="$(graphql__request "$ENDPOINT" "$(@obj '.auth' "$LINEAR_API_KEY")" "$(cat "$FUZZ/issue-create.graphql")" "$variables")"
+  @get "$data" '.issueCreate.issue'
 }
 
-# Puts a link card for the job on the issue.
+# Puts a link card for the job on the issue, through shellops' Linear
+# client.
 attach_run() {
-  jq -n \
-    --rawfile query "$FUZZ/attachment-create.graphql" \
-    --arg issueId "$1" \
-    --arg title "fuzz run ${CI_JOB_ID:-}" \
-    --arg url "$CI_JOB_URL" \
-    --arg subtitle "the job and its artifacts" \
-    '{query: $query, variables: {issueId: $issueId, title: $title, url: $url, subtitle: $subtitle}}' > "$WORK/attach.json"
-  post "$WORK/attach.json" | jq -e '.data.attachmentCreate.success' > /dev/null
-}
-
-# One GraphQL request to Linear, the payload read from a file; prints the
-# response and fails on a transport error or a GraphQL error.
-post() {
-  local response
-  response="$(curl -sS --fail-with-body "$ENDPOINT" -H "Authorization: $LINEAR_API_KEY" -H 'Content-Type: application/json' --data @"$1")"
-  if jq -e '.errors' <<< "$response" > /dev/null 2>&1; then
-    printf 'silt-fuzz-report: Linear refused: %s\n' "$(jq -c '.errors' <<< "$response")" >&2
-    return 1
-  fi
-  printf '%s' "$response"
+  local attachment options
+  attachment="$(@set "$(linear__new_attachment)" \
+    '.title' "fuzz run ${CI_JOB_ID:-}" \
+    '.url' "$CI_JOB_URL" \
+    '.subtitle' "the job and its artifacts"
+  )"
+  options="$(@set "$(linear__new_linear_options)" '.token' "$LINEAR_API_KEY")"
+  linear__add_attachment "$1" "$attachment" "$options"
 }
 
 main "$@"

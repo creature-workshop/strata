@@ -1,7 +1,0 @@
-# A link card on an issue, its url the key that keeps one card per link.
-mutation($issueId: String!, $title: String!, $url: String!, $subtitle: String) {
-  attachmentCreate(input: { issueId: $issueId, title: $title, url: $url, subtitle: $subtitle }) {
-    success
-    attachment { id }
-  }
-}

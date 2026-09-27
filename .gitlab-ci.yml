@@ -18,7 +18,8 @@
 # seeds start at the hour, so every night draws new values and a failure
 # names its seed, and the failing cases stay as artifacts for 90 days. When
 # it fails, `silt-fuzz-report` files them as one issue in the Fuzzer project
-# of the Strata team, pointing back at the run.
+# of the Strata team through shellops' Linear client, pointing back at the
+# run.
 
 include:
   - component: $CI_SERVER_FQDN/ksoft/creatures/forge--code-review-hygiene@0.19.1
@@ -72,8 +73,8 @@ silt-fuzz:
     expire_in: 90 days
 
 silt-fuzz-report:
+  extends: .shellops
   stage: cleanup
-  image: ubuntu:22.04
   needs:
     - job: silt-fuzz
       artifacts: true
@@ -83,7 +84,5 @@ silt-fuzz-report:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_PIPELINE_SOURCE == "web"
-  before_script:
-    - apt-get update -qq && apt-get install -y -qq --no-install-recommends jq curl ca-certificates > /dev/null
   script:
     - bash test/silt-fuzz-report.sh fuzz-failures
