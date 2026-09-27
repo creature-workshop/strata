@@ -55,17 +55,15 @@ silt__is_zero() {
 }
 
 : <<'PUB_FUN'
-Answers the opposite of a bool. Given a bool document, it answers a bool
-document. Given the word true or false, which is what a predicate answers,
-it answers the other word. Refuses every other value, the empty string
-included, so an unset variable is never read as false.
+Answers the opposite of a bool document. Refuses every other value: the
+bare word true or false, a null and the empty string are not bool
+documents, so an unset variable is never read as false.
 
   silt__not off '0.:bool=true'   ->  off='0.:bool=false'
-  silt__not no true              ->  no=false
 
 args:
   $1  The name of the variable to answer in
-  $2  A bool document, or the word true or false
+  $2  The document, a bool
 PUB_FUN
 silt__not() {
   __silt__out "$1" || return 1
@@ -73,10 +71,8 @@ silt__not() {
   case "$2" in
     0.:bool=true) __silt__ANSWER='0.:bool=false' ;;
     0.:bool=false) __silt__ANSWER='0.:bool=true' ;;
-    true) __silt__ANSWER=false ;;
-    false) __silt__ANSWER=true ;;
     *)
-      __silt__fail "not: not a bool: '$2'"
+      __silt__fail "not: not a bool document: '$2'"
       return 1
       ;;
   esac

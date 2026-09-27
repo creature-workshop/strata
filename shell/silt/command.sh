@@ -22,7 +22,7 @@ silt__succeeds() {
   __silt__out "$1" || return 1
   shift
 
-  __silt__run_command true false "$@"
+  __silt__command__run true false "$@"
 }
 
 : <<'PUB_FUN'
@@ -39,7 +39,7 @@ silt__fails() {
   __silt__out "$1" || return 1
   shift
 
-  __silt__run_command false true "$@"
+  __silt__command__run false true "$@"
 }
 
 : <<'FUN'
@@ -53,10 +53,10 @@ args:
   $2  The word for any other status
   $@  The command and its arguments
 FUN
-__silt__run_command() {
+__silt__command__run() {
   set -- "$__silt__OUT" "$@"
 
-  if __silt__call_command "$@"; then
+  if __silt__command__call "$@"; then
     __silt__ANSWER="$2"
   else
     __silt__ANSWER="$3"
@@ -74,7 +74,7 @@ args:
   $3  The word for any other status
   $@  The command and its arguments
 FUN
-__silt__call_command() {
+__silt__command__call() {
   shift 3
   "$@"
 }

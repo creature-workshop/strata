@@ -41,15 +41,15 @@ false
 ## not @f
 0.:bool=true
 ## not-word true
-false
+!! 1 ERROR: silt: not: not a bool document: 'true'
 ## not-word false
-true
+!! 1 ERROR: silt: not: not a bool document: 'false'
 ## not-word
-!! 1 ERROR: silt: not: not a bool: ''
+!! 1 ERROR: silt: not: not a bool document: ''
 ## not-word yes
-!! 1 ERROR: silt: not: not a bool: 'yes'
+!! 1 ERROR: silt: not: not a bool document: 'yes'
 ## not @n
-!! 1 ERROR: silt: not: not a bool: '0.:null'
+!! 1 ERROR: silt: not: not a bool document: '0.:null'
 ## bool true
 0.:bool=true
 ## bool false

@@ -50,7 +50,7 @@ silt__empty() {
   if [ -n "$2" ]; then
     silt__type __silt__empty__kind "$2" || return 1
   fi
-  __silt__require_map_or_list "$__silt__empty__kind" "$2" || return 1
+  __silt__defined__require_map_or_list "$__silt__empty__kind" "$2" || return 1
   __silt__is_spelled "$2" "0.:$__silt__empty__kind"
 
   __silt__OUT="$__silt__empty__out"
@@ -64,7 +64,7 @@ args:
   $1  The kind silt__type answered, or nothing for the empty string
   $2  The value
 FUN
-__silt__require_map_or_list() {
+__silt__defined__require_map_or_list() {
   case "$1" in
     map | list) return 0 ;;
   esac
