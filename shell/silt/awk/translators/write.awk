@@ -4,7 +4,7 @@
 # whole. The writer keeps which collections are open, so a caller under a
 # map names its member's key as a JSON string literal and a caller under a
 # list names nothing, the index being the writer's. A map handed a key twice
-# is refused. Loaded after lines.awk and order.awk; a program's BEGIN calls
+# is refused. Loaded after lines.awk and order.awk, from awk/translators; a program's BEGIN calls
 # order_begin() and its END print_ordered().
 #
 #   {"a":[1,"x"]}    open_collection("map", "")          ->  0."a":list

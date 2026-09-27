@@ -1,0 +1,1 @@
+A value that opens with an anchor, which the YAML reader leaves out and refuses, naming the line.

@@ -3,8 +3,8 @@
 # a plain scalar as the null, bool, number or str YAML's core schema reads.
 # A number spelled outside ADR.20's patterns is written as the map ADR.20
 # gives it, its value in ADR.20's form beside the spelling and the format.
-# Loaded after write.awk, yaml_lines.awk and yaml_scalars.awk, beside
-# yaml_flow.awk.
+# Loaded after translators/write.awk and lines.awk and scalars.awk beside
+# this one, with flow.awk.
 #
 #   write_inline("\"a\"", "0x1F")  ->  0."a":map
 #                                      1."format":str="yaml"

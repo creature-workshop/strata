@@ -1,0 +1,1 @@
+A JSON object cut off after its first key's colon, which from_json refuses, naming the line.

@@ -1,0 +1,1 @@
+One plain scalar per spelling YAML's core schema reads as a number: hex, octal, a plus sign, leading zeros, a point with no digit after or before it, .inf and .NaN, and beside them the spellings ADR.20 already has and the ones that are strings, 1_000 among them. A spelling outside ADR.20's patterns becomes the map that keeps it.

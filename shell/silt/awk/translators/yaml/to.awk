@@ -5,7 +5,7 @@
 # block when it runs over lines, and in double quotes, as its literal
 # already spells it, everywhere else. The lines are kept first, since a
 # collection is written on its own line only when its next line is deeper.
-# Loaded after lines.awk, yaml_lines.awk and yaml_scalars.awk.
+# Loaded after lines.awk, and lines.awk and scalars.awk beside this one.
 #
 #   0."jobs":list
 #   1.0:map

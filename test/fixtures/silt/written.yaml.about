@@ -1,0 +1,1 @@
+What to_yaml writes for the awkward value: block style, two spaces per level, a collection opening on its dash's line, a string quoted only where a reader would take it for something else, and a string that runs over lines as a literal block. Reading it back gives the awkward value, and writing that gives these bytes again.

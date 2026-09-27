@@ -24,7 +24,7 @@ silt__from_json() {
   __silt__from_json__out="$__silt__OUT"
 
   __silt__ANSWER=''
-  __silt__translate_stdin 'order write from_json' || return 1
+  __silt__translate_stdin 'order translators/write translators/json/from' || return 1
 
   __silt__OUT="$__silt__from_json__out"
   __silt__answer
@@ -49,7 +49,7 @@ silt__to_json() {
   __silt__to_json__out="$__silt__OUT"
 
   __silt__ANSWER=''
-  __silt__hand_off "$2" to_json || return 1
+  __silt__hand_off "$2" translators/json/to || return 1
 
   __silt__OUT="$__silt__to_json__out"
   __silt__answer
@@ -76,7 +76,7 @@ silt__from_yaml() {
   __silt__from_yaml__out="$__silt__OUT"
 
   __silt__ANSWER=''
-  __silt__translate_stdin 'order write yaml_lines yaml_scalars yaml_values yaml_flow yaml_blocks yaml_tree from_yaml' || return 1
+  __silt__translate_stdin 'order translators/write translators/yaml/lines translators/yaml/scalars translators/yaml/values translators/yaml/flow translators/yaml/blocks translators/yaml/tree translators/yaml/from' || return 1
 
   __silt__OUT="$__silt__from_yaml__out"
   __silt__answer
@@ -101,7 +101,7 @@ silt__to_yaml() {
   __silt__to_yaml__out="$__silt__OUT"
 
   __silt__ANSWER=''
-  __silt__hand_off "$2" 'yaml_lines yaml_scalars to_yaml' || return 1
+  __silt__hand_off "$2" 'translators/yaml/lines translators/yaml/scalars translators/yaml/to' || return 1
 
   __silt__OUT="$__silt__to_yaml__out"
   __silt__answer
@@ -112,7 +112,8 @@ Runs awk programs of the tier over the caller's stdin, and takes what they
 print as the answer.
 
 args:
-  $1  The programs' names under shell/silt/awk, separated by spaces
+  $1  The programs' names under shell/silt/awk, without .awk, separated by
+      spaces
 FUN
 __silt__translate_stdin() {
   __silt__HANDED=true

@@ -1,0 +1,1 @@
+A mapping that merges another with the << key, which the YAML reader leaves out and refuses, naming the line.

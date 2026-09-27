@@ -1,7 +1,7 @@
 # The lines of a YAML document as the reader walks them: each kept as
 # written, then read for its indentation and its text with the comment and
-# the trailing spaces off, and the line the reader stands on. Loaded after
-# lines.awk by every program that reads YAML.
+# the trailing spaces off, and the line the reader stands on. Loaded
+# after awk/lines.awk by every program that reads or writes YAML.
 #
 #   Y_N          how many lines the document has
 #   Y_RAW[i]     line i as written, which a block scalar reads

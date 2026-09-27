@@ -2,7 +2,8 @@
 # read into the SILT writer: the text is walked once, left to right, in one
 # of six states named for what comes next, a bracket opening a collection
 # and its pair closing it. One that runs over lines is refused. Loaded after
-# write.awk, yaml_lines.awk, yaml_scalars.awk and yaml_values.awk.
+# translators/write.awk and lines.awk, scalars.awk and values.awk beside
+# this one.
 #
 #   read_flow("\"a\"", "[x, {b: 1}]")  ->  0."a":list
 #                                          1.0:str="x"

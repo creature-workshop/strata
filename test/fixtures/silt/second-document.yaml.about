@@ -1,0 +1,1 @@
+A stream of two YAML documents, the second opening with ---, which the YAML reader refuses, naming the line.

@@ -5,8 +5,7 @@
 # left open, and one at the same indentation is the next member. A line's
 # own text is read left to right, a dash that opens a collection on its own
 # line making the rest of the line a line of its own. Loaded after
-# write.awk, yaml_lines.awk, yaml_scalars.awk, yaml_values.awk,
-# yaml_flow.awk and yaml_blocks.awk.
+# translators/write.awk and every other file beside this one.
 #
 #   jobs:              ->  0."jobs":list
 #     - name: test         1.0:map

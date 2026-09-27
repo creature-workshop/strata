@@ -3,7 +3,7 @@
 # joins a line to the next with a space, a blank line standing for a line
 # break and a line indented further kept on its own. The "-" and "+" after
 # the mark strip or keep the line breaks at the end, and an indentation
-# digit there is refused. Loaded after write.awk and yaml_lines.awk.
+# digit there is refused. Loaded after translators/write.awk and lines.awk beside this one.
 #
 #   key: |          key: >-
 #     a               a

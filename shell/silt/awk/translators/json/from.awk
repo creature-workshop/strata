@@ -5,7 +5,7 @@
 # a number by ADR.20's patterns, a collection opened on its bracket and
 # closed on the other. A map that holds a key twice, a number outside 64
 # bits or binary64, and any text that is not JSON are refused, naming the
-# line. Loaded after lines.awk, order.awk and write.awk.
+# line. Loaded after lines.awk, order.awk and translators/write.awk.
 #
 #   {"b":[1,"x"],"a":null}  ->  0."a":null
 #                               0."b":list

@@ -1,0 +1,1 @@
+The value awkward.yaml spells, as JSON with its keys in canonical order: what from_yaml reads must be what from_json reads from this, and what to_json writes from either must be these bytes.

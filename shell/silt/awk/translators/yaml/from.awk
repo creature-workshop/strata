@@ -5,7 +5,7 @@
 # does not read it refuses, naming the line: anchors and aliases, tags, merge
 # keys, complex keys, directives, a second document, and a scalar or a flow
 # collection that runs over lines. Loaded after lines.awk, order.awk,
-# write.awk and the yaml_ files.
+# translators/write.awk and the files beside this one.
 #
 #   a:            ->  0."a":list
 #     - 1             1.0:int=1
