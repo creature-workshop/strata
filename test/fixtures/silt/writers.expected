@@ -128,9 +128,9 @@ bats2null
 ## string @j .k
 a "quoted" key: with.dots
 ## as z set @c .[0] 0.:int=1
-!! 1 silt: a map takes a name, not the index 0
+!! 1 ERROR: silt: a map takes a name, not the index 0
 ## as z2 set @l .name 0.:int=1
-!! 1 silt: a list takes an index, not the name "name"
+!! 1 ERROR: silt: a list takes an index, not the name "name"
 ## split a,,b ,
 0.0:str="a"
 0.1:str="b"
@@ -143,24 +143,24 @@ a "quoted" key: with.dots
 ## split
 0.:list
 ## set @r .x 0.:int=1
-!! 1 silt: str has no members
+!! 1 ERROR: silt: str has no members
 ## set @c .runner.deeper 0.:int=1
-!! 1 silt: not a collection at "runner"
+!! 1 ERROR: silt: not a collection at "runner"
 ## set @l .[7] 0.:int=1
-!! 1 silt: no element 7 to set; push appends to a list
+!! 1 ERROR: silt: no element 7 to set; push appends to a list
 ## push @c 0.:int=1
-!! 1 silt: push takes a list, not a map
+!! 1 ERROR: silt: push takes a list, not a map
 ## concat @l $c
-!! 1 silt: concat takes a list, not a map
+!! 1 ERROR: silt: concat takes a list, not a map
 ## concat @c $l
-!! 1 silt: concat takes a list, not a map
+!! 1 ERROR: silt: concat takes a list, not a map
 ## join @l2 ,
-!! 1 silt: join of a list holding a collection
+!! 1 ERROR: silt: join of a list holding a collection
 ## push @el
 0.:list
 ## push @el $r
 0.0:str="bats"
 ## join @l3 ,
-!! 1 silt: join of a list holding a collection
+!! 1 ERROR: silt: join of a list holding a collection
 ## obj k
-!! 1 silt: a key without a document: k
+!! 1 ERROR: silt: a key without a document: k
