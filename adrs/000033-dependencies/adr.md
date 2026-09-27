@@ -2,7 +2,7 @@
 
 - Status: approved
 - Date: 2026-09-27
-- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/MR_IID
+- Merge request: https://gitlab.creature-workshop.com/ksoft/strata/-/merge_requests/73
 - Argued from: https://linear.app/grand-cluster-city/issue/STRATA-182
 - Implementation: not started
 
