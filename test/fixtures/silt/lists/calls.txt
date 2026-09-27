@@ -1,0 +1,44 @@
+first
+last
+slice 1 3
+slice 0 1
+slice 2 9
+slice 3 3
+slice 9 12
+slice x 2
+slice 1 y
+values
+line
+as none arr
+first @none
+last @none
+slice @none 0 2
+sum @none
+values @none
+as whole arr 0.:int=1 0.:int=-5 0.:int=40
+sum @whole
+as mixed arr 0.:int=1 0.:float=1.5 0.:float=0.25
+sum @mixed
+as round arr 0.:float=1.5 0.:float=1.5
+sum @round
+as tenths arr 0.:float=0.1 0.:float=0.2
+sum @tenths
+sum
+as deep obj on 0.:bool=true
+as inner arr $deep 0.:int=2
+as m obj b 0.:int=1 a $inner c 0.:str="x"
+values @m
+entries @m
+line @m
+as empty obj
+values @empty
+entries @empty
+entries
+first @m
+last @m
+slice @m 0 1
+sum @m
+as s str x
+values @s
+entries @s
+line @s

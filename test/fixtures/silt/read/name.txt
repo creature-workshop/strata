@@ -1,0 +1,1 @@
+read: a document from text written as SILT or as JSON

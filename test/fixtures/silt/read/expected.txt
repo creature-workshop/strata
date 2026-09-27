@@ -1,0 +1,74 @@
+## read {"b":[1,{"c":null}],"a":"x"}
+0."a":str="x"
+0."b":list
+1.0:int=1
+1.1:map
+2."c":null
+## read [1, 2.5, "three"]
+0.0:int=1
+0.1:float=2.5
+0.2:str="three"
+## read "bats"
+0.:str="bats"
+## read "a \\"quoted\\" word"
+0.:str="a \"quoted\" word"
+## read "tab\\there"
+0.:str="tab\there"
+## read true
+0.:bool=true
+## read false
+0.:bool=false
+## read null
+0.:null
+## read {}
+0.:map
+## read []
+0.:list
+## read 0
+0.:int=0
+## read -12
+0.:int=-12
+## read 12
+0.:int=12
+## read 0.5
+0.:float=0.5
+## read -1.5e3
+0.:float=-1.5e3
+## read 007
+!! 1 
+## read 12x
+!! 1 
+## read -
+!! 1 
+## read bats
+!! 1 
+## read "
+!! 1 
+## read "unclosed
+!! 1 
+## read {"a":
+!! 1 
+## read 0."a":int=1
+0."a":int=1
+## read 0.:list
+0.:list
+## read 0.0:str="x"
+0.0:str="x"
+## read 3.0:int=1
+3.0:int=1
+## as inner arr 0.:str="x"
+0.0:str="x"
+## as doc obj a 0.:int=1 b $inner
+0."a":int=1
+0."b":list
+1.0:str="x"
+## as flat to_line @doc
+0."a":int=10."b":list1.0:str="x"
+## read-register @flat
+0."a":int=1
+0."b":list
+1.0:str="x"
+## from_line @flat
+0."a":int=1
+0."b":list
+1.0:str="x"

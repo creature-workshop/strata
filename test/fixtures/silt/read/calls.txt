@@ -1,0 +1,31 @@
+read {"b":[1,{"c":null}],"a":"x"}
+read [1, 2.5, "three"]
+read "bats"
+read "a \\"quoted\\" word"
+read "tab\\there"
+read true
+read false
+read null
+read {}
+read []
+read 0
+read -12
+read 12
+read 0.5
+read -1.5e3
+read 007
+read 12x
+read -
+read bats
+read "
+read "unclosed
+read {"a":
+read 0."a":int=1
+read 0.:list
+read 0.0:str="x"
+read 3.0:int=1
+as inner arr 0.:str="x"
+as doc obj a 0.:int=1 b $inner
+as flat to_line @doc
+read-register @flat
+from_line @flat

@@ -67,6 +67,18 @@ function drawn_key(__j, __count, __at) {
   }
 }
 
+# Whether the collection whose path is <parent>, as getpath takes it, holds
+# any member at all.
+function holds_member(parent, __j) {
+  for (__j = 1; __j <= PATHS; __j++) {
+    if (PARENT[__j] == parent) {
+      return 1
+    }
+  }
+
+  return 0
+}
+
 # The text of a key literal a verb can take as one word, since the transcript
 # splits a writer's or a collection verb's words on spaces and the shell
 # would expand a glob: none of a space, a backslash, a quote, a star, a
@@ -184,17 +196,35 @@ function scalar_calls(i) {
 }
 
 # The calls over a path whose value is a collection: the value as JSON, its
-# length, the verbs over each, and for a map its keys and the root merged
-# with it, for a list its unique values and its intersection with itself.
+# length, its values, the verbs over each, and for a map its keys, its
+# entries and the root merged with it, for a list a slice of it, its first
+# and last element where it holds one, its unique values and its
+# intersection with itself.
 function collection_calls(i) {
   print "as s" i " get @d " SILT[i]
   print "to_json @s" i " => getpath(" JQ[i] ") | tojson"
   print "len @s" i " => getpath(" JQ[i] ") | length"
   each_calls("@s" i, "getpath(" JQ[i] ")", JQ[i])
 
+  print "as l" i " values @s" i
+  print "to_json @l" i " => getpath(" JQ[i] ") | [.[]] | tojson"
+  print "line @s" i " => \"one line: true\\nidentity: true\""
+
   if (TYPE[i] == "object") {
     print "as k" i " keys @s" i
     print "join @k" i " , => getpath(" JQ[i] ") | keys | join(\",\")"
+    print "as n" i " entries @s" i
+    print "to_json @n" i " => getpath(" JQ[i] ") | to_entries | tojson"
+  }
+  if (TYPE[i] == "array") {
+    print "as c" i " slice @s" i " 1 3"
+    print "to_json @c" i " => getpath(" JQ[i] ") | .[1:3] | tojson"
+  }
+  if (TYPE[i] == "array" && holds_member(JQ[i])) {
+    print "as a" i " first @s" i
+    print "to_json @a" i " => getpath(" JQ[i] ") | .[0] | tojson"
+    print "as z" i " last @s" i
+    print "to_json @z" i " => getpath(" JQ[i] ") | .[-1] | tojson"
   }
   if (TYPE[i] == "object" && root == "object") {
     print "as m" i " merge @d $s" i

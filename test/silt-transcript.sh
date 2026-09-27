@@ -9,8 +9,12 @@
 #
 # A call is a verb and one argument; a blank line or a # line is skipped.
 # type, scalar, len, keys, canon, unique, is_true, is_false, is_zero,
-# to_json, to_yaml and to_toml take the document; get, string, has and pluck
-# take it and a path; string-or takes a default word, then the path;
+# to_json, to_yaml, to_toml, first, last, sum, values and entries take the
+# document; slice takes it and two indices; line takes it and answers
+# whether to_line wrote it on one line and from_line read it back; to_line
+# and from_line take the document; read takes text read through printf %b,
+# and read-register the text a register holds; get, string, has and pluck
+# take the document and a path; string-or takes a default word, then the path;
 # from_json, from_yaml, from_toml and from_strh take a file, beside the calls
 # file unless absolute, and read it on stdin, and from_strt such a file and
 # then the register holding the corpus's keys; unwrap takes the literal; wrap
@@ -178,6 +182,12 @@ transcript__run_with_callback() {
 transcript__run_verb() {
   case "$1" in
     type | scalar | len | keys | canon | unique | is_true | is_false | is_zero | to_json | to_yaml | to_toml) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
+    first | last | sum | values | entries) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
+    slice) transcript__capture silt__slice ANSWER "$DOCUMENT_FOR_CALL" "${2%% *}" "${2#* }" ;;
+    read) transcript__capture silt__read ANSWER "$(transcript__unescape "$2")" ;;
+    read-register) transcript__capture silt__read ANSWER "$DOCUMENT_FOR_CALL" ;;
+    to_line | from_line) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
+    line) transcript__line ;;
     get | string | has | pluck) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
     string-or) transcript__capture silt__string ANSWER "$DOCUMENT_FOR_CALL" "$(transcript__argument_of "$2")" "$(transcript__unescape "${2%% *}")" ;;
     from_json | from_yaml | from_toml | from_strh) transcript__capture "silt__$1" ANSWER < "$(transcript__file_of "$2")" ;;
@@ -224,6 +234,19 @@ transcript__now() {
       ANSWER='0.:time-rfc3339-utc=9999-99-99T99:99:99.999999999Z'
       ;;
   esac
+}
+
+# to_line then from_line over the document: whether the line holds no
+# newline, and whether the document came back unchanged.
+transcript__line() {
+  transcript__capture silt__to_line LINE "$DOCUMENT_FOR_CALL"
+  transcript__capture silt__from_line BACK "$LINE"
+
+  case "$LINE" in
+    *"$__silt__NL"*) ANSWER='one line: false' ;;
+    *) ANSWER='one line: true' ;;
+  esac
+  ANSWER="$ANSWER$__silt__NL$(transcript__identity_of "$DOCUMENT_FOR_CALL" "$BACK")"
 }
 
 # wrap then unwrap: the literal, then whether the text came back unchanged.
