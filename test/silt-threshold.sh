@@ -21,7 +21,7 @@ main() {
     sizes=(50 100 200 400 800 1600)
   fi
 
-  printf 'lines\tdash shell\tdash awk\tbash shell\tbash awk\n'
+  printf 'lines\tdash_shell_ms\tdash_awk_ms\tbash_shell_ms\tbash_awk_ms\n'
   local lines
   for lines in "${sizes[@]}"; do
     row "$lines"
@@ -40,14 +40,14 @@ row() {
 }
 
 # Milliseconds per silt__get of the last key, under <shell> with the
-# threshold at <threshold>, as "<ms> ms".
+# threshold at <threshold>.
 timed() {
   local shell="$1" doc="$2" lines="$3" threshold="$4" file="$REPO/test/silt-threshold.doc.$$"
   printf '%s' "$doc" > "$file"
   local ms
   ms="$(SILT_THRESHOLD="$threshold" "$shell" "$REPO/test/silt-threshold.bench.sh" "$REPO/shell/silt/api.sh" "$file" "$((lines - 1))" "$CALLS")"
   rm -f "$file"
-  printf '%s ms' "$ms"
+  printf '%s' "$ms"
 }
 
 # A map of N string leaves, key0 to keyN-1.
