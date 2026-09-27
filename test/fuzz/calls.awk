@@ -304,6 +304,24 @@ function set_calls(i) {
   print "to_json @t" i " => setpath(" JQ[i] "; 41) | tojson"
 }
 
+# Prints the calls that take several paths: the first path that holds a
+# value, read after a path that holds nothing; two values placed in one
+# call, when the root is a map; and a value appended to the list at the
+# path, when the path holds a list.
+function several_path_calls(i) {
+  print "as gf" i " get-first @d .\"absent\" " SILT[i]
+  print "to_json @gf" i " => getpath(" JQ[i] ") | tojson"
+
+  if (root == "object") {
+    print "as sp" i " set @d " SILT[i] " 0.:int=41 .\"fresh\" 0.:int=42"
+    print "to_json @sp" i " => setpath(" JQ[i] "; 41) | setpath([\"fresh\"]; 42) | tojson"
+  }
+  if (TYPE[i] == "array") {
+    print "as pa" i " push @d --at " SILT[i] " 0.:int=7"
+    print "to_json @pa" i " => setpath(" JQ[i] "; getpath(" JQ[i] ") + [7]) | tojson"
+  }
+}
+
 # The calls over one path, by the type of the value there. A set is drawn
 # only for a path with no space and no backslash in it, since the
 # transcript splits a writer's words on spaces and reads them through
@@ -318,6 +336,7 @@ function path_calls(i) {
 
   if (pick(3) == 0 && index(SILT[i], " ") == 0 && index(SILT[i], "\\") == 0) {
     set_calls(i)
+    several_path_calls(i)
   }
 }
 

@@ -10,6 +10,12 @@ keyless line, a collection becomes its members at depth 0, an empty
 collection or a null its one keyless line. Answers the empty string for a
 path nothing holds, which no document is.
 
+Given several paths, answers the value at the first path that holds a value
+that is not a null. When no path does, answers the document after
+--default, or without --default what the last path holds.
+
+  silt__get nodes "$doc" .nodes .edges --default '0.:list'
+
   silt__get runner "$doc" '.suites.unit.runner'   ->  runner='0.:str="bats"'
   silt__get reads "$doc" '.suites.unit.tests'     ->  reads='0."test/a.bats":map
                                                               1."reads":list
@@ -23,9 +29,15 @@ registers:
 args:
   $1  The name of the variable to answer in
   $2  The document
-  $3  The path
+  $@  The path, or several paths
+  --default  The document to answer when no path holds a value
 PUB_FUN
 silt__get() {
+  if [ "$#" -ne 3 ]; then
+    __silt__get_first "$@"
+    return
+  fi
+
   __silt__out "$1" || return 1
   __silt__get__out="$__silt__OUT"
 
@@ -142,4 +154,28 @@ __silt__collect_member() {
   esac
 
   __silt__emit "$((__silt__DEPTH - __silt__AT - 1)).${1#*.}"
+}
+
+: <<'FUN'
+Answers the value at the first of several paths that holds a value that is
+not a null, or else the default, or else what the last path holds.
+
+args:
+  $1  The name of the variable to answer in
+  $2  The document
+  $@  The paths, and --default with a document
+FUN
+__silt__get_first() {
+  __silt__out "${1:-}" || return 1
+  __silt__get_first__out="$__silt__OUT"
+  __silt__get_first__doc="${2:-}"
+  shift 2
+
+  __silt__choose "$__silt__get_first__doc" "$@" || return 1
+
+  __silt__ANSWER="$__silt__CHOSEN"
+  if [ "$__silt__IS_CHOSEN" = false ] && [ "$__silt__HAS_DEFAULT" = true ]; then
+    __silt__ANSWER="$__silt__DEFAULT"
+  fi
+  __silt__answer_in "$__silt__get_first__out"
 }

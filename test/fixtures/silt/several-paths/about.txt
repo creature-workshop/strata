@@ -1,0 +1,1 @@
+A map with a str, a null, an int, a list and a map that holds a str and a list. The calls read the first of several paths that holds a value, with and without a default, place several values in one call, leave out values that are empty, and append to a list inside the document.

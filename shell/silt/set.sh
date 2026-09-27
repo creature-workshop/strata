@@ -5,7 +5,7 @@ silt__set: puts a document at a path.
 MODULE
 
 : <<'PUB_FUN'
-Puts a value at a path. If a member is already there, it is replaced along
+Puts a value at a path, or each of several values at its path. If a member is already there, it is replaced along
 with everything under it. If not, the value is added at the end of its
 parent, and any missing parents on the way are created: a map, or a list
 when the next path segment is an index. An empty path answers the value
@@ -18,6 +18,12 @@ what grows a list.
   silt__set doc '0."a":int=1' .b '0.:int=2'      ->  doc='0."a":int=1
                                                           0."b":int=2'
   silt__set doc '0."a":int=1' .a.b '0.:int=2'    ->  refused: not a collection at "a"
+
+Given several pairs, places them one after another, so a later pair sees
+what an earlier pair placed.
+
+  silt__set doc '0.:map' .a '0.:int=1' .b '0.:int=2'   ->  doc='0."a":int=1
+                                                                0."b":int=2'
 
 registers:
   __silt__NEW           The value
@@ -33,8 +39,14 @@ args:
   $2  The document
   $3  The path
   $4  The value, a document
+  $@  More paths and values, pair by pair
 PUB_FUN
 silt__set() {
+  if [ "$#" -ne 4 ]; then
+    __silt__set_pairs false "$@"
+    return
+  fi
+
   __silt__out "$1" || return 1
   __silt__set__out="$__silt__OUT"
   __silt__NEW="$4"
