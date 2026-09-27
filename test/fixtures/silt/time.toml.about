@@ -1,0 +1,2 @@
+A TOML pair holding an offset date-time. Read back, it is a time, since
+TOML spells one and nothing else reads as one.

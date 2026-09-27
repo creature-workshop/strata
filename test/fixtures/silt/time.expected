@@ -78,3 +78,20 @@ true
 0."at":str="2026-09-22T06:10:04.500000000Z"
 ## equals @back $m
 false
+## to_yaml @m
+at: "2026-09-22T06:10:04.500000000Z"
+## to_toml @m
+at = 2026-09-22T06:10:04.500000000Z
+## from_yaml time.yaml
+0."at":str="2026-09-22T06:10:04.500000000Z"
+0."plain":str="2026-09-22T06:10:04.500000000Z"
+## as toml from_toml time.toml
+0."at":time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+## equals @toml $m
+true
+## as index split at ,
+0.0:str="at"
+## as strh to_strh @m 1299709 104729 1
+67e924b179c7e1f3 0."at":time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+## to_strt @m $index
+0.@0:-7=2026-09-22T06:10:04.500000000Z

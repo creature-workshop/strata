@@ -43,3 +43,13 @@ as m obj at $t
 to_json @m
 as back from_json time.json
 equals @back $m
+# Out to YAML and TOML, and back
+to_yaml @m
+to_toml @m
+from_yaml time.yaml
+as toml from_toml time.toml
+equals @toml $m
+# Out to .strh and .strt, the time a leaf like any other
+as index split at ,
+as strh to_strh @m 1299709 104729 1
+to_strt @m $index
