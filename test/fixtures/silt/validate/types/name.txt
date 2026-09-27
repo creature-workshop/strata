@@ -1,0 +1,1 @@
+a schema document that another schema refers to
