@@ -28,7 +28,6 @@ silt__keys() {
   __silt__INDEX=0
   __silt__AWK='keys'
   __silt__walk "$2" __silt__keys_line || return 1
-  __silt__absorb_handed
 
   __silt__answer_list
   __silt__OUT="$__silt__keys__out"

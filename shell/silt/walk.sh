@@ -19,6 +19,7 @@ registers:
                          rides last in this walk's positional parameters and
                          is given back when this walk ends
   __silt__STOP           Set true by a callback to end the walk early
+  __silt__IFS            The field separator held aside during a split
   __silt__WALK_DOCUMENT  The document, kept for the hand-off once the split
                          has taken the positional parameters
   __silt__WALK_PROGRAM   The awk program the verb named, if any
@@ -33,13 +34,10 @@ __silt__walk() {
   set -- "$1" "$2" "${__silt__LINE_CALLBACK-}"
   __silt__LINE_CALLBACK="$2"
 
-  __silt__walk__ifs="$IFS"
-  IFS="$__silt__NL"
-  set -f
+  __silt__split_lines
   # shellcheck disable=SC2086
   set -- $1 "$3"
-  set +f
-  IFS="$__silt__walk__ifs"
+  __silt__split_over
 
   if [ "$#" -gt "$((__silt__THRESHOLD + 1))" ] && [ -n "$__silt__WALK_PROGRAM" ]; then
     __silt__hand_off "$__silt__WALK_DOCUMENT" "$__silt__WALK_PROGRAM" || __silt__WALK_STATUS=$?
@@ -49,6 +47,26 @@ __silt__walk() {
 
   __silt__walk_done "$#" "$@"
   return "$__silt__WALK_STATUS"
+}
+
+: <<'FUN'
+Sets the shell up to split a document into lines: IFS a newline alone and
+globbing off, so a value's * stays as it is. The caller does the split with
+its own set --, since positional parameters are a frame's own, and calls
+__silt__split_over after it.
+FUN
+__silt__split_lines() {
+  __silt__IFS="$IFS"
+  IFS="$__silt__NL"
+  set -f
+}
+
+: <<'FUN'
+Gives the shell back its field splitting and globbing after a split.
+FUN
+__silt__split_over() {
+  set +f
+  IFS="$__silt__IFS"
 }
 
 : <<'FUN'
@@ -103,7 +121,8 @@ __silt__walk_done() {
 
 : <<'FUN'
 Runs one awk program of the tier over the document on stdin, the line
-library loaded ahead of it, and leaves what it printed in
+library loaded ahead of it, and appends what it printed to __silt__ANSWER,
+where the walk's callback would have put it, keeping a copy in
 __silt__HANDED_OUT with __silt__HANDED true. Keys, paths and numbers reach
 the program through SILT_* in the environment, a second document through
 the spill file SILT_SPILL names; the document itself rides stdin, so no
@@ -116,7 +135,8 @@ args:
 FUN
 __silt__hand_off() {
   __silt__HANDED=true
-  __silt__HANDED_OUT="$(printf '%s\n' "$1" | __silt__tier "$2")"
+  __silt__HANDED_OUT="$(printf '%s\n' "$1" | __silt__tier "$2")" || return $?
+  __silt__absorb_handed
 }
 
 : <<'FUN'

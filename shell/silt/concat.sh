@@ -25,7 +25,6 @@ silt__concat() {
   __silt__continue_list "$2"
   __silt__AWK='concat'
   __silt__walk "$3" __silt__append_list_line || return 1
-  __silt__absorb_handed
 
   __silt__answer_list
   __silt__OUT="$__silt__concat__out"

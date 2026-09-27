@@ -45,18 +45,14 @@ args:
   $1  The document
 FUN
 __silt__count_members() {
-  __silt__COUNT=0
+  __silt__ANSWER=''
   __silt__AWK='len'
   __silt__walk "$1" __silt__count_line
-
-  if [ "$__silt__HANDED" = true ]; then
-    __silt__COUNT="$__silt__HANDED_OUT"
-  fi
-  __silt__ANSWER="$__silt__COUNT"
+  __silt__ANSWER="${__silt__ANSWER:-0}"
 }
 
 : <<'FUN'
-Counts one line of the walk in __silt__COUNT when it is a member's own line.
+Counts one line of the walk in __silt__ANSWER when it is a member's own line.
 
 args:
   $1  The line
@@ -64,7 +60,7 @@ FUN
 __silt__count_line() {
   case "$1" in
     0.:*) ;;
-    0.*) __silt__COUNT=$((__silt__COUNT + 1)) ;;
+    0.*) __silt__ANSWER=$((${__silt__ANSWER:-0} + 1)) ;;
   esac
 }
 
