@@ -226,10 +226,10 @@ transcript__run_verb() {
     time) transcript__capture silt__time ANSWER "$2" ;;
     now) transcript__now ;;
     roundtrip) transcript__roundtrip "$(transcript__unescape "$2")" ;;
-    each) transcript__capture silt__each transcript__note "$DOCUMENT_FOR_CALL" "$2" ;;
-    each-until) transcript__capture silt__each transcript__until_key "$DOCUMENT_FOR_CALL" "$2" ;;
-    each-string) transcript__capture silt__each transcript__note_string "$DOCUMENT_FOR_CALL" "$2" ;;
-    each-nested) transcript__capture silt__each transcript__note_nested "$DOCUMENT_FOR_CALL" '' ;;
+    each) transcript__capture silt__each "$DOCUMENT_FOR_CALL" transcript__note "$2" ;;
+    each-until) transcript__capture silt__each "$DOCUMENT_FOR_CALL" transcript__until_key "$2" ;;
+    each-string) transcript__capture silt__each "$DOCUMENT_FOR_CALL" transcript__note_string "$2" ;;
+    each-nested) transcript__capture silt__each "$DOCUMENT_FOR_CALL" transcript__note_nested '' ;;
     *) STATUS=127 ;;
   esac
 }
@@ -374,7 +374,7 @@ transcript__note_nested() {
 
   silt__type KIND "$2" || return 1
   case "$KIND" in
-    map | list) silt__each transcript__note_nested "$2" "$3$1/" ;;
+    map | list) silt__each "$2" transcript__note_nested "$3$1/" ;;
   esac
 }
 
@@ -386,7 +386,7 @@ transcript__count_up() {
 # A callback for map: the number of members, counted by running each.
 transcript__count_members() {
   COUNTED=0
-  silt__each transcript__count_up "$3" COUNTED || return 1
+  silt__each "$3" transcript__count_up COUNTED || return 1
   transcript__answer "$1" "0.:int=$COUNTED"
 }
 

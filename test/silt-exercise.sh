@@ -54,7 +54,7 @@ exercise__run_verbs() {
   silt__has h "$DOC" .key1
   silt__len n "$DOC"
   silt__keys k "$DOC"
-  silt__each exercise__nothing "$DOC" extra
+  silt__each "$DOC" exercise__nothing extra
 }
 
 # get, len and each over the document, timed with date, which is outside the
@@ -63,7 +63,7 @@ exercise__run_timed() {
   __exercise__run_timed__started="$(date +%s%N)"
   silt__get g "$DOC" .key3999
   silt__len n "$DOC"
-  silt__each exercise__nothing "$DOC"
+  silt__each "$DOC" exercise__nothing
   __exercise__run_timed__ended="$(date +%s%N)"
   printf '%s\n%s\n%s\n' "$g" "$n" $(( (__exercise__run_timed__ended - __exercise__run_timed__started) / 1000000 ))
 }

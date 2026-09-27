@@ -33,7 +33,7 @@ silt__project() {
 
   __silt__COLLECTED='0.:list'
   __silt__KEPT=0
-  silt__each __silt__project_member "$__silt__project__doc" "$@" || return $?
+  silt__each "$__silt__project__doc" __silt__project_member "$@" || return $?
 
   __silt__ANSWER="$__silt__COLLECTED"
   __silt__OUT="$__silt__project__out"
