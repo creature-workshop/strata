@@ -1,0 +1,18 @@
+as names pluck .name
+join @names , => map(.name) | join(",")
+as kept filter has_at .reads
+as kept_names pluck @kept .name
+join @kept_names , => map(select(has("reads")) | .name) | join(",")
+as projected project name status
+to_json @projected => map({name, status}) | tojson
+to_json => tojson
+any has_at .reads => any(.[]; has("reads"))
+all has_at .reads => all(.[]; has("reads"))
+as failed find string_is .status failed
+string @failed .name => first(.[] | select(.status == "failed")) | .name
+as keys_as_values map str_of_key
+join @keys_as_values , => [keys[] | tostring] | join(",")
+string-or none .[7].name => .[7].name // "none"
+string-or none .[0].name => .[0].name // "none"
+is_true => . == true
+len => length

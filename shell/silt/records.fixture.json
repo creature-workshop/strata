@@ -1,0 +1,1 @@
+[{"name":"build","status":"passed","reads":["lib/a.sh"]},{"name":"test","status":"failed","reads":[]},{"name":"lint","status":"passed"}]

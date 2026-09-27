@@ -12,3 +12,17 @@ map
 {}
 ## to_yaml
 {}
+## map str_of_key
+0.:map
+## filter is_list
+0.:map
+## find is_list
+
+## any is_list
+false
+## all is_list
+true
+## pluck .x
+0.:list
+## project x
+0.:list

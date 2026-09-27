@@ -1,0 +1,27 @@
+## string .""
+1
+## get .b.""
+0.:str="x"
+## has .b.""
+true
+## keys
+0.0:str=""
+0.1:str="b"
+## each
+: 0.:int=1
+b: 0."":str="x"
+0."c":null
+## map str_of_key
+0."":str=""
+0."b":str="b"
+## filter has_at .""
+0."b":map
+1."":str="x"
+1."c":null
+## pluck .""
+0.0:null
+0.1:str="x"
+## any has_at .""
+true
+## to_json
+{"":1,"b":{"":"x","c":null}}

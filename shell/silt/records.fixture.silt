@@ -1,0 +1,12 @@
+0.0:map
+1."name":str="build"
+1."status":str="passed"
+1."reads":list
+2.0:str="lib/a.sh"
+0.1:map
+1."name":str="test"
+1."status":str="failed"
+1."reads":list
+0.2:map
+1."name":str="lint"
+1."status":str="passed"

@@ -2,3 +2,7 @@ type
 scalar
 string
 len
+is_zero
+is_true
+to_json
+string-or x

@@ -2,8 +2,7 @@
 
 : <<'MODULE'
 SILT, structured inline live text: a Strata document carried between shell
-functions without its id column (ADR.32@strata), read here without starting a
-process.
+functions without its id column (ADR.32@strata), read without a process.
 
 A document is lines, one node each: "<depth>.<key>:<type>" for a collection
 or a null, "<depth>.<key>:<type>=<value>" for a leaf (ADR.2@strata). It is
@@ -13,14 +12,12 @@ document's members, string keys making it a map and indices a list
 str's value is its JSON literal, quotes and escapes included (ADR.3@strata).
 
 Every verb answers in the variable the caller names first, and none starts a
-process: a verb binds its parameters to names, splits the document into its
-own positional parameters once, in C, with IFS a newline and globbing off, and
-reads a line at a time from there. The split lives in each verb because the
-positional parameters are the function's own; SILT has no empty line, which a
-split would drop. A predicate here answers in a register
-rather than printing, since printing would cost the subshell the library
-exists to avoid. A document past __silt__THRESHOLD lines belongs to the awk
-tier, which answers the same call the same way.
+process: a verb splits the document into its own positional parameters once,
+in C, with IFS a newline and globbing off, and reads a line at a time from
+there; SILT has no empty line, which a split would drop. A predicate answers
+in a register rather than printing, since printing would cost the subshell
+the library exists to avoid. A document past __silt__THRESHOLD lines belongs
+to the awk tier, which answers the same call the same way.
 
   silt__type      the kind of value a document is
   silt__get       the value at a path, as a document of its own
@@ -30,6 +27,13 @@ tier, which answers the same call the same way.
   silt__len       the number of members
   silt__keys      the members' keys, as a list document
   silt__each      a callback per member, with its key and its value
+  silt__map       every member's value replaced by what a callback answers
+  silt__filter    the members a predicate keeps
+  silt__find      the first member's value a predicate takes
+  silt__any       whether a predicate takes any member
+  silt__all       whether a predicate takes every member
+  silt__pluck     the value at a path in each member, as a list
+  silt__project   the members named of each member, as a list of maps
   silt__unwrap    a JSON string literal to text
   silt__wrap      text to a JSON string literal
   silt__str       a str document from text
@@ -42,12 +46,19 @@ tier, which answers the same call the same way.
   silt__split     text cut on a separator, as a list of str
   silt__canon     the document with every map in canonical order
   silt__equals    whether two documents are the same value
+  silt__is_true   whether a document is the bool true
+  silt__is_false  whether a document is the bool false
+  silt__is_zero   whether a document is the int 0
   silt__from_json the JSON on stdin as a document
   silt__to_json   a document as one line of JSON
   silt__from_yaml the YAML on stdin as a document
   silt__to_yaml   a document as YAML in block style
   silt__from_toml the TOML on stdin as a document
   silt__to_toml   a document as TOML, its tables under headers
+
+A verb with a callback calls it as a verb is called: the answer variable's
+name, the member's key as text, its value as a document, then the caller's
+extras. It may run any verb but each and the verbs over it: no recursion.
 
 A path names members from the top: ".a.b" the member b of the member a,
 ".a[2]" the third element of the list a, ".[0]" the first element of a list
@@ -125,3 +136,13 @@ __silt__home || return 1
 . "$__silt__DIR/split.sh"
 . "$__silt__DIR/canon.sh"
 . "$__silt__DIR/translate.sh"
+. "$__silt__DIR/callback.sh"
+. "$__silt__DIR/gather.sh"
+. "$__silt__DIR/map.sh"
+. "$__silt__DIR/filter.sh"
+. "$__silt__DIR/find.sh"
+. "$__silt__DIR/any.sh"
+. "$__silt__DIR/all.sh"
+. "$__silt__DIR/pluck.sh"
+. "$__silt__DIR/project.sh"
+. "$__silt__DIR/truth.sh"

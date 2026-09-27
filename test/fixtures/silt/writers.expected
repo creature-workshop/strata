@@ -161,3 +161,44 @@ a "quoted" key: with.dots
 !! 1 ERROR: silt: join of a list holding a collection
 ## obj k
 !! 1 ERROR: silt: a key without a document: k
+## as zc set @c .count 0.:int=0
+0."runner":str="bats"
+0."count":int=0
+## as zero get @zc .count
+0.:int=0
+## is_zero @zero
+true
+## is_zero @c
+false
+## to_json @c
+{"runner":"bats","count":3}
+## to_json @l2
+["bats",2,null,true,{"runner":"bats","count":3}]
+## to_json @c3
+{"runner":"bats","count":3,"tests":{"a":{"b":"bats"}}}
+## to_json @e
+{"a":[{"b":1}]}
+## as inf set @c .ratio 0.:float=inf
+0."runner":str="bats"
+0."count":int=3
+0."ratio":float=inf
+## to_json @inf
+{"runner":"bats","count":3,"ratio":{"format":"strata","spelling":"inf"}}
+## as at set @c .at 0.:time-rfc3339-utc=2026-09-20T18:11:50.946Z
+0."runner":str="bats"
+0."count":int=3
+0."at":time-rfc3339-utc=2026-09-20T18:11:50.946Z
+## to_json @at
+{"runner":"bats","count":3,"at":"2026-09-20T18:11:50.946Z"}
+## as odd set @c .k 0.:blob=x
+0."runner":str="bats"
+0."count":int=3
+0."k":blob=x
+## to_json @odd
+!! 1 ERROR: silt: line 3: a type JSON has no spelling for: 0."k":blob=x
+## as odd2 set @c .k 0.:blob
+0."runner":str="bats"
+0."count":int=3
+0."k":blob
+## to_json @odd2
+!! 1 ERROR: silt: line 3: a type JSON has no spelling for: 0."k":blob

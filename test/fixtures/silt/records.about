@@ -1,0 +1,8 @@
+A list of three records, the shape a list of jobs or tests takes; the third
+has no reads. map replaces every value by what a callback answers, filter
+keeps the members a predicate takes, find answers the first one, any and all
+say whether one or every member is taken, pluck lifts a path out of each
+member and project cuts each down to the keys named. The callbacks read the
+members with the verbs, and end with the refusals:
+a callback that answers no document, a predicate that answers neither true
+nor false, one that fails, and the verbs over a scalar.

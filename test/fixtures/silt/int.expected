@@ -6,3 +6,11 @@ int
 3
 ## len
 !! 1 ERROR: silt: int has no length
+## is_zero
+false
+## is_true
+false
+## to_json
+3
+## string-or x
+3

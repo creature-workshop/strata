@@ -1,0 +1,204 @@
+## type
+list
+## len
+3
+## map str_of_key
+0.0:str="0"
+0.1:str="1"
+0.2:str="2"
+## map value_at .name
+0.0:str="build"
+0.1:str="test"
+0.2:str="lint"
+## map value_at .reads
+!! 1 ERROR: silt: no document answered for 2
+## map len_as_int
+0.0:int=3
+0.1:int=3
+0.2:int=2
+## filter has_at .reads
+0.0:map
+1."name":str="build"
+1."status":str="passed"
+1."reads":list
+2.0:str="lib/a.sh"
+0.1:map
+1."name":str="test"
+1."status":str="failed"
+1."reads":list
+## filter string_is .status passed
+0.0:map
+1."name":str="build"
+1."status":str="passed"
+1."reads":list
+2.0:str="lib/a.sh"
+0.1:map
+1."name":str="lint"
+1."status":str="passed"
+## filter is_list
+0.:list
+## find string_is .status failed
+0."name":str="test"
+0."status":str="failed"
+0."reads":list
+## find string_is .status skipped
+
+## any string_is .status failed
+true
+## any has_at .missing
+false
+## all has_at .name
+true
+## all has_at .reads
+false
+## pluck .name
+0.0:str="build"
+0.1:str="test"
+0.2:str="lint"
+## pluck .reads
+0.0:list
+1.0:str="lib/a.sh"
+0.1:list
+0.2:null
+## pluck .reads[0]
+0.0:str="lib/a.sh"
+0.1:null
+0.2:null
+## pluck .
+0.0:map
+1."name":str="build"
+1."status":str="passed"
+1."reads":list
+2.0:str="lib/a.sh"
+0.1:map
+1."name":str="test"
+1."status":str="failed"
+1."reads":list
+0.2:map
+1."name":str="lint"
+1."status":str="passed"
+## project name status
+0.0:map
+1."name":str="build"
+1."status":str="passed"
+0.1:map
+1."name":str="test"
+1."status":str="failed"
+0.2:map
+1."name":str="lint"
+1."status":str="passed"
+## project name missing
+0.0:map
+1."name":str="build"
+1."missing":null
+0.1:map
+1."name":str="test"
+1."missing":null
+0.2:map
+1."name":str="lint"
+1."missing":null
+## project status
+0.0:map
+1."status":str="passed"
+0.1:map
+1."status":str="failed"
+0.2:map
+1."status":str="passed"
+## as first get .[0]
+0."name":str="build"
+0."status":str="passed"
+0."reads":list
+1.0:str="lib/a.sh"
+## map @first str_of_key
+0."name":str="name"
+0."status":str="status"
+0."reads":str="reads"
+## filter @first is_list
+0."reads":list
+1.0:str="lib/a.sh"
+## find @first is_list
+0.0:str="lib/a.sh"
+## pluck @first .
+0.0:str="build"
+0.1:str="passed"
+0.2:list
+1.0:str="lib/a.sh"
+## project @first name
+0.0:map
+1."name":null
+0.1:map
+1."name":null
+0.2:map
+1."name":null
+## each-string .name
+0: build
+1: test
+2: lint
+## to_json
+[{"name":"build","status":"passed","reads":["lib/a.sh"]},{"name":"test","status":"failed","reads":[]},{"name":"lint","status":"passed"}]
+## as none arr
+0.:list
+## map @none str_of_key
+0.:list
+## filter @none is_list
+0.:list
+## find @none is_list
+
+## any @none is_list
+false
+## all @none is_list
+true
+## pluck @none .x
+0.:list
+## project @none x
+0.:list
+## to_json @none
+[]
+## string .[0].reads
+
+## string .[0]
+
+## string .[1].reads
+
+## string-or none .[7].name
+none
+## string-or none .[0].name
+build
+## string-or none .[0].reads
+none
+## string-or none .[1].reads
+none
+## string-or none .[2].reads
+none
+## is_true
+false
+## is_zero
+false
+## map value_at .missing
+!! 1 ERROR: silt: no document answered for 0
+## filter says maybe
+!! 1 ERROR: silt: a predicate answers true or false, not 'maybe'
+## filter fails
+!! 7 
+## map fails
+!! 7 
+## any fails
+!! 7 
+## project
+!! 1 ERROR: silt: project takes at least one key
+## as s str x
+0.:str="x"
+## map @s str_of_key
+!! 1 ERROR: silt: str has no members
+## filter @s is_list
+!! 1 ERROR: silt: str has no members
+## find @s is_list
+!! 1 ERROR: silt: str has no members
+## any @s is_list
+!! 1 ERROR: silt: str has no members
+## all @s is_list
+!! 1 ERROR: silt: str has no members
+## pluck @s .x
+!! 1 ERROR: silt: str has no members
+## project @s x
+!! 1 ERROR: silt: str has no members

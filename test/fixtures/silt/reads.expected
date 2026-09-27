@@ -23,3 +23,12 @@ lib/a.sh
 ## each
 0: 0.:str="lib/a.sh"
 1: 0.:str="test/a.bats"
+## to_json
+["lib/a.sh","test/a.bats"]
+## map str_of_key
+0.0:str="0"
+0.1:str="1"
+## filter is_list
+0.:list
+## string-or x .[7]
+x

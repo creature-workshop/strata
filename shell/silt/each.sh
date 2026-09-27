@@ -8,7 +8,9 @@ MODULE
 Calls <callback> once per member of a map or a list, with the member's key
 as text (a map's unquoted, a list's index), the member's value as a document
 of its own, and the extra arguments after them. Stops at the first callback
-that returns non-zero, returning its status.
+that returns non-zero, returning its status. The callback may run any verb
+but each and the verbs over it: walking members inside a member's callback
+is recursion, which SILT does not do.
 
   count_reads() { silt__len n "$2"; total=$((total + n)); }
   total=0
@@ -52,9 +54,9 @@ silt__each() {
 
 : <<'FUN'
 Handles one line of the blocks the awk tier writes for each: a member's key
-as text opens a member, its value's lines fill it, and the line holding the
-record separator alone delivers it. Returns the callback's status when it
-stops the walk.
+as the line writes it opens a member, its value's lines fill it, and the
+line holding the record separator alone delivers it. Returns the callback's
+status when it stops the walk.
 
 args:
   $1  The line
@@ -66,13 +68,28 @@ __silt__each_block_line() {
   fi
 
   if [ "$__silt__OPEN" = false ]; then
-    __silt__MEMBER_KEY="$1"
-    __silt__MEMBER=''
-    __silt__OPEN=true
+    __silt__open_block_member "$1" || return 1
     return
   fi
 
   __silt__MEMBER="$__silt__MEMBER${__silt__MEMBER:+$__silt__NL}$1"
+}
+
+: <<'FUN'
+Opens a member of a block from its key line: a map's key literal unwrapped
+to text, a list's index as it is.
+
+args:
+  $1  The key, as the line writes it
+FUN
+__silt__open_block_member() {
+  case "$1" in
+    "$__silt__QUOTE"*) silt__unwrap __silt__MEMBER_KEY "$1" || return 1 ;;
+    *) __silt__MEMBER_KEY="$1" ;;
+  esac
+
+  __silt__MEMBER=''
+  __silt__OPEN=true
 }
 
 : <<'FUN'
@@ -95,32 +112,46 @@ __silt__hold_extras() {
 }
 
 : <<'FUN'
-Handles one line of the walk: a depth-0 line opens a member, a deeper one
-belongs to the member open. Returns the callback's status when it stops
+Handles one line of the walk: a depth-0 line is the next member, a deeper
+one belongs to the member open. Returns the callback's status when it stops
 the walk.
 
 args:
   $1  The line
 FUN
 __silt__each_line() {
-  __silt__parse "$1" || return 1
-
-  if [ "$__silt__DEPTH" -eq 0 ]; then
-    __silt__open_member
-  else
-    __silt__extend_member "$1"
-  fi
+  case "$1" in
+    0.*) __silt__next_member "$1" ;;
+    *) __silt__extend_member "$1" ;;
+  esac
 }
 
 : <<'FUN'
-Delivers the member open, if one is, then opens the parsed line as the next:
-its key as text, its value as a keyless root. A keyless line is an empty
-collection, which ends the walk with no member at all. Returns the
-callback's status when it stops the walk.
+Delivers the member open, if one is, then opens the line as the next, unless
+the delivery ended the walk. The delivery comes first because the callback
+may parse lines of its own, so the line is read only once it has returned.
+Returns the callback's status when it stops the walk.
+
+args:
+  $1  The member's own line
 FUN
-__silt__open_member() {
+__silt__next_member() {
   __silt__deliver_member || return $?
 
+  if [ "$__silt__STOP" = true ]; then
+    return 0
+  fi
+
+  __silt__parse "$1" || return 1
+  __silt__open_member
+}
+
+: <<'FUN'
+Opens the parsed line as the next member: its key as text, its value as a
+keyless root. A keyless line is an empty collection, which ends the walk
+with no member at all.
+FUN
+__silt__open_member() {
   case "$__silt__KEY" in
     '')
       __silt__STOP=true
@@ -147,6 +178,8 @@ args:
   $1  The line
 FUN
 __silt__extend_member() {
+  __silt__parse "$1" || return 1
+
   case "$__silt__MEMBER" in
     0.:map | 0.:list) __silt__MEMBER="$((__silt__DEPTH - 1)).${1#*.}" ;;
     *) __silt__MEMBER="$__silt__MEMBER$__silt__NL$((__silt__DEPTH - 1)).${1#*.}" ;;

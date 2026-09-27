@@ -5,3 +5,10 @@ get
 scalar
 to_json
 to_yaml
+map str_of_key
+filter is_list
+find is_list
+any is_list
+all is_list
+pluck .x
+project x

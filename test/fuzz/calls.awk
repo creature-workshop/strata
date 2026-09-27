@@ -4,7 +4,9 @@
 # paths come in on stdin as test/fuzz/paths.jq prints them; a seed picks
 # which are exercised, drawn by a Lehmer generator of this file's own, the
 # root's type comes in as -v root=, -v yaml=0 leaves the YAML out, and
-# -v toml=1 brings the TOML in.
+# -v toml=1 brings the TOML in. Over every collection read, the verbs over
+# each run with the transcript's callbacks; over every scalar, the truth
+# verbs and string with a default.
 #
 #   awk -v seed=7 -v root=object -f calls.awk paths  ->  as d from_json value.json
 #                                                        to_json @d => tojson
@@ -21,13 +23,112 @@ function pick(n) {
   return int(draw() * n)
 }
 
-# Keeps one path with its spellings and type.
+# Keeps one path with its spellings, its type, its parent's path and its key.
 function keep_path(line, __part) {
   split(line, __part, "\037")
   PATHS++
   SILT[PATHS] = __part[1]
   JQ[PATHS] = __part[2]
   TYPE[PATHS] = __part[3]
+  PARENT[PATHS] = __part[4]
+  KEY[PATHS] = __part[5]
+}
+
+# Whether the collection whose path is <parent>, as getpath takes it, holds a
+# member of the type.
+function holds_member_of_type(parent, type, __j) {
+  for (__j = 1; __j <= PATHS; __j++) {
+    if (PARENT[__j] == parent && TYPE[__j] == type) {
+      return 1
+    }
+  }
+
+  return 0
+}
+
+# A map key of the value, drawn, as its JSON literal; "a" when the value has
+# no map key at all.
+function drawn_key(__j, __count, __at) {
+  __count = 0
+  for (__j = 1; __j <= PATHS; __j++) {
+    if (KEY[__j] != "") {
+      __count++
+    }
+  }
+  if (__count == 0) {
+    return "\"a\""
+  }
+
+  __at = pick(__count)
+  for (__j = 1; __j <= PATHS; __j++) {
+    if (KEY[__j] != "" && __at-- == 0) {
+      return KEY[__j]
+    }
+  }
+}
+
+# The text of a key literal a verb can take as one word, since the transcript
+# splits a writer's or a collection verb's words on spaces and the shell
+# would expand a glob: none of a space, a backslash, a quote, a star, a
+# question mark or a bracket inside; nothing when the literal holds one.
+function plain_text(literal, __text) {
+  __text = substr(literal, 2, length(literal) - 2)
+  if (__text == "" || __text ~ /[ \\"*?[\]]/) {
+    return ""
+  }
+
+  return __text
+}
+
+# The verbs over each, run over a collection: <doc> names it for a call, <at>
+# is the jq expression for the value there, and <parent> its path as getpath
+# takes it, for what it holds. map and filter take the transcript's
+# callbacks, which read the member with the reader verbs; find only where a
+# list member exists, since it answers nothing otherwise; pluck with a key
+# drawn from the value's own, and has_at and project with it where it is one
+# plain word.
+function each_calls(doc, at, parent, __n, __key, __text) {
+  EACH_CALLS++
+  __n = EACH_CALLS
+  print "as m" __n " map " doc " str_of_key"
+  print "to_json @m" __n " => " at " | (if type == \"array\" then [keys[] | tostring] else with_entries(.value = .key) end) | tojson"
+  print "as g" __n " map " doc " value_at ."
+  print "to_json @g" __n " => " at " | tojson"
+  print "as f" __n " filter " doc " is_list"
+  print "to_json @f" __n " => " at " | (if type == \"array\" then map(select(type == \"array\")) else with_entries(select(.value | type == \"array\")) end) | tojson"
+  print "any " doc " is_list => " at " | any(.[]; type == \"array\")"
+  print "all " doc " is_list => " at " | all(.[]; type == \"array\")"
+
+  if (holds_member_of_type(parent, "array")) {
+    print "as x" __n " find " doc " is_list"
+    print "to_json @x" __n " => " at " | first(.[] | select(type == \"array\")) | tojson"
+  }
+
+  __key = drawn_key()
+  print "as p" __n " pluck " doc " ."
+  print "to_json @p" __n " => " at " | [.[]] | tojson"
+  print "as q" __n " pluck " doc " ." __key
+  print "to_json @q" __n " => " at " | [.[] | if type == \"object\" then .[" __key "] else null end] | tojson"
+  __text = plain_text(__key)
+  if (__text != "") {
+    print "as w" __n " filter " doc " has_at ." __key
+    print "to_json @w" __n " => " at " | (if type == \"array\" then map(select(type == \"object\" and has(" __key "))) else with_entries(select(.value | type == \"object\" and has(" __key "))) end) | tojson"
+    print "as j" __n " project " doc " " __text
+    print "to_json @j" __n " => " at " | [.[] | {" __key ": (if type == \"object\" then .[" __key "] else null end)}] | tojson"
+  }
+}
+
+# The truth verbs and string with a default over a scalar: <doc> names it
+# for a call, <path> is its path for string, and <at> the jq expression for
+# the value there.
+function scalar_verb_calls(doc, path, at, __n) {
+  SCALAR_CALLS++
+  __n = SCALAR_CALLS
+  print "string-or @d none " path " => " at " | if . == null then \"none\" else . end"
+  print "as v" __n " get @d " path
+  print "is_true @v" __n " => " at " == true"
+  print "is_false @v" __n " => " at " == false"
+  print "is_zero @v" __n " => " at " == 0"
 }
 
 # The calls every case makes over the root: read it, write it back, and
@@ -52,33 +153,37 @@ function root_calls() {
   }
 }
 
-# The calls over a root that is a collection: its length, and for a map its
-# keys and a key it does not hold.
+# The calls over a root that is a collection: its length, the verbs over
+# each, and for a map its keys and a key it does not hold.
 function collection_root_calls() {
   print "len @d => length"
+  each_calls("@d", ".", "[]")
 
   if (root == "object") {
     print "as k keys @d"
     print "join @k , => keys | join(\",\")"
     print "has @d .\"no such key\" => has(\"no such key\")"
+    print "string-or @d none .\"no such key\" => .[\"no such key\"] // \"none\""
     print "as t set @d .\"fresh\" 0.:str=\"new\""
     print "to_json @t => setpath([\"fresh\"]; \"new\") | tojson"
   }
 }
 
-# The calls over a path whose value is a scalar: its text, and whether it
-# is there.
+# The calls over a path whose value is a scalar: its text, whether it is
+# there, and the scalar verbs.
 function scalar_calls(i) {
   print "string @d " SILT[i] " => getpath(" JQ[i] ")"
   print "has @d " SILT[i] " => true"
+  scalar_verb_calls("@d", SILT[i], "getpath(" JQ[i] ")")
 }
 
 # The calls over a path whose value is a collection: the value as JSON, its
-# length, and for a map its keys.
+# length, the verbs over each, and for a map its keys.
 function collection_calls(i) {
   print "as s" i " get @d " SILT[i]
   print "to_json @s" i " => getpath(" JQ[i] ") | tojson"
   print "len @s" i " => getpath(" JQ[i] ") | length"
+  each_calls("@s" i, "getpath(" JQ[i] ")", JQ[i])
 
   if (TYPE[i] == "object") {
     print "as k" i " keys @s" i
@@ -126,12 +231,16 @@ function main() {
 BEGIN {
   STATE = ((seed + 7919) % 2147483646) + 1
   PATHS = 0
+  EACH_CALLS = 0
+  SCALAR_CALLS = 0
 }
 
 END {
   root_calls()
   if (root == "object" || root == "array") {
     collection_root_calls()
+  } else {
+    scalar_verb_calls("@d", ".", ".")
   }
   drawn_path_calls()
 }

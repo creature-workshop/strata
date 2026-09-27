@@ -1,0 +1,63 @@
+type
+len
+map str_of_key
+map value_at .name
+map value_at .reads
+map len_as_int
+filter has_at .reads
+filter string_is .status passed
+filter is_list
+find string_is .status failed
+find string_is .status skipped
+any string_is .status failed
+any has_at .missing
+all has_at .name
+all has_at .reads
+pluck .name
+pluck .reads
+pluck .reads[0]
+pluck .
+project name status
+project name missing
+project status
+as first get .[0]
+map @first str_of_key
+filter @first is_list
+find @first is_list
+pluck @first .
+project @first name
+each-string .name
+to_json
+as none arr
+map @none str_of_key
+filter @none is_list
+find @none is_list
+any @none is_list
+all @none is_list
+pluck @none .x
+project @none x
+to_json @none
+string .[0].reads
+string .[0]
+string .[1].reads
+string-or none .[7].name
+string-or none .[0].name
+string-or none .[0].reads
+string-or none .[1].reads
+string-or none .[2].reads
+is_true
+is_zero
+map value_at .missing
+filter says maybe
+filter fails
+map fails
+any fails
+project
+as s str x
+map @s str_of_key
+filter @s is_list
+find @s is_list
+any @s is_list
+all @s is_list
+pluck @s .x
+project @s x
