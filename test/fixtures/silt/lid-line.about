@@ -1,0 +1,1 @@
+A SILT line opens with its depth; a line with a LID in front is a .strh line, which from_strh translates and the reader refuses, naming the line (ADR.32).

@@ -1,0 +1,1 @@
+A type code from 1 up is a derived primitive, which a header defines and SILT cannot carry; from_strt refuses it, naming the line.

@@ -1,0 +1,1 @@
+The .strt twin of the map fixture: a string key as @ and its code in an index that lists the keys in the order they first appear, a type as its code, a bool as 1 or 0, and no id column.

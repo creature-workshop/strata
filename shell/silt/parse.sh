@@ -168,12 +168,56 @@ args:
 FUN
 __silt__parse() {
   __silt__DEPTH="${1%%.*}"
+  __silt__require_depth "$1" || return 1
+  __silt__parse_key "${1#*.}" || return 1
+  __silt__parse_node "$__silt__REST"
+  __silt__require_spelled_out "$1"
+}
 
+: <<'FUN'
+Refuses a line that does not open with its depth, bare digits and a dot: one
+with no dot at all, and a .strh line with its LID still in front
+(ADR.32@strata). Reads __silt__DEPTH, the text before the first dot.
+
+args:
+  $1  The line
+FUN
+__silt__require_depth() {
   if [ "$__silt__DEPTH" = "$1" ]; then
     __silt__fail "not a SILT line: $1"
     return 1
   fi
 
-  __silt__parse_key "${1#*.}" || return 1
-  __silt__parse_node "$__silt__REST"
+  case "$__silt__DEPTH" in
+    # structs-lint: allow -- a depth is bare digits (ADR.2@strata); SILT sits beneath structs
+    '' | *[!0-9]*)
+      __silt__fail "not a SILT line: $1"
+      return 1
+      ;;
+  esac
+}
+
+: <<'FUN'
+Refuses a line that writes its key as @ and a code, or its type as a code,
+the way a .strt line does (ADR.32@strata), naming it. Reads the registers
+__silt__parse filled.
+
+args:
+  $1  The line
+FUN
+__silt__require_spelled_out() {
+  case "$__silt__KEY" in
+    @*)
+      __silt__fail "a SILT line writes its key, not a code: $1"
+      return 1
+      ;;
+  esac
+
+  case "$__silt__TYPE" in
+    # structs-lint: allow -- a type code is a number, 0 or below (ADR.3@strata); SILT sits beneath structs
+    -* | [0-9]*)
+      __silt__fail "a SILT line names its type, not a code: $1"
+      return 1
+      ;;
+  esac
 }

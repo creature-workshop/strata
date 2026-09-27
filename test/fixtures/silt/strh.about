@@ -1,0 +1,6 @@
+from_strh reads the map fixture's .strh twin, dropping the LID in front of
+every line, and the reader verbs read the result. to_strh draws the column
+again: with the same seeds and number, document 1, the text comes back byte
+for byte, and as document 0, the header's, it carries the LIDs of ADR.9's
+vector. The calls end with what is refused: a SILT file handed to
+from_strh, seeds and numbers out of range, and a value that is not an int.

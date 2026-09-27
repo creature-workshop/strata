@@ -1,0 +1,6 @@
+## type
+map
+## get .a
+!! 1 ERROR: silt: a SILT line names its type, not a code: 1."b":-5=1
+## get .a.b
+!! 1 ERROR: silt: a SILT line names its type, not a code: 1."b":-5=1

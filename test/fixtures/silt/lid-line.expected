@@ -1,0 +1,6 @@
+## type
+!! 1 ERROR: silt: not a SILT line: 5e71b83c0a2d9f46 0."a":int=1
+## get .a
+!! 1 ERROR: silt: not a SILT line: 5e71b83c0a2d9f46 0."a":int=1
+## len
+!! 1 ERROR: silt: not a SILT line: 5e71b83c0a2d9f46 0."a":int=1

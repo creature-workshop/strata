@@ -5,7 +5,7 @@
 # <name>.calls lists verbs to run with their one argument, <name>.silt is the
 # document they run against (absent, the module's own <name>.fixture.silt),
 # and <name>.expected is the transcript test/silt-transcript.sh writes. A
-# document a call reads by name, <file>.json, <file>.yaml or <file>.toml,
+# document a call reads by name, <file>.json, .yaml, .toml, .strh or .strt,
 # carries its own <file>.name and <file>.about beside it, and a test checks
 # that each does.
 #
@@ -83,9 +83,9 @@ document_of() {
 }
 
 # Every document a call reads by name carries a name and an about of its own.
-@test "golden documents: every .json, .yaml and .toml under the fixtures has a .name and an .about beside it" {
+@test "golden documents: every .json, .yaml, .toml, .strh and .strt under the fixtures has a .name and an .about beside it" {
   local document missing=''
-  for document in "$FIXTURES"/*.json "$FIXTURES"/*.yaml "$FIXTURES"/*.toml; do
+  for document in "$FIXTURES"/*.json "$FIXTURES"/*.yaml "$FIXTURES"/*.toml "$FIXTURES"/*.strh "$FIXTURES"/*.strt; do
     [ -f "$document.name" ] && [ -f "$document.about" ] || missing="$missing $(basename "$document")"
   done
   [ -z "$missing" ] || fail "documents with no name or about:$missing"
