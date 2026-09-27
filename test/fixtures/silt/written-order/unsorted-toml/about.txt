@@ -1,0 +1,1 @@
+A TOML document whose tables are not in sorted order. The table zeta.sub is written after the table alpha, and it still belongs under zeta, where zeta was first written.

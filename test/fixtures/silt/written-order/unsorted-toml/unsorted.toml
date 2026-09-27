@@ -1,0 +1,7 @@
+name = "x"
+[zeta]
+k = 1
+[alpha]
+k = 2
+[zeta.sub]
+j = 3

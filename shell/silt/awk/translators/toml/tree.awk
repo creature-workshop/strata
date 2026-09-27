@@ -7,7 +7,7 @@
 # body ends and closed after, though a header may still put a new sub-table
 # beneath it; and an inline table, an array and a value take nothing more.
 # Once the text is read the tree is walked once into the SILT writer.
-# Loaded after awk/lines.awk, order.awk and translators/write.awk, and
+# Loaded after awk/lines.awk and translators/write.awk, and
 # text.awk beside this one.
 #
 #   N_KIND[n]                  table, array or scalar
@@ -206,8 +206,7 @@ function table_words(state) {
 
 # Writes the tree under <node> into the SILT writer as the member <key> of
 # the collection open: a scalar as its line, a table as a map and an array
-# as a list, each child after it in the document's order, the writer
-# putting every map in canonical order.
+# as a list, each child after it in the document's order.
 function emit(node, key, __i) {
   if (N_KIND[node] == "scalar") {
     write_scalar(key, N_TYPE[node], N_VALUE[node])

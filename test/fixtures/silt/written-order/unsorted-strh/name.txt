@@ -1,0 +1,1 @@
+A .strh document with its keys out of sorted order

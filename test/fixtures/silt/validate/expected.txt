@@ -1,29 +1,29 @@
 ## as s from_json schema/schema.json
+0."type":str="object"
+0."required":list
+1.0:str="org"
+1.1:str="at"
+0."properties":map
+1."org":map
+2."type":str="string"
+2."pattern":str="^[a-z]+$"
+1."at":map
+2."type":str="string"
+2."minLength":int=30
+1."ratio":map
+2."type":str="number"
+2."maximum":int=1
+1."tags":map
+2."type":str="array"
+2."items":map
+3."$ref":str="#/$defs/tag"
+2."uniqueItems":bool=true
+0."additionalProperties":bool=false
 0."$defs":map
 1."tag":map
 2."enum":list
 3.0:str="silt"
 3.1:str="adrs"
-0."additionalProperties":bool=false
-0."properties":map
-1."at":map
-2."minLength":int=30
-2."type":str="string"
-1."org":map
-2."pattern":str="^[a-z]+$"
-2."type":str="string"
-1."ratio":map
-2."maximum":int=1
-2."type":str="number"
-1."tags":map
-2."items":map
-3."$ref":str="#/$defs/tag"
-2."type":str="array"
-2."uniqueItems":bool=true
-0."required":list
-1.0:str="org"
-1.1:str="at"
-0."type":str="object"
 ## as at time 2026-09-22T08:10:04.5+02:00
 0.:time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
 ## as org str ksoft
@@ -115,6 +115,7 @@
 ## validate @good 3.0:int=1
 !! 1 ERROR: silt: line is nested more than one level deeper than the line before it: 3.0:int=1
 ## as r from_json refers/refers.json
+0."type":str="object"
 0."properties":map
 1."org":map
 2."$ref":str="types/types.json#/$defs/name"
@@ -122,12 +123,11 @@
 2."$ref":str="types/types.json#/$defs/name"
 1."plan":map
 2."$ref":str="plans.json"
-0."type":str="object"
 ## as t from_json types/types.json
 0."$defs":map
 1."name":map
-2."pattern":str="^[a-z]+$"
 2."type":str="string"
+2."pattern":str="^[a-z]+$"
 ## references @r
 0.0:str="plans.json"
 0.1:str="types/types.json"

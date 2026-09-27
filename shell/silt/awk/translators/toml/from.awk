@@ -1,5 +1,5 @@
-# The TOML document on stdin as a SILT document, every map in canonical
-# order: silt__from_toml. The text is read whole, then walked once: a
+# The TOML document on stdin as a SILT document, with the members of every
+# map in the order the TOML first wrote them: silt__from_toml. The text is read whole, then walked once: a
 # header names the table the pairs after it fill, and a pair puts its value
 # under its key, a dotted key naming tables on the way. Since a header may
 # name a table from anywhere in the document, the values are held in a tree
@@ -9,7 +9,7 @@
 # A spelling Strata has no primitive for, a number outside ADR.20's
 # patterns or a local date-time, is kept as the map ADR.20 gives it, and
 # what TOML forbids is refused, naming the line. Loaded after awk/lines.awk,
-# order.awk, translators/write.awk, translators/numbers.awk and every other
+# translators/write.awk, translators/numbers.awk and every other
 # file beside this one.
 #
 #   [a]              ->  0."a":map
@@ -87,7 +87,6 @@ function main() {
 }
 
 BEGIN {
-  order_begin()
   TEXT = ""
   POS = 1
   AT_LINE = 1
@@ -97,7 +96,7 @@ BEGIN {
 
 END {
   read_document()
-  print_ordered()
+  print_written()
 }
 
 { main() }

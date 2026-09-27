@@ -1,12 +1,12 @@
 ## as b from_yaml indented-block/indented-block.yaml
-0."fold":str=" deep\nshallow\n"
-0."keep":str="kept\n\n"
 0."lead":str=" two\n\nbreaks"
+0."keep":str="kept\n\n"
+0."fold":str=" deep\nshallow\n"
 ## to_json @b
-{"fold":" deep\nshallow\n","keep":"kept\n\n","lead":" two\n\nbreaks"}
+{"lead":" two\n\nbreaks","keep":"kept\n\n","fold":" deep\nshallow\n"}
 ## to_yaml @b
-fold: " deep\nshallow\n"
+lead: " two\n\nbreaks"
 keep: |+
   kept
 
-lead: " two\n\nbreaks"
+fold: " deep\nshallow\n"

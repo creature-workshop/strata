@@ -1,31 +1,19 @@
 ## as y from_yaml awkward/awkward.yaml
-0."jobs":list
-1.0:map
-2."name":str="test"
-2."needs":list
-2."script":list
-3.0:str="echo \"hi\""
-3.1:str="one\n  two # not a comment\n\nthree\n"
-3.2:str="folded onto one line\nand a second"
-1.1:map
-2."keep":str="kept\n\n"
-2."name":str="deploy"
-2."rules":list
-3.0:list
-4.0:str="nested"
-4.1:str="sequence"
-3.1:map
-4."if":str="$CI_COMMIT_TAG"
-2."strip":str="stripped"
-0."on":str="push"
 0."stages":list
 1.0:str="build"
 1.1:str="test"
 0."variables":map
 1."GIT_DEPTH":int=1
-1."clean":bool=true
-1."empty list":list
+1."ratio":float=-1.5e3
+1."version":str="1.0"
+1."plain version":str="1.2.3"
 1."empty map":map
+1."empty list":list
+1."nothing":null
+1."tilde":null
+1."clean":bool=true
+1."single 'quoted' key":str="it's plain"
+1."url":str="http://example.com/a#b"
 1."escaped":str="a \"quote\",\ta tab\nand a line"
 1."flow":map
 2."a":int=1
@@ -33,13 +21,25 @@
 3.0:str="x"
 3.1:str="y, z"
 2."c":null
-1."nothing":null
-1."plain version":str="1.2.3"
-1."ratio":float=-1.5e3
-1."single 'quoted' key":str="it's plain"
-1."tilde":null
-1."url":str="http://example.com/a#b"
-1."version":str="1.0"
+0."jobs":list
+1.0:map
+2."name":str="test"
+2."script":list
+3.0:str="echo \"hi\""
+3.1:str="one\n  two # not a comment\n\nthree\n"
+3.2:str="folded onto one line\nand a second"
+2."needs":list
+1.1:map
+2."name":str="deploy"
+2."rules":list
+3.0:list
+4.0:str="nested"
+4.1:str="sequence"
+3.1:map
+4."if":str="$CI_COMMIT_TAG"
+2."keep":str="kept\n\n"
+2."strip":str="stripped"
+0."on":str="push"
 ## as j from_json awkward-value/awkward-value.json
 0."jobs":list
 1.0:map
@@ -85,9 +85,32 @@
 ## equals @y $j
 true
 ## to_yaml @y
+stages:
+  - build
+  - test
+variables:
+  GIT_DEPTH: 1
+  ratio: -1.5e3
+  version: "1.0"
+  plain version: "1.2.3"
+  empty map: {}
+  empty list: []
+  nothing: null
+  tilde: null
+  clean: true
+  "single 'quoted' key": "it's plain"
+  url: "http://example.com/a#b"
+  escaped: |-
+    a "quote",	a tab
+    and a line
+  flow:
+    a: 1
+    b:
+      - x
+      - "y, z"
+    c: null
 jobs:
   - name: test
-    needs: []
     script:
       - "echo \"hi\""
       - |
@@ -98,40 +121,17 @@ jobs:
       - |-
         folded onto one line
         and a second
-  - keep: |+
-      kept
-
-    name: deploy
+    needs: []
+  - name: deploy
     rules:
       - - nested
         - sequence
       - if: "$CI_COMMIT_TAG"
+    keep: |+
+      kept
+
     strip: stripped
 "on": push
-stages:
-  - build
-  - test
-variables:
-  GIT_DEPTH: 1
-  clean: true
-  empty list: []
-  empty map: {}
-  escaped: |-
-    a "quote",	a tab
-    and a line
-  flow:
-    a: 1
-    b:
-      - x
-      - "y, z"
-    c: null
-  nothing: null
-  plain version: "1.2.3"
-  ratio: -1.5e3
-  "single 'quoted' key": "it's plain"
-  tilde: null
-  url: "http://example.com/a#b"
-  version: "1.0"
 ## as w from_yaml written/written.yaml
 0."jobs":list
 1.0:map
@@ -229,87 +229,87 @@ variables:
 ## to_yaml @c
 null
 ## as n from_yaml numbers/numbers.yaml
-0."dot":map
-1."format":str="yaml"
-1."spelling":str="1."
-1."value":float=1.0
 0."hex":map
 1."format":str="yaml"
 1."spelling":str="0x1F"
 1."value":int=31
-0."inf":map
-1."format":str="yaml"
-1."spelling":str="-.inf"
-1."value":float=-inf
-0."lead":map
-1."format":str="yaml"
-1."spelling":str=".5"
-1."value":float=0.5
-0."nan":map
-1."format":str="yaml"
-1."spelling":str=".NaN"
-1."value":float=nan
-0."negzero":int=-0
-0."nothing":null
 0."octal":map
 1."format":str="yaml"
 1."spelling":str="0o17"
 1."value":int=15
-0."plain":float=1e5
 0."plus":map
 1."format":str="yaml"
 1."spelling":str="+5"
 1."value":int=5
-0."underscore":str="1_000"
-0."upper":float=1.0E+05
-0."yes":bool=true
-0."zero":float=0.0
 0."zeros":map
 1."format":str="yaml"
 1."spelling":str="007"
 1."value":int=7
+0."dot":map
+1."format":str="yaml"
+1."spelling":str="1."
+1."value":float=1.0
+0."lead":map
+1."format":str="yaml"
+1."spelling":str=".5"
+1."value":float=0.5
+0."inf":map
+1."format":str="yaml"
+1."spelling":str="-.inf"
+1."value":float=-inf
+0."nan":map
+1."format":str="yaml"
+1."spelling":str=".NaN"
+1."value":float=nan
+0."underscore":str="1_000"
+0."plain":float=1e5
+0."upper":float=1.0E+05
+0."zero":float=0.0
+0."negzero":int=-0
+0."yes":bool=true
+0."nothing":null
 ## to_json @n
-{"dot":{"format":"yaml","spelling":"1.","value":1.0},"hex":{"format":"yaml","spelling":"0x1F","value":31},"inf":{"format":"yaml","spelling":"-.inf","value":{"format":"strata","spelling":"-inf"}},"lead":{"format":"yaml","spelling":".5","value":0.5},"nan":{"format":"yaml","spelling":".NaN","value":{"format":"strata","spelling":"nan"}},"negzero":-0,"nothing":null,"octal":{"format":"yaml","spelling":"0o17","value":15},"plain":1e5,"plus":{"format":"yaml","spelling":"+5","value":5},"underscore":"1_000","upper":1.0E+05,"yes":true,"zero":0.0,"zeros":{"format":"yaml","spelling":"007","value":7}}
+{"hex":{"format":"yaml","spelling":"0x1F","value":31},"octal":{"format":"yaml","spelling":"0o17","value":15},"plus":{"format":"yaml","spelling":"+5","value":5},"zeros":{"format":"yaml","spelling":"007","value":7},"dot":{"format":"yaml","spelling":"1.","value":1.0},"lead":{"format":"yaml","spelling":".5","value":0.5},"inf":{"format":"yaml","spelling":"-.inf","value":{"format":"strata","spelling":"-inf"}},"nan":{"format":"yaml","spelling":".NaN","value":{"format":"strata","spelling":"nan"}},"underscore":"1_000","plain":1e5,"upper":1.0E+05,"zero":0.0,"negzero":-0,"yes":true,"nothing":null}
 ## to_yaml @n
-dot:
-  format: yaml
-  spelling: "1."
-  value: 1.0
 hex:
   format: yaml
   spelling: "0x1F"
   value: 31
-inf:
-  format: yaml
-  spelling: "-.inf"
-  value: -.inf
-lead:
-  format: yaml
-  spelling: ".5"
-  value: 0.5
-nan:
-  format: yaml
-  spelling: ".NaN"
-  value: .nan
-negzero: -0
-nothing: null
 octal:
   format: yaml
   spelling: "0o17"
   value: 15
-plain: 1e5
 plus:
   format: yaml
   spelling: "+5"
   value: 5
-underscore: "1_000"
-upper: 1.0E+05
-"yes": true
-zero: 0.0
 zeros:
   format: yaml
   spelling: "007"
   value: 7
+dot:
+  format: yaml
+  spelling: "1."
+  value: 1.0
+lead:
+  format: yaml
+  spelling: ".5"
+  value: 0.5
+inf:
+  format: yaml
+  spelling: "-.inf"
+  value: -.inf
+nan:
+  format: yaml
+  spelling: ".NaN"
+  value: .nan
+underscore: "1_000"
+plain: 1e5
+upper: 1.0E+05
+zero: 0.0
+negzero: -0
+"yes": true
+nothing: null
 ## from_yaml anchor/anchor.yaml
 !! 1 ERROR: silt: yaml line 1: an anchor: a: &base 1
 ## from_yaml merge-key/merge-key.yaml
