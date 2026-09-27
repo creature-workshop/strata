@@ -1,0 +1,17 @@
+# each inside each inside each
+each-nested
+# map inside map
+map lengths_of
+# a failure two loops down ends every loop: an int has no length
+map lengths_two_deep
+# filter inside map
+map lists_of
+# any inside filter
+filter has_list
+# find inside filter, with an extra argument passed down
+filter holds_more_than 2
+filter holds_more_than 9
+# all inside any
+any all_are_lists
+# each inside map, and the map still collects every member
+map count_members

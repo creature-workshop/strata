@@ -69,7 +69,7 @@ lines belongs to the awk tier, which answers the same call the same way.
 
 A verb with a callback calls it as a verb is called: the answer variable's
 name, the member's key as text, its value as a document, then the caller's
-extras. It may run any verb but each and the verbs over it: no recursion.
+extras. A callback can run any verb, a loop of its own included.
 
 A path names members from the top: ".a.b" the member b of the member a,
 ".a[2]" the third element of the list a, ".[0]" the first element of a list

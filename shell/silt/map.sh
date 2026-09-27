@@ -9,7 +9,7 @@ Answers a document of the same kind as the one given, each member's value
 replaced by the document the callback answers for it: a map keeps its keys,
 a list its indices. The callback is called with the name of the variable to
 answer in, the member's key as text, its value as a document, and the extra
-arguments after them, and it may run any verb but each and the verbs over it.
+arguments after them. It can run any verb, a loop of its own included.
 
   key_of() { silt__str "$1" "$2"; }
   silt__map named "$doc" key_of   ->  every value the str of its key
