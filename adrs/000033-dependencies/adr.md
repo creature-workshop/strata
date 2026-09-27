@@ -20,8 +20,7 @@ shell/.ops       shellops: the lint, the bats libraries, a test's oracle,
                  the hat, the lints and the test job
 ```
 
-Two repositories that depend on each other can stop each other, and
-neither can be mended first.
+Two repositories that depend on each other can stop each other.
 
 ## Decision
 
@@ -52,17 +51,15 @@ No cycle runs at run time: shellops reads strata, strata reads shell-logs,
 and shell-logs reads neither. A break in shellops or the catalog cannot
 reach a caller of strata.
 
-It can still stop strata's pipeline, and with it every landing. A pin
-holds the files it names and nothing under them: a catalog member runs the
-vendored shellops' own scripts, so the two pins are one and move together,
-and the job beneath them floats, on an image named by tag, packages at
-whatever the day's index holds, and test libraries fetched from another
-forge. The runner's awk differing from a workstation's is that float
-already met.
+At dev time the pin holds the cycle open. Once shellops runs its structs
+on SILT, the shellops that checks strata runs on an earlier strata that
+already passed, as a compiler is built by the release before it.
 
-So the dev-time line limits the dependency and does not end it. What is
-left is accepted until the image and the tools are pinned too, which is
-work of its own.
+A break can still stop strata's pipeline, and with it every landing. A
+catalog member runs the vendored shellops' own scripts, so the two pins
+are one and move together. The job beneath them runs on a stock image and
+installs its tools at the day's versions. That float is accepted: strata
+builds no image of its own.
 
 Nothing checks the run-time rule yet; a test that loads SILT with shellops
 absent is its implementation.
