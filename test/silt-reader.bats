@@ -173,3 +173,9 @@ stub_date() {
   echo "$output"
   assert_success
 }
+
+@test "names: no function under shell/silt is defined more than once" {
+  run bash "$REPO/test/silt-names.sh"
+  echo "$output"
+  assert_success
+}

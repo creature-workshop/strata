@@ -1,0 +1,1 @@
+presence: whether a value is there, empty or true, and the options of a verb
