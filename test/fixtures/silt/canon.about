@@ -1,0 +1,5 @@
+canon puts every map's members in one fixed order, the one RFC 8785 gives:
+by the keys' UTF-16 code units, which puts a capital before a lowercase
+letter, é after e, and an emoji, which UTF-16 spells as a surrogate pair,
+before U+FFFF. Nested maps are ordered too; lists keep their order. equals
+says whether two documents are the same value, looking past member order.

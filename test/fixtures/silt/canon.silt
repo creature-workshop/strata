@@ -1,0 +1,14 @@
+0."zeta":int=1
+0."alpha":map
+1."b":int=2
+1."a":list
+2.0:map
+3."y":null
+3."x":bool=true
+2.1:int=9
+0."Zed":str="capital sorts first"
+0."a \"quoted\" key":int=3
+0."é":int=4
+0."e":int=5
+0."😀":int=6
+0."￿":int=7

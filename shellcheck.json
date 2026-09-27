@@ -3,6 +3,7 @@
     "shell/silt/answer.sh",
     "shell/silt/api.sh",
     "shell/silt/arr.sh",
+    "shell/silt/canon.sh",
     "shell/silt/concat.sh",
     "shell/silt/constants.sh",
     "shell/silt/each.sh",

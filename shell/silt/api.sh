@@ -40,6 +40,8 @@ tier, which answers the same call the same way.
   silt__concat    two lists, one after the other
   silt__join      a list's scalars as one text
   silt__split     text cut on a separator, as a list of str
+  silt__canon     the document with every map in canonical order
+  silt__equals    whether two documents are the same value
 
 A path names members from the top: ".a.b" the member b of the member a,
 ".a[2]" the third element of the list a, ".[0]" the first element of a list
@@ -115,3 +117,4 @@ __silt__home || return 1
 . "$__silt__DIR/concat.sh"
 . "$__silt__DIR/join.sh"
 . "$__silt__DIR/split.sh"
+. "$__silt__DIR/canon.sh"

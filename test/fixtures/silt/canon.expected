@@ -1,0 +1,75 @@
+## type
+map
+## as c canon
+0."Zed":str="capital sorts first"
+0."a \"quoted\" key":int=3
+0."alpha":map
+1."a":list
+2.0:map
+3."x":bool=true
+3."y":null
+2.1:int=9
+1."b":int=2
+0."e":int=5
+0."zeta":int=1
+0."é":int=4
+0."😀":int=6
+0."￿":int=7
+## keys @c
+0.0:str="Zed"
+0.1:str="a \"quoted\" key"
+0.2:str="alpha"
+0.3:str="e"
+0.4:str="zeta"
+0.5:str="é"
+0.6:str="😀"
+0.7:str="￿"
+## get @c .alpha
+0."a":list
+1.0:map
+2."x":bool=true
+2."y":null
+1.1:int=9
+0."b":int=2
+## as c2 canon @c
+0."Zed":str="capital sorts first"
+0."a \"quoted\" key":int=3
+0."alpha":map
+1."a":list
+2.0:map
+3."x":bool=true
+3."y":null
+2.1:int=9
+1."b":int=2
+0."e":int=5
+0."zeta":int=1
+0."é":int=4
+0."😀":int=6
+0."￿":int=7
+## equals @c $c2
+true
+## as r str x
+0.:str="x"
+## as one obj a $r b 0.:int=1
+0."a":str="x"
+0."b":int=1
+## as two obj b 0.:int=1 a $r
+0."b":int=1
+0."a":str="x"
+## equals @one $two
+true
+## equals @one $r
+false
+## as l1 arr $r 0.:int=1
+0.0:str="x"
+0.1:int=1
+## as l2 arr 0.:int=1 $r
+0.0:int=1
+0.1:str="x"
+## equals @l1 $l2
+false
+## canon @l1
+0.0:str="x"
+0.1:int=1
+## equals @l1 $l1
+true

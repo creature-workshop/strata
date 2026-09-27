@@ -15,8 +15,8 @@
 # which the callback returns 3. A call written "as <name> <call>" keeps its
 # answer in a register, "@<name>" in place of the document makes a call read
 # that register, and a writer's words may name one as "$<name>": obj, arr
-# and split take their words alone; push, set, concat and join take the
-# document first; str takes the rest of the line as its text.
+# and split take their words alone; push, set, concat, join and equals take
+# the document first; str takes the rest of the line as its text.
 
 set -u
 
@@ -104,7 +104,7 @@ transcript__run_call() {
 
   # shellcheck disable=SC2086  # a writer's words are split on purpose
   case "${1%% *}" in
-    obj | arr | push | set | concat | join | split) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
+    obj | arr | push | set | concat | join | split | equals) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
     *) transcript__run_verb "${1%% *}" "$__transcript__run_call__rest" ;;
   esac
 }
@@ -142,7 +142,7 @@ transcript__run_writer() {
 # Dispatches a reader verb, with the document where the verb takes one.
 transcript__run_verb() {
   case "$1" in
-    type | scalar | len | keys) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
+    type | scalar | len | keys | canon) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
     get | string | has) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
     unwrap) transcript__capture silt__unwrap ANSWER "$2" ;;
     wrap) transcript__capture silt__wrap ANSWER "$(transcript__unescape "$2")" ;;
