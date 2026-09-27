@@ -114,8 +114,8 @@ awk_starts() {
   assert_equal "$stored" "505b3e7c79c7e1f3 0.0:int=1${NL}505b3e7c68c84c23 0.1:int=2${NL}505b3e7c7b970259 0.2:int=3"
 }
 
-# Puts a date on PATH that notes each start in starts.log and runs the one
-# line of shell given, in place of the clock.
+# Puts a fake date command first on PATH. It appends a line to starts.log
+# each time it runs, then runs the given line of shell.
 stub_date() {
   mkdir -p "$BATS_TEST_TMPDIR/bin"
   printf '#!/bin/sh\necho date >> "%s/starts.log"\n%s\n' "$BATS_TEST_TMPDIR" "$1" > "$BATS_TEST_TMPDIR/bin/date"
@@ -123,21 +123,21 @@ stub_date() {
   PATH="$BATS_TEST_TMPDIR/bin:$PATH"
 }
 
-@test "silt__now: starts date once, and gives nine zeros where date spells no fraction, as BSD's does not" {
+@test "silt__now: runs date once, and uses nine zeros when date does not print fractional seconds" {
   stub_date "echo 2026-09-27T14:03:11.NZ"
   silt__now doc
   assert_equal "$doc" '0.:time-rfc3339-utc=2026-09-27T14:03:11.000000000Z'
   assert_equal "$(cat "$BATS_TEST_TMPDIR/starts.log")" date
 }
 
-@test "silt__now: refuses when date fails, naming the clock" {
+@test "silt__now: fails with a clear message when the date command fails" {
   stub_date "exit 1"
   run silt__now doc
   assert_failure
-  assert_output --partial "the clock could not be read"
+  assert_output --partial "could not read the current time"
 }
 
-@test "validate: every case answers as shellops' jq validator does, on the shell tier and the awk tier" {
+@test "silt__validate: returns the same errors as the shellops jq validator for every case, on both tiers" {
   run bash "$REPO/test/silt-validate.sh"
   echo "$output"
   assert_success

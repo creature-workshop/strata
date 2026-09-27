@@ -1,34 +1,40 @@
-# The keywords that read a collection: required, properties,
-# patternProperties and additionalProperties over an object, and minItems,
-# maxItems, uniqueItems and items over an array. A member is checked at its
-# own place in the value, so the references followed to reach it are
-# forgotten there. Loaded after schema/keywords.awk and schema/patterns.awk.
+# Keywords that check a map or a list: required, properties,
+# patternProperties and additionalProperties for objects; and minItems,
+# maxItems, uniqueItems and items for arrays.
 #
-#   {"required":["a"]} over {}   ->  $: missing required field 'a'
+# When validation moves down to a member or an element, the list of
+# references already followed is reset, because circular references are
+# detected per value.
+#
+# The error messages match the jq validator's messages exactly. Load after
+# schema/keywords.awk and schema/patterns.awk.
+#
+#   {"required":["a"]} with the value {}   ->  $: missing required field 'a'
 
-# required: the object holds every field listed.
+# Handles the required keyword: records an error for each listed field that
+# the object does not have.
 function check_required(schema, value, path, __list, __i, __name) {
   if (!has(schema, "required")) {
     return
   }
 
-  __list = collection_under(schema, "required", "list")
+  __list = collection_operand(schema, "required", "list")
   for (__i = 0; __i < COUNT[__list]; __i++) {
-    __name = said(CHILD_AT[__list, __i])
+    __name = message_text(CHILD_AT[__list, __i])
     if (!has(value, __name)) {
-      fail(path, "missing required field '" __name "'")
+      add_error(path, "missing required field '" __name "'")
     }
   }
 }
 
-# properties: each member the schema names, where the object holds it, is
-# valid against the schema under its name.
+# Handles the properties keyword: validates each member that the schema
+# lists and the object has.
 function check_properties(schema, value, path, __map, __i, __name) {
   if (!has(schema, "properties")) {
     return
   }
 
-  __map = collection_under(schema, "properties", "map")
+  __map = collection_operand(schema, "properties", "map")
   for (__i = 0; __i < COUNT[__map]; __i++) {
     __name = NAME_OF[CHILD_AT[__map, __i]]
     if (has(value, __name)) {
@@ -37,8 +43,7 @@ function check_properties(schema, value, path, __map, __i, __name) {
   }
 }
 
-# Every member of the object whose key holds a match of the pattern is
-# valid against the pattern's schema.
+# Validates every member of the object whose key matches the pattern.
 function check_matching(pattern, schema, value, path, __i, __name) {
   for (__i = 0; __i < COUNT[value]; __i++) {
     __name = NAME_OF[CHILD_AT[value, __i]]
@@ -48,20 +53,21 @@ function check_matching(pattern, schema, value, path, __i, __name) {
   }
 }
 
-# patternProperties: check_matching for each pattern the schema gives.
+# Handles the patternProperties keyword.
 function check_pattern_properties(schema, value, path, __map, __i) {
   if (!has(schema, "patternProperties")) {
     return
   }
 
-  __map = collection_under(schema, "patternProperties", "map")
+  __map = collection_operand(schema, "patternProperties", "map")
   for (__i = 0; __i < COUNT[__map]; __i++) {
     check_matching(NAME_OF[CHILD_AT[__map, __i]], CHILD_AT[__map, __i], value, path)
   }
 }
 
-# Whether a key matches a pattern of the schema's patternProperties.
-function matches_a_pattern(schema, name, __map, __i) {
+# Returns 1 if the key matches any pattern in the schema's
+# patternProperties.
+function matches_any_pattern(schema, name, __map, __i) {
   if (!has(schema, "patternProperties")) {
     return 0
   }
@@ -76,26 +82,28 @@ function matches_a_pattern(schema, name, __map, __i) {
   return 0
 }
 
-# Whether a key is one neither properties names nor a pattern matches.
+# Returns 1 if the key is not listed in properties and does not match any
+# pattern in patternProperties.
 function is_additional(schema, name) {
   if (has(schema, "properties") && has(member(schema, "properties"), name)) {
     return 0
   }
 
-  return !matches_a_pattern(schema, name)
+  return !matches_any_pattern(schema, name)
 }
 
-# One additional member against what additionalProperties gives: refused
-# by false, and valid against a schema.
+# Checks one additional member against the operand of additionalProperties.
+# If the operand is false, the member is an error. If it is a schema, the
+# member is validated against it.
 function check_additional(rule, member_node, path) {
   if (TYPE_OF[rule] == "bool" && VALUE_OF[rule] == "false") {
-    fail(path, "unexpected property '" NAME_OF[member_node] "'")
+    add_error(path, "unexpected property '" NAME_OF[member_node] "'")
   } else if (TYPE_OF[rule] == "map") {
     validate(rule, member_node, path "." NAME_OF[member_node], "")
   }
 }
 
-# additionalProperties: check_additional for each additional member.
+# Handles the additionalProperties keyword.
 function check_additional_properties(schema, value, path, __i) {
   if (!has(schema, "additionalProperties")) {
     return
@@ -108,7 +116,7 @@ function check_additional_properties(schema, value, path, __i) {
   }
 }
 
-# The keywords over an object, skipped for any other value.
+# Runs the object keywords. Does nothing if the value is not a map.
 function check_object(schema, value, path) {
   if (TYPE_OF[value] != "map") {
     return
@@ -120,20 +128,20 @@ function check_object(schema, value, path) {
   check_additional_properties(schema, value, path)
 }
 
-# minItems and maxItems: the array's length is within them.
+# Handles minItems and maxItems.
 function check_item_count(schema, value, path) {
-  if (has(schema, "minItems") && COUNT[value] < number_under(schema, "minItems")) {
-    fail(path, "array has " COUNT[value] " items, minimum is " said(member(schema, "minItems")))
+  if (has(schema, "minItems") && COUNT[value] < number_operand(schema, "minItems")) {
+    add_error(path, "array has " COUNT[value] " items, minimum is " message_text(member(schema, "minItems")))
   }
-  if (has(schema, "maxItems") && COUNT[value] > number_under(schema, "maxItems")) {
-    fail(path, "array has " COUNT[value] " items, maximum is " said(member(schema, "maxItems")))
+  if (has(schema, "maxItems") && COUNT[value] > number_operand(schema, "maxItems")) {
+    add_error(path, "array has " COUNT[value] " items, maximum is " message_text(member(schema, "maxItems")))
   }
 }
 
-# Whether no two elements of the array are the same value.
-function all_differ(value, __i, __met, __identity) {
+# Returns 1 if no two elements of the list are equal.
+function items_are_unique(value, __i, __met, __identity) {
   for (__i = 0; __i < COUNT[value]; __i++) {
-    __identity = identity(CHILD_AT[value, __i])
+    __identity = comparison_key(CHILD_AT[value, __i])
     if (__identity in __met) {
       return 0
     }
@@ -143,14 +151,14 @@ function all_differ(value, __i, __met, __identity) {
   return 1
 }
 
-# uniqueItems: where it is true, no two elements are the same value.
+# Handles the uniqueItems keyword. Does nothing unless the operand is true.
 function check_unique_items(schema, value, path) {
-  if (has(schema, "uniqueItems") && VALUE_OF[member(schema, "uniqueItems")] == "true" && !all_differ(value)) {
-    fail(path, "array items are not unique")
+  if (has(schema, "uniqueItems") && VALUE_OF[member(schema, "uniqueItems")] == "true" && !items_are_unique(value)) {
+    add_error(path, "array items are not unique")
   }
 }
 
-# items: every element is valid against the schema.
+# Handles the items keyword: validates every element against the schema.
 function check_items(schema, value, path, __i) {
   if (!has(schema, "items")) {
     return
@@ -161,7 +169,7 @@ function check_items(schema, value, path, __i) {
   }
 }
 
-# The keywords over an array, skipped for any other value.
+# Runs the array keywords. Does nothing if the value is not a list.
 function check_array(schema, value, path) {
   if (TYPE_OF[value] != "list") {
     return

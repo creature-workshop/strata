@@ -1,15 +1,22 @@
-# A schema's pattern as the extended regular expression awk matches with.
-# The classes \d, \w and \s and their opposites are spelled out, inside a
-# bracket expression and outside one.
-# A repetition between braces is written out, since not every awk reads the
-# braces. What an extended regular expression has no spelling for is
-# refused: a group opening on "(?", a word boundary and a back reference.
-# It holds functions alone. Loaded after lines.awk and order.awk.
+# Converts a schema's pattern into a regular expression that awk can match.
 #
-#   as_ere("^\\d{2}-[\\w.]+$")  ->  ^[0-9][0-9]-[A-Za-z0-9_.]+$
+# JSON Schema patterns use a richer regular expression syntax than awk has.
+# This file translates the parts that can be translated and rejects the rest:
+#
+#   - \d, \w and \s, and their negations \D, \W and \S, are replaced with
+#     bracket expressions. They match ASCII characters only.
+#   - A repetition in braces, such as a{2,3}, is expanded, because some
+#     versions of awk do not support braces.
+#   - A group that starts with "(?", a word boundary (\b) and a back
+#     reference (\1) cannot be translated, and cause an error.
+#
+# This file contains functions only. Load after lines.awk and order.awk.
+#
+#   to_awk_regex("^\\d{2}-[\\w.]+$")  ->  ^[0-9][0-9]-[A-Za-z0-9_.]+$
 
-# The members of the class a letter names, as a bracket expression holds
-# them, or nothing when the letter names no class.
+# Returns the characters that a class letter (d, w or s, in either case)
+# stands for, in the form used inside a bracket expression. Returns an empty
+# string if the letter is not a class.
 function class_members(letter) {
   if (letter == "d" || letter == "D") {
     return "0-9"
@@ -24,12 +31,12 @@ function class_members(letter) {
   return ""
 }
 
-# An escape met outside a bracket expression: a class as a bracket
-# expression of its own, and any other as written. Refuses a word boundary
-# and a back reference.
+# Translates an escape sequence that appears outside a bracket expression.
+# A class becomes a bracket expression, and any other escape is kept as it
+# is. Exits with an error for a word boundary or a back reference.
 function escape_outside(letter, pattern, __members) {
   if (letter ~ /^[bB1-9]$/) {
-    refuse("a pattern an extended regular expression cannot spell: " pattern)
+    refuse("pattern uses a feature that awk regular expressions do not support: " pattern)
   }
 
   __members = class_members(letter)
@@ -40,12 +47,13 @@ function escape_outside(letter, pattern, __members) {
   return (letter ~ /^[DWS]$/ ? "[^" : "[") __members "]"
 }
 
-# An escape met inside a bracket expression: a class as its members, and
-# any other as written. Refuses the opposite of a class, which a bracket
-# expression cannot hold.
+# Translates an escape sequence that appears inside a bracket expression. A
+# class becomes its characters, and any other escape is kept as it is. Exits
+# with an error for a negated class, which cannot be written inside a
+# bracket expression.
 function escape_inside(letter, pattern) {
   if (letter ~ /^[DWS]$/) {
-    refuse("a pattern an extended regular expression cannot spell: " pattern)
+    refuse("pattern uses a feature that awk regular expressions do not support: " pattern)
   }
   if (class_members(letter) == "") {
     return "\\" letter
@@ -54,16 +62,17 @@ function escape_inside(letter, pattern) {
   return class_members(letter)
 }
 
-# Appends text to the expression being written, as the atom a repetition
-# after it would repeat.
+# Appends text to the output and records where it starts. If a repetition
+# follows, this is the text that gets repeated.
 function write_atom(text) {
   ATOM_AT = length(OUT) + 1
   OUT = OUT text
 }
 
-# Opens a bracket expression, a "^" and a "]" that open it taken with it,
-# since a "]" there is a member and closes nothing. Answers how many
-# characters of the pattern it took.
+# Writes the start of a bracket expression, including a leading "^" and a
+# leading "]" if present, because a "]" in that position is a literal
+# character and does not close the expression. Returns the number of pattern
+# characters consumed.
 function open_bracket(pattern, at, __opener) {
   __opener = "["
   if (substr(pattern, at + length(__opener), 1) == "^") {
@@ -79,14 +88,15 @@ function open_bracket(pattern, at, __opener) {
   return length(__opener)
 }
 
-# One character inside a bracket expression, which a "]" closes.
+# Writes one character that is inside a bracket expression. A "]" closes the
+# expression.
 function write_inside(c) {
   OUT = OUT c
   INSIDE = (c != "]")
 }
 
-# Opens or closes a group: the atom a closed group leaves is the whole of
-# it, from its opener.
+# Writes an opening or closing parenthesis. After a closing parenthesis,
+# the whole group is what a following repetition repeats.
 function write_group(c) {
   if (c == "(") {
     GROUP_AT[++GROUPS] = length(OUT) + 1
@@ -100,10 +110,13 @@ function write_group(c) {
   }
 }
 
-# The atom written <fewest> times, then as often as the bound allows: any
-# number of times more when <most> is empty, and up to <most> in all
-# otherwise.
-function repeated(atom, fewest, most, __out, __i) {
+# Returns the text repeated according to a brace repetition: at least
+# "fewest" times, and at most "most" times. If "most" is empty there is no
+# upper limit.
+#
+#   expand_repetition("a", 2, 3)   ->  aa(a)?
+#   expand_repetition("a", 2, "")  ->  aaa*
+function expand_repetition(atom, fewest, most, __out, __i) {
   __out = ""
 
   for (__i = 1; __i <= fewest; __i++) {
@@ -119,10 +132,10 @@ function repeated(atom, fewest, most, __out, __i) {
   return __out
 }
 
-# Writes the repetition the pattern spells at <at> between braces, {n},
-# {n,} or {n,m}, as the atom before it written out that often, since not
-# every awk reads the braces. Answers how many characters of the pattern it
-# took, 0 when the braces spell no repetition.
+# Handles a brace repetition at the given position in the pattern: {n},
+# {n,} or {n,m}. Replaces the preceding text in the output with its expanded
+# form. Returns the number of pattern characters consumed, or 0 if the
+# braces are not a valid repetition.
 function write_repetition(pattern, at, __bounds, __bound, __atom) {
   if (!match(substr(pattern, at), /^\{[0-9]+(,[0-9]*)?\}/)) {
     return 0
@@ -131,14 +144,15 @@ function write_repetition(pattern, at, __bounds, __bound, __atom) {
   __bounds = substr(pattern, at + 1, RLENGTH - 2)
   split(__bounds, __bound, ",")
   __atom = substr(OUT, ATOM_AT)
-  OUT = substr(OUT, 1, ATOM_AT - 1) repeated(__atom, __bound[1] + 0, (index(__bounds, ",") > 0) ? __bound[2] : __bound[1])
+  OUT = substr(OUT, 1, ATOM_AT - 1) expand_repetition(__atom, __bound[1] + 0, (index(__bounds, ",") > 0) ? __bound[2] : __bound[1])
 
   return RLENGTH
 }
 
-# One character outside a bracket expression, with what it opens; a brace
-# that spells no repetition is written as the character it is. Answers how
-# many characters of the pattern it took.
+# Writes one character that is outside a bracket expression, handling the
+# characters that have a special meaning. A brace that is not part of a
+# valid repetition is written as a literal brace. Returns the number of
+# pattern characters consumed.
 function write_outside(pattern, at, __c, __took) {
   __c = substr(pattern, at, 1)
 
@@ -146,7 +160,7 @@ function write_outside(pattern, at, __c, __took) {
     return open_bracket(pattern, at)
   }
   if (__c == "(" && substr(pattern, at + 1, 1) == "?") {
-    refuse("a pattern an extended regular expression cannot spell: " pattern)
+    refuse("pattern uses a feature that awk regular expressions do not support: " pattern)
   }
   if (__c == "(" || __c == ")") {
     write_group(__c)
@@ -172,8 +186,8 @@ function write_outside(pattern, at, __c, __took) {
   return 1
 }
 
-# An escape and the letter after it, inside a bracket expression or
-# outside one.
+# Writes an escape sequence, translating it according to whether it is
+# inside or outside a bracket expression.
 function write_escape(letter, pattern) {
   if (INSIDE) {
     OUT = OUT escape_inside(letter, pattern)
@@ -182,10 +196,9 @@ function write_escape(letter, pattern) {
   }
 }
 
-# The pattern as an extended regular expression, read from its start, OUT
-# holding what is written and INSIDE telling whether a bracket expression
-# is open.
-function translated(pattern, __at, __c) {
+# Translates a whole pattern and returns the result. OUT holds the output so
+# far, and INSIDE is 1 while a bracket expression is open.
+function translate_pattern(pattern, __at, __c) {
   OUT = ""
   INSIDE = 0
   GROUPS = 0
@@ -209,16 +222,17 @@ function translated(pattern, __at, __c) {
   return OUT
 }
 
-# The pattern as an extended regular expression, translated once and kept.
-function as_ere(pattern) {
+# Returns the translated pattern. Each pattern is translated once and the
+# result is cached.
+function to_awk_regex(pattern) {
   if (!(pattern in ERE)) {
-    ERE[pattern] = translated(pattern)
+    ERE[pattern] = translate_pattern(pattern)
   }
 
   return ERE[pattern]
 }
 
-# Whether the text holds a match of the pattern.
+# Returns 1 if the text contains a match for the pattern.
 function matches(text, pattern) {
-  return text ~ as_ere(pattern)
+  return text ~ to_awk_regex(pattern)
 }

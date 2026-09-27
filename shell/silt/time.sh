@@ -1,29 +1,33 @@
 #!/bin/sh
 
 : <<'MODULE'
-silt__time and silt__now: a time document, from text carrying an offset or
-from the clock.
+silt__time and silt__now: create a time document from a date-time string or
+from the system clock.
 
-A time is an instant in UTC spelled exactly one way (ADR.23@strata), a
-capital T and Z and nine fraction digits, so text order is time order and
-two writers spell one instant in the same thirty bytes. The reading, the
-checks and the offset's conversion run in the shell's own arithmetic, with
-no process; only the clock starts one, date.
+A time is always written in UTC in one fixed format (ADR.23@strata):
+YYYY-MM-DDTHH:MM:SS.nnnnnnnnnZ, with exactly nine fractional digits. Because
+the format is fixed, sorting times as strings sorts them chronologically.
+
+Parsing, validation and UTC conversion use shell arithmetic only and start
+no process. silt__now starts one process, date, to read the clock.
 MODULE
 
 : <<'PUB_FUN'
-Builds a time document from an RFC 3339 date-time carrying an offset: the
-offset folded into the clock and the date, T and Z in capitals, and the
-fraction padded to nine digits. Refuses text that is no date-time, one with
-no offset, which names no instant, a field outside its range, a day its
-month has not, and a fraction past nine digits, since nothing is rounded.
+Creates a time document from an RFC 3339 date-time string. The string must
+include a UTC offset (Z or +HH:MM). The result is converted to UTC, and the
+fractional seconds are padded with zeros to nine digits.
+
+Fails if the string is not a valid date-time, has no offset, has a field
+that is out of range, names a day that does not exist, or has more than
+nine fractional digits. Values are never rounded.
 
   silt__time doc '2026-09-22T08:10:04.5+02:00'
     ->  doc='0.:time-rfc3339-utc=2026-09-22T06:10:04.500000000Z'
 
 args:
-  $1  The name of the variable to answer in
-  $2  The date-time, T, t or a space between its date and its clock
+  $1  Name of the variable that receives the result
+  $2  The date-time string. The date and time may be separated by T, t or
+      a space.
 PUB_FUN
 silt__time() {
   __silt__out "$1" || return 1
@@ -33,33 +37,34 @@ silt__time() {
   __silt__time__check_date "$2" || return 1
   __silt__time__check_clock "$2" || return 1
   __silt__time__to_utc "$2" || return 1
-  __silt__time__spell
+  __silt__time__format
 
-  __silt__ANSWER="0.:time-rfc3339-utc=$__silt__time__SPELLING"
+  __silt__ANSWER="0.:time-rfc3339-utc=$__silt__time__FORMATTED"
   __silt__OUT="$__silt__time__out"
   __silt__answer
 }
 
 : <<'PUB_FUN'
-Builds a time document from the clock, now, starting one date. A date that
-spells no fraction, as BSD's does not, gives nine zeros.
+Creates a time document for the current time. Runs the date command once.
+If date does not support fractional seconds (BSD date does not), the
+fraction is nine zeros.
 
   silt__now doc   ->  doc='0.:time-rfc3339-utc=2026-09-27T14:03:11.402118337Z'
 
 args:
-  $1  The name of the variable to answer in
+  $1  Name of the variable that receives the result
 PUB_FUN
 silt__now() {
   __silt__out "$1" || return 1
   __silt__now__out="$__silt__OUT"
 
   if ! __silt__now__clock="$(date -u '+%Y-%m-%dT%H:%M:%S.%NZ')"; then
-    __silt__fail "the clock could not be read: date failed"
+    __silt__fail "could not read the current time: the date command failed"
     return 1
   fi
 
   case "${__silt__now__clock##*.}" in
-    # structs-lint: allow -- a fraction's spelling, digits or a date's unexpanded %N; SILT sits beneath structs
+    # structs-lint: allow -- matches a fraction that is not all digits, which is what date prints when it does not support %N
     *[!0-9]*Z) __silt__now__clock="${__silt__now__clock%.*}Z" ;;
   esac
 
@@ -67,24 +72,24 @@ silt__now() {
 }
 
 : <<'FUN'
-Reads a date-time into the registers, refusing any other text: the fields
-as numbers in __silt__time__YEAR, MONTH, DAY, HOUR and MINUTE, the second as
-its two digits in __silt__time__SECOND, the fraction's digits or nothing in
-__silt__time__FRACTION, and the offset in __silt__time__OFFSET.
+Parses a date-time string into the __silt__time__ variables: YEAR, MONTH,
+DAY, HOUR and MINUTE as numbers, SECOND as two digits, FRACTION as the
+fractional digits (or empty), and OFFSET as the offset text. Fails if the
+string does not start with a date and time in RFC 3339 format.
 
   __silt__time__read '2026-09-22T08:10:04.5+02:00'
     ->  YEAR 2026  MONTH 9  DAY 22  HOUR 8  MINUTE 10  SECOND 04
         FRACTION 5  OFFSET +02:00
 
 args:
-  $1  The text
+  $1  The date-time string
 FUN
 __silt__time__read() {
   case "$1" in
-    # structs-lint: allow -- RFC 3339's date and clock, digit for digit; SILT sits beneath structs
+    # structs-lint: allow -- matches the fixed positions of an RFC 3339 date and time
     [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9][Tt\ ][0-9][0-9]:[0-9][0-9]:[0-9][0-9]*) ;;
     *)
-      __silt__fail "not an RFC 3339 date-time: $1"
+      __silt__fail "not a valid RFC 3339 date-time: $1"
       return 1
       ;;
   esac
@@ -95,12 +100,12 @@ __silt__time__read() {
 
 
 : <<'FUN'
-Reads the fields of a date-time whose date and clock are already known to
-be digits where RFC 3339 puts them into the registers __silt__time__read
-names.
+Extracts the date and time fields from a date-time string into the
+variables listed under __silt__time__read. The caller has already checked
+that the string has digits in the right positions.
 
 args:
-  $1  The text
+  $1  The date-time string
 FUN
 __silt__time__read_fields() {
   __silt__time__read_fields__date="${1%%[Tt ]*}"
@@ -123,16 +128,17 @@ __silt__time__read_fields() {
 }
 
 : <<'FUN'
-Reads what follows a date-time's seconds, its fraction and its offset, into
-__silt__time__FRACTION and __silt__time__OFFSET, and the offset's signed
-minutes into __silt__time__OFFSET_MINUTES. Refuses anything between the
-seconds and the offset but a point and digits, a fraction past nine digits,
-and an offset missing or misspelled.
+Parses the part of a date-time string that follows the seconds: the
+optional fractional seconds and the offset. Sets __silt__time__FRACTION,
+__silt__time__OFFSET and __silt__time__OFFSET_MINUTES (the offset in
+minutes, negative for offsets west of UTC). Fails if that part contains
+anything other than a fraction and an offset, if the fraction has more than
+nine digits, or if the offset is missing or malformed.
 
-  __silt__time__read_rest '…' '.5+02:00'  ->  FRACTION 5  OFFSET +02:00  OFFSET_MINUTES 120
+  __silt__time__read_rest '...' '.5+02:00'  ->  FRACTION 5  OFFSET +02:00  OFFSET_MINUTES 120
 
 args:
-  $1  The whole text, for the refusal
+  $1  The whole date-time string, used in error messages
   $2  The text after the seconds
 FUN
 __silt__time__read_rest() {
@@ -145,54 +151,56 @@ __silt__time__read_rest() {
 }
 
 : <<'FUN'
-Refuses a fraction that is not a point and digits, or runs past the nine
-digits ADR.23@strata allows; nothing is rounded.
+Fails if the fractional seconds are not a dot followed by digits, or if
+there are more than nine digits (ADR.23@strata). Values are never rounded.
 
 args:
-  $1  The whole text, for the refusal
-  $2  The text between the seconds and the offset, the point included
+  $1  The whole date-time string, used in error messages
+  $2  The text between the seconds and the offset, including the dot
 FUN
 __silt__time__check_fraction() {
   case "$2" in
-    # structs-lint: allow -- a fraction's spelling, a point and digits; SILT sits beneath structs
+    # structs-lint: allow -- matches anything that is not a dot followed by digits
     . | .*[!0-9]* | [!.]*)
-      __silt__fail "not an RFC 3339 date-time: $1"
+      __silt__fail "not a valid RFC 3339 date-time: $1"
       return 1
       ;;
   esac
 
   if [ "${#__silt__time__FRACTION}" -gt 9 ]; then
-    __silt__fail "a fraction past nine digits: $1"
+    __silt__fail "fractional seconds have more than nine digits: $1"
     return 1
   fi
 }
 
 : <<'FUN'
-Refuses an offset that is missing, since a date-time without one names no
-instant, or spelled other than Z or a signed HH:MM, and reads the rest into
-__silt__time__OFFSET_MINUTES.
+Validates the offset in __silt__time__OFFSET and sets
+__silt__time__OFFSET_MINUTES. Fails if the offset is missing, because a
+date-time without an offset does not identify a point in time, or if it is
+not Z or a signed HH:MM.
 
 args:
-  $1  The whole text, for the refusal
+  $1  The whole date-time string, used in error messages
 FUN
 __silt__time__check_offset() {
   case "$__silt__time__OFFSET" in
     Z | z) __silt__time__OFFSET_MINUTES=0 ;;
-    # structs-lint: allow -- an offset's spelling, a sign and HH:MM; SILT sits beneath structs
+    # structs-lint: allow -- matches a signed HH:MM offset
     [+-][0-9][0-9]:[0-9][0-9]) __silt__time__offset_minutes "$1" ;;
-    '') __silt__fail "no offset, so no instant: $1" ;;
-    *) __silt__fail "not an RFC 3339 date-time: $1" ;;
+    '') __silt__fail "date-time has no UTC offset: $1" ;;
+    *) __silt__fail "not a valid RFC 3339 date-time: $1" ;;
   esac
 }
 
 : <<'FUN'
-Reads a signed HH:MM offset into __silt__time__OFFSET_MINUTES, the minutes
-it stands ahead of UTC. Refuses hours past 23 or minutes past 59.
+Converts a signed HH:MM offset to minutes and stores the result in
+__silt__time__OFFSET_MINUTES. Fails if the hours are above 23 or the
+minutes are above 59.
 
-  __silt__time__offset_minutes '…'   (OFFSET -07:30)  ->  OFFSET_MINUTES -450
+  __silt__time__offset_minutes '...'   (OFFSET -07:30)  ->  OFFSET_MINUTES -450
 
 args:
-  $1  The whole text, for the refusal
+  $1  The whole date-time string, used in error messages
 FUN
 __silt__time__offset_minutes() {
   __silt__time__offset_minutes__hours="${__silt__time__OFFSET#?}"
@@ -202,7 +210,7 @@ __silt__time__offset_minutes() {
   __silt__time__number "${__silt__time__OFFSET#*:}"
 
   if [ "$__silt__time__offset_minutes__hours" -gt 23 ] || [ "$__silt__time__NUMBER" -gt 59 ]; then
-    __silt__fail "an offset outside -23:59 to +23:59: $1"
+    __silt__fail "UTC offset is out of range (-23:59 to +23:59): $1"
     return 1
   fi
 
@@ -213,9 +221,9 @@ __silt__time__offset_minutes() {
 }
 
 : <<'FUN'
-Reads digits as a number the shell's arithmetic takes into
-__silt__time__NUMBER: its leading zeros dropped, which would otherwise make
-it octal, and 0 for zeros alone.
+Converts a string of digits to a number that shell arithmetic can use, and
+stores it in __silt__time__NUMBER. Leading zeros are removed because the
+shell would otherwise read the number as octal.
 
   __silt__time__number 08    ->  NUMBER 8
   __silt__time__number 0000  ->  NUMBER 0
@@ -229,50 +237,52 @@ __silt__time__number() {
 }
 
 : <<'FUN'
-Refuses a month outside 01 to 12, and a day its month has not.
+Fails if the month is not between 1 and 12, or if the day does not exist
+in that month and year.
 
 args:
-  $1  The whole text, for the refusal
+  $1  The whole date-time string, used in error messages
 FUN
 __silt__time__check_date() {
   if [ "$__silt__time__MONTH" -lt 1 ] || [ "$__silt__time__MONTH" -gt 12 ]; then
-    __silt__fail "a month outside 01 to 12: $1"
+    __silt__fail "month is out of range (01 to 12): $1"
     return 1
   fi
 
   __silt__time__days_in "$__silt__time__YEAR" "$__silt__time__MONTH"
   if [ "$__silt__time__DAY" -lt 1 ] || [ "$__silt__time__DAY" -gt "$__silt__time__DAYS" ]; then
-    __silt__fail "a day its month has not: $1"
+    __silt__fail "day does not exist in that month: $1"
     return 1
   fi
 }
 
 : <<'FUN'
-Refuses an hour past 23, a minute past 59, or a second past 60, which is a
-leap second's.
+Fails if the hour is above 23, the minute is above 59, or the second is
+above 60. A second of 60 is allowed because of leap seconds.
 
 args:
-  $1  The whole text, for the refusal
+  $1  The whole date-time string, used in error messages
 FUN
 __silt__time__check_clock() {
   __silt__time__number "$__silt__time__SECOND"
 
   if [ "$__silt__time__HOUR" -gt 23 ]; then
-    __silt__fail "an hour outside 00 to 23: $1"
+    __silt__fail "hour is out of range (00 to 23): $1"
     return 1
   fi
   if [ "$__silt__time__MINUTE" -gt 59 ]; then
-    __silt__fail "a minute outside 00 to 59: $1"
+    __silt__fail "minute is out of range (00 to 59): $1"
     return 1
   fi
   if [ "$__silt__time__NUMBER" -gt 60 ]; then
-    __silt__fail "a second outside 00 to 60: $1"
+    __silt__fail "second is out of range (00 to 60): $1"
     return 1
   fi
 }
 
 : <<'FUN'
-Reads how many days a month has in a year into __silt__time__DAYS.
+Stores the number of days in the given month in __silt__time__DAYS, taking
+leap years into account.
 
   __silt__time__days_in 2024 2  ->  DAYS 29
   __silt__time__days_in 1900 2  ->  DAYS 28
@@ -290,15 +300,15 @@ __silt__time__days_in() {
 }
 
 : <<'FUN'
-Folds the offset into the clock and the date read, so they stand in UTC,
-moving the date a day where the offset carries the clock over midnight.
-Refuses an instant that lands outside the years 0000 to 9999, which
-RFC 3339 cannot spell.
+Converts the parsed date and time to UTC by subtracting the offset. If
+that crosses midnight, the date moves forward or back by one day. Fails if
+the resulting year is outside 0000 to 9999, which RFC 3339 cannot
+represent.
 
   2026-01-01T01:30:00+02:00  ->  2025-12-31T23:30
 
 args:
-  $1  The whole text, for the refusal
+  $1  The whole date-time string, used in error messages
 FUN
 __silt__time__to_utc() {
   __silt__time__to_utc__minutes=$((__silt__time__HOUR * 60 + __silt__time__MINUTE - __silt__time__OFFSET_MINUTES))
@@ -316,13 +326,13 @@ __silt__time__to_utc() {
   __silt__time__MINUTE=$((__silt__time__to_utc__minutes % 60))
 
   if [ "$__silt__time__YEAR" -lt 0 ] || [ "$__silt__time__YEAR" -gt 9999 ]; then
-    __silt__fail "a date outside the years RFC 3339 spells: $1"
+    __silt__fail "year is out of range (0000 to 9999) after converting to UTC: $1"
     return 1
   fi
 }
 
 : <<'FUN'
-Moves the date read one day on.
+Moves the parsed date forward by one day.
 FUN
 __silt__time__next_day() {
   __silt__time__days_in "$__silt__time__YEAR" "$__silt__time__MONTH"
@@ -339,7 +349,7 @@ __silt__time__next_day() {
 }
 
 : <<'FUN'
-Moves the date read one day back.
+Moves the parsed date back by one day.
 FUN
 __silt__time__previous_day() {
   __silt__time__DAY=$((__silt__time__DAY - 1))
@@ -358,35 +368,36 @@ __silt__time__previous_day() {
 }
 
 : <<'FUN'
-Spells the instant read into __silt__time__SPELLING as ADR.23@strata has
-it: every field at its width, T and Z in capitals, and the fraction padded
-on the right to nine digits.
+Formats the parsed date and time in the fixed format of ADR.23@strata and
+stores the result in __silt__time__FORMATTED. Every field is zero-padded
+to its width, and the fraction is padded on the right to nine digits.
 
   YEAR 2026  MONTH 9  DAY 22  HOUR 6  MINUTE 10  SECOND 04  FRACTION 5
-    ->  SPELLING 2026-09-22T06:10:04.500000000Z
+    ->  FORMATTED 2026-09-22T06:10:04.500000000Z
 FUN
-__silt__time__spell() {
+__silt__time__format() {
   __silt__time__pad 4 "$__silt__time__YEAR"
-  __silt__time__SPELLING="$__silt__time__PADDED-"
+  __silt__time__FORMATTED="$__silt__time__PADDED-"
   __silt__time__pad 2 "$__silt__time__MONTH"
-  __silt__time__SPELLING="$__silt__time__SPELLING$__silt__time__PADDED-"
+  __silt__time__FORMATTED="$__silt__time__FORMATTED$__silt__time__PADDED-"
   __silt__time__pad 2 "$__silt__time__DAY"
-  __silt__time__SPELLING="${__silt__time__SPELLING}${__silt__time__PADDED}T"
+  __silt__time__FORMATTED="${__silt__time__FORMATTED}${__silt__time__PADDED}T"
   __silt__time__pad 2 "$__silt__time__HOUR"
-  __silt__time__SPELLING="$__silt__time__SPELLING$__silt__time__PADDED:"
+  __silt__time__FORMATTED="$__silt__time__FORMATTED$__silt__time__PADDED:"
   __silt__time__pad 2 "$__silt__time__MINUTE"
-  __silt__time__SPELLING="$__silt__time__SPELLING$__silt__time__PADDED:$__silt__time__SECOND."
+  __silt__time__FORMATTED="$__silt__time__FORMATTED$__silt__time__PADDED:$__silt__time__SECOND."
 
-  __silt__time__spell__fraction="$__silt__time__FRACTION"
-  while [ "${#__silt__time__spell__fraction}" -lt 9 ]; do
-    __silt__time__spell__fraction="${__silt__time__spell__fraction}0"
+  __silt__time__format__fraction="$__silt__time__FRACTION"
+  while [ "${#__silt__time__format__fraction}" -lt 9 ]; do
+    __silt__time__format__fraction="${__silt__time__format__fraction}0"
   done
 
-  __silt__time__SPELLING="${__silt__time__SPELLING}${__silt__time__spell__fraction}Z"
+  __silt__time__FORMATTED="${__silt__time__FORMATTED}${__silt__time__format__fraction}Z"
 }
 
 : <<'FUN'
-Reads a number into __silt__time__PADDED, zeros in front to the width.
+Pads a number with leading zeros to the given width and stores the result
+in __silt__time__PADDED.
 
   __silt__time__pad 4 99  ->  PADDED 0099
 

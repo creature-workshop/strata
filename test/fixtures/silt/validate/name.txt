@@ -1,1 +1,1 @@
-a document against a JSON Schema
+validating a document against a JSON Schema

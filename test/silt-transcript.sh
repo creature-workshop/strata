@@ -25,8 +25,9 @@
 # arr and split take their words alone; push, set, concat, join, equals,
 # merge, difference, intersect, validate, to_strh and to_strt take the
 # document first;
-# str and time take the rest of the line as their text; now takes nothing,
-# and its answer is written as the shape of a time, since the clock moves.
+# str and time take the rest of the line as their text. now takes no
+# argument, and its result is printed with every digit replaced by 9,
+# because the current time is different on every run.
 
 set -u
 
@@ -211,8 +212,9 @@ transcript__unescape() {
   printf '%b' "$1"
 }
 
-# now, written as the shape its answer takes: a time line with every digit
-# of the instant as 9, or the answer itself when it has another shape.
+# Runs silt__now. If the result is a correctly formatted time, replaces
+# every digit with 9 so the transcript is the same on every run. Any other
+# result is left unchanged, so a badly formatted time shows up as a failure.
 transcript__now() {
   transcript__capture silt__now ANSWER
   case "$ANSWER" in
