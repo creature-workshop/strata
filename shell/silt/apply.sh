@@ -34,6 +34,7 @@ silt__apply() {
 
   while [ "$__silt__apply__at" -lt "$__silt__apply__count" ]; do
     silt__string __silt__apply__text "$__silt__apply__list" ".[$__silt__apply__at]" || return 1
+    # structs-lint: allow -- this verb is what builds the argument list; SILT sits beneath structs
     set -- "$@" "$__silt__apply__text"
     __silt__apply__at=$((__silt__apply__at + 1))
   done
