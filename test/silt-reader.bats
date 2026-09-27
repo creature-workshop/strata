@@ -19,7 +19,6 @@ setup() {
   # shellcheck source=../shell/silt/api.sh
   . "$REPO/shell/silt/api.sh"
   MAP="$(cat "$REPO/shell/silt/map.fixture.silt")"
-  MAP_JSON="$REPO/shell/silt/map.fixture.json"
   NL=$'\n'
 }
 
