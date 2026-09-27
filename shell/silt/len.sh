@@ -46,7 +46,12 @@ args:
 FUN
 __silt__count_members() {
   __silt__COUNT=0
+  __silt__AWK='len'
   __silt__walk "$1" __silt__count_line
+
+  if [ "$__silt__HANDED" = true ]; then
+    __silt__COUNT="$__silt__HANDED_OUT"
+  fi
   __silt__ANSWER="$__silt__COUNT"
 }
 

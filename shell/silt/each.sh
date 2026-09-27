@@ -39,9 +39,40 @@ silt__each() {
   __silt__MEMBER_KEY=''
   __silt__MEMBER=''
   __silt__OPEN=false
+  __silt__AWK='each'
   __silt__walk "$__silt__each__doc" __silt__each_line || return $?
 
+  if [ "$__silt__HANDED" = true ]; then
+    __silt__walk "$__silt__HANDED_OUT" __silt__each_block_line || return $?
+    return
+  fi
+
   __silt__deliver_member
+}
+
+: <<'FUN'
+Handles one line of the blocks the awk tier writes for each: a member's key
+as text opens a member, its value's lines fill it, and the line holding the
+record separator alone delivers it. Returns the callback's status when it
+stops the walk.
+
+args:
+  $1  The line
+FUN
+__silt__each_block_line() {
+  if [ "$1" = "$__silt__RS" ]; then
+    __silt__deliver_member
+    return
+  fi
+
+  if [ "$__silt__OPEN" = false ]; then
+    __silt__MEMBER_KEY="$1"
+    __silt__MEMBER=''
+    __silt__OPEN=true
+    return
+  fi
+
+  __silt__MEMBER="$__silt__MEMBER${__silt__MEMBER:+$__silt__NL}$1"
 }
 
 : <<'FUN'

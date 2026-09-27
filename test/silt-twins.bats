@@ -15,20 +15,25 @@ FIXTURES="$BATS_TEST_DIRNAME/fixtures/silt"
 load "${SHELLOPS_DIR:-$REPO/shell/.ops}/test/lib/bats-support/load.bash"
 load "${SHELLOPS_DIR:-$REPO/shell/.ops}/test/lib/bats-assert/load.bash"
 
-# Registers one test per twins file.
+# Registers one test per twins file and tier.
 register_twin_cases() {
-  local twins name
+  local twins name tier
   for twins in "$FIXTURES"/*.twins; do
     name="$(basename "$twins" .twins)"
-    bats_test_function --description "twins: every $name call answers as its jq program does" -- twin_case "$name"
+    for tier in shell awk; do
+      bats_test_function --description "twins, $tier tier: every $name call answers as its jq program does" -- twin_case "$name" "$tier"
+    done
   done
 }
 
-# One twins file: the calls' transcript against jq, pair by pair.
+# One twins file on one tier: the calls' transcript against jq, pair by pair.
 twin_case() {
-  local name="$1" calls="$BATS_TEST_TMPDIR/$1.calls" failed=''
+  local name="$1" tier="$2" calls="$BATS_TEST_TMPDIR/$1.calls" failed='' threshold=1000000
+  if [ "$tier" = awk ]; then
+    threshold=0
+  fi
   sed 's/ => .*$//' "$FIXTURES/$name.twins" > "$calls"
-  bash "$REPO/test/silt-transcript.sh" "$REPO/shell/silt/api.sh" "$calls" "$REPO/shell/silt/$name.fixture.silt" > "$BATS_TEST_TMPDIR/$name.transcript"
+  SILT_THRESHOLD="$threshold" bash "$REPO/test/silt-transcript.sh" "$REPO/shell/silt/api.sh" "$calls" "$REPO/shell/silt/$name.fixture.silt" > "$BATS_TEST_TMPDIR/$name.transcript"
 
   local index=0 line
   while IFS= read -r line; do

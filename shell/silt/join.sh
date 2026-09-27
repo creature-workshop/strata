@@ -27,8 +27,12 @@ silt__join() {
   __silt__SEPARATOR="${3-}"
   __silt__JOINED=''
   __silt__FIRST=true
+  __silt__AWK='join'
   __silt__walk "$2" __silt__join_line || return 1
 
+  if [ "$__silt__HANDED" = true ]; then
+    __silt__JOINED="$__silt__HANDED_OUT"
+  fi
   __silt__ANSWER="$__silt__JOINED"
   __silt__OUT="$__silt__join__out"
   __silt__answer

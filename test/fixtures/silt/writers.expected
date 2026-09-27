@@ -54,7 +54,6 @@ bats
 2.0:str="bats"
 2.1:int=2
 2.2:null
-4."b":str="bats"
 ## keys @c4
 0.0:str="runner"
 0.1:str="count"
@@ -63,7 +62,6 @@ bats
 0.0:str="bats"
 0.1:int=2
 0.2:null
-2."b":str="bats"
 ## as c5 set @c4 .tests.a[1] 0.:int=9
 0."runner":str="bats"
 0."count":int=3
@@ -72,7 +70,6 @@ bats
 2.0:str="bats"
 2.1:int=9
 2.2:null
-4."b":str="bats"
 ## string @c5 .tests.a[1]
 9
 ## as c6 set @c4 .tests.a 0.:null
@@ -103,7 +100,7 @@ bats
 0.1:map
 1."runner":str="bats"
 1."count":int=3
-1.2:null
+0.2:null
 ## string @l3 .[1].runner
 bats
 ## join @l ,

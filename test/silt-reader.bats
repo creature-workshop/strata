@@ -47,14 +47,31 @@ process_starts() {
   grep -c 'clone\|fork\|execve' "$BATS_TEST_TMPDIR/$1.trace"
 }
 
-@test "no process: the verbs over 4,000 lines start nothing beyond the import" {
+# How many processes of one mode of test/silt-exercise.sh became an awk, from
+# the same trace: one per process, whatever PATH entries it tried first and
+# whether a wrapper handed it on to the real awk.
+awk_starts() {
+  awk '/execve\("[^"]*awk"/ && !seen[$1]++' "$BATS_TEST_TMPDIR/$1.trace" | wc -l
+}
+
+@test "no process: on the shell tier the verbs over 4,000 lines start nothing beyond the import" {
   command -v strace >/dev/null || skip "strace is not installed"
   wide_map 4000 > "$BATS_TEST_TMPDIR/wide.silt"
+  export SILT_THRESHOLD=1000000
   assert_equal "$(process_starts verbs)" "$(process_starts import)"
+}
+
+@test "hand-off: past the threshold each walking verb starts one awk and nothing else new" {
+  command -v strace >/dev/null || skip "strace is not installed"
+  wide_map 4000 > "$BATS_TEST_TMPDIR/wide.silt"
+  unset SILT_THRESHOLD
+  process_starts verbs >/dev/null
+  assert_equal "$(awk_starts verbs)" 6
 }
 
 @test "linear: get, len and each over 4,000 lines stay under three seconds, where the quadratic idioms take nine, under dash, bash and sh" {
   wide_map 4000 > "$BATS_TEST_TMPDIR/wide.silt"
+  export SILT_THRESHOLD=1000000
   for shell in dash bash sh; do
     run "$shell" "$REPO/test/silt-exercise.sh" "$REPO/shell/silt/api.sh" "$BATS_TEST_TMPDIR/wide.silt" timed
     assert_success
