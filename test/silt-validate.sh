@@ -3,7 +3,10 @@
 # which is the contract it matches: over every case of a cases file, a JSON
 # list of {name, schema, value}, the errors silt__validate answers must be
 # the lines the jq validator reports, in its order. Prints each case that
-# differs, with both answers, and fails when any does. SHELLOPS_DIR names
+# differs, with both answers, and fails when any does. silt__validate tells
+# a map in a message with its keys in canonical order, however the document
+# wrote them, and jq tells it as it read it, so the jq validator is handed
+# the schema and the value with their keys sorted. SHELLOPS_DIR names
 # the shellops whose validator is the oracle, the vendored one when not set.
 #
 # Usage: test/silt-validate.sh [<cases>]; test/fixtures/silt/validate/cases/cases.json
@@ -45,12 +48,17 @@ check_case() {
   schema="$(jq -c ".[$1].schema" "$CASES")"
   value="$(jq -c ".[$1].value" "$CASES")"
   ours="$(errors_of_silt "$schema" "$value")"
-  theirs="$(errors_of_jq "$schema" "$value")"
+  theirs="$(errors_of_jq "$(sorted "$schema")" "$(sorted "$value")")"
 
   if [ "$ours" != "$theirs" ]; then
     printf '## %s\nschema: %s\nvalue:  %s\nsilt:\n%s\njq:\n%s\n' "$(jq -r ".[$1].name" "$CASES")" "$schema" "$value" "$ours" "$theirs"
     return 1
   fi
+}
+
+# A JSON text with every map's keys sorted.
+sorted() {
+  jq -S -c . <<< "$1"
 }
 
 # The errors silt__validate answers, one per line, or its refusal.

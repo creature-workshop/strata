@@ -57,21 +57,3 @@ export function distinct(list) {
     return isNew;
   });
 }
-
-// A map's keys in canonical order, RFC 8785's: by UTF-16 code unit, which
-// is how JavaScript compares strings.
-function canonicalKeys(map) {
-  return Object.keys(map).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
-}
-
-// The JSON text of a value on one line, every map's keys in canonical
-// order whatever order the map holds them in.
-export function canonicalText(value) {
-  if (jsonType(value) === "array") {
-    return `[${value.map(canonicalText).join(",")}]`;
-  }
-  if (!isMap(value)) {
-    return JSON.stringify(value);
-  }
-  return `{${canonicalKeys(value).map((key) => `${JSON.stringify(key)}:${canonicalText(value[key])}`).join(",")}}`;
-}

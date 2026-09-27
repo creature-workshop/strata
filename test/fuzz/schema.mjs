@@ -5,9 +5,7 @@
 // two are that schema loosened or broken in a place the seed picks, and
 // two are drawn free of the value, so valid and invalid answers both come
 // up. Every schema is one a validator accepts, in the keywords
-// shell/silt/awk/validate.awk lists, and every map is written with its
-// keys in canonical order, since a message that tells a map tells it in
-// that order from silt__validate and as it was written from jq.
+// shell/silt/awk/validate.awk lists.
 //
 //   node schema.mjs 7 case  ->  case/schemas.json
 
@@ -16,7 +14,7 @@ import { altered } from "./alterations.mjs";
 import { derive } from "./derivedSchema.mjs";
 import { drawerFrom } from "./draws.mjs";
 import { free } from "./freeSchema.mjs";
-import { canonicalText, jsonType, keysUnder, valuesUnder } from "./json.mjs";
+import { jsonType, keysUnder, valuesUnder } from "./json.mjs";
 import { holdsPlainTextAlone } from "./pattern.mjs";
 import { KEYS, PIECES } from "./vocabulary.mjs";
 
@@ -28,7 +26,7 @@ function main() {
   const value = JSON.parse(readFileSync(`${dir}/value.json`, "utf8"));
   const cases = casesOf(drawerFrom(seed), value, seed);
 
-  writeFileSync(`${dir}/schemas.json`, `[\n${cases.map(textOf).join(",\n")}\n]\n`);
+  writeFileSync(`${dir}/schemas.json`, `[\n${cases.map((one) => JSON.stringify(one)).join(",\n")}\n]\n`);
 }
 
 // The seed and the directory, or the usage and status 2.
@@ -38,11 +36,6 @@ function usage([seed, dir]) {
     process.exit(2);
   }
   return [Number(seed), dir];
-}
-
-// One case as a line of JSON.
-function textOf({ name, schema, value }) {
-  return `{"name":${JSON.stringify(name)},"schema":${canonicalText(schema)},"value":${canonicalText(value)}}`;
 }
 
 // What the generators know of the value: the keys and the scalars it is

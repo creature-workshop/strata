@@ -179,6 +179,24 @@
     }
   },
   {
+    "name": "const: a map in a message is told with its keys in canonical order",
+    "schema": {
+      "const": {
+        "z": 1,
+        "a": [
+          {
+            "k": 2,
+            "b": 3
+          }
+        ]
+      }
+    },
+    "value": {
+      "b": 1,
+      "a": 2
+    }
+  },
+  {
     "name": "const: the value given",
     "schema": {
       "const": {

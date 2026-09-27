@@ -1,7 +1,8 @@
 # The errors the document on stdin meets against the JSON Schema in
 # SILT_SPILL, as a list of str, empty when the document is valid:
 # silt__validate. An error names the place in the value it was met at, from
-# "$" down, and the same error met twice is told once. The keywords read
+# "$" down, and the same error met twice is told once. A map told in an
+# error has its keys in canonical order. The keywords read
 # are type, enum, const, minLength, maxLength, pattern, minimum, maximum,
 # exclusiveMinimum, exclusiveMaximum, multipleOf, required, properties,
 # patternProperties, additionalProperties, minItems, maxItems, uniqueItems,

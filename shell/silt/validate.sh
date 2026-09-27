@@ -7,13 +7,14 @@ MODULE
 : <<'PUB_FUN'
 Answers the errors a document meets against a JSON Schema, itself a
 document, as a list of str: each names the place in the value it was met
-at, from "$" down, and a valid document answers the empty list. The
-document and the schema are read as the JSON they translate to. The
-keywords read are those of draft 2020-12 that shell/silt/awk/validate.awk
-lists, a $ref followed within the schema's own document. Refuses a schema
-that is no schema, a keyword whose operand is of the wrong kind among
-them. This runs in awk whatever the document's size, the schema reaching
-it through the spill file.
+at, from "$" down, and a valid document answers the empty list. A map
+told in an error has its keys in canonical order, however the document or
+the schema wrote them. The document and the schema are read as the JSON
+they translate to. The keywords read are those of draft 2020-12 that
+shell/silt/awk/validate.awk lists, a $ref followed within the schema's own
+document. Refuses a schema that is no schema, a keyword whose operand is
+of the wrong kind among them. This runs in awk whatever the document's
+size, the schema reaching it through the spill file.
 
   silt__validate errors '0."n":str="x"' '0."properties":map
   1."n":map
