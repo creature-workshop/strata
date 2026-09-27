@@ -179,6 +179,24 @@
     }
   },
   {
+    "name": "const: a map in a message is told with its keys in canonical order",
+    "schema": {
+      "const": {
+        "z": 1,
+        "a": [
+          {
+            "k": 2,
+            "b": 3
+          }
+        ]
+      }
+    },
+    "value": {
+      "b": 1,
+      "a": 2
+    }
+  },
+  {
     "name": "const: the value given",
     "schema": {
       "const": {
@@ -917,6 +935,22 @@
       "$ref": "#/$defs/a"
     },
     "value": 1
+  },
+  {
+    "name": "$ref: the whole document after two others is followed, and the first met again is the circle",
+    "schema": {
+      "$ref": "#/$defs/a",
+      "$defs": {
+        "a": {
+          "$ref": "#/$defs/b"
+        },
+        "b": {
+          "$ref": "#",
+          "type": "string"
+        }
+      }
+    },
+    "value": 3
   },
   {
     "name": "$ref: a fragment that names nothing",

@@ -1,24 +1,20 @@
 #!/bin/sh
 
 : <<'MODULE'
-silt__validate: validate a document against a JSON Schema.
+silt__validate: the errors a document meets against a JSON Schema.
 MODULE
 
 : <<'PUB_FUN'
-Validates a document against a JSON Schema and returns the validation
-errors as a list of strings. The schema is also a SILT document. Each error
-starts with the path to the invalid value, beginning at "$". A valid
-document returns an empty list.
-
-An invalid document is not a failure: the function returns 0 and the list
-of errors. It fails only when the schema itself is invalid, for example
-when a keyword has an operand of the wrong type.
-
-Both the document and the schema are treated as the JSON they translate
-to. The supported keywords are listed in shell/silt/awk/validate.awk. A
-$ref is resolved within the schema document only.
-
-Validation always runs in awk, whatever the size of the document.
+Answers the errors a document meets against a JSON Schema, itself a
+document, as a list of str: each names the place in the value it was met
+at, from "$" down, and a valid document answers the empty list. A map
+told in an error has its keys in canonical order, however the document or
+the schema wrote them. The document and the schema are read as the JSON
+they translate to. The keywords read are those of draft 2020-12 that
+shell/silt/awk/validate.awk lists, a $ref followed within the schema's own
+document. Refuses a schema that is no schema, a keyword whose operand is
+of the wrong kind among them. This runs in awk whatever the document's
+size, the schema reaching it through the spill file.
 
   silt__validate errors '0."n":str="x"' '0."properties":map
   1."n":map
@@ -26,7 +22,7 @@ Validation always runs in awk, whatever the size of the document.
     ->  errors='0.0:str="$.n: expected number, got string"'
 
 args:
-  $1  Name of the variable that receives the result
+  $1  The name of the variable to answer in
   $2  The document
   $3  The schema
 PUB_FUN

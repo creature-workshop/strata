@@ -4,7 +4,8 @@
 # silt__validate.
 #
 # Each error starts with the path to the invalid value, beginning at "$".
-# Duplicate errors are printed once.
+# Duplicate errors are printed once. When an error shows a map, the map's
+# keys are in sorted order, whatever order the document wrote them in.
 #
 # Supported keywords: type, enum, const, minLength, maxLength, pattern,
 # minimum, maximum, exclusiveMinimum, exclusiveMaximum, multipleOf, required,

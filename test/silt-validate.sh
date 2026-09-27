@@ -8,6 +8,10 @@
 # prints each case where they differ, with both results, and exits non-zero
 # if there are any.
 #
+# silt__validate shows a map in an error with its keys sorted. jq shows a
+# map's keys in the order it read them. So the script sorts the keys of the
+# schema and the value before it hands them to the jq validator.
+#
 # SHELLOPS_DIR sets which shellops checkout provides the jq validator. The
 # default is the vendored submodule.
 #
@@ -51,12 +55,17 @@ check_case() {
   schema="$(jq -c ".[$1].schema" "$CASES")"
   value="$(jq -c ".[$1].value" "$CASES")"
   ours="$(errors_of_silt "$schema" "$value")"
-  theirs="$(errors_of_jq "$schema" "$value")"
+  theirs="$(errors_of_jq "$(sorted "$schema")" "$(sorted "$value")")"
 
   if [ "$ours" != "$theirs" ]; then
     printf '## %s\nschema: %s\nvalue:  %s\nsilt:\n%s\njq:\n%s\n' "$(jq -r ".[$1].name" "$CASES")" "$schema" "$value" "$ours" "$theirs"
     return 1
   fi
+}
+
+# Prints a JSON text with the keys of every map sorted.
+sorted() {
+  jq -S -c . <<< "$1"
 }
 
 # Prints the errors from silt__validate, one per line. If silt__validate

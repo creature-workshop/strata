@@ -9,12 +9,16 @@
 # TOML must read through yq to the same value; node writes the value's .strh
 # and .strt through test/fuzz/store.mjs, a second opinion on the corpus
 # translators, and to_strh and to_strt must give them byte for byte under
-# the seeds and the index it drew. A case that fails is kept
-# under the work directory and named with its seed, what differed in its
-# report file, so it reproduces, reduces to a golden by hand, and files as
-# an issue through test/silt-fuzz-report.sh. SILT_TRANSCRIPT names the implementation
-# under test as test/silt-twins.sh reads it. Needs node with fast-check
-# installed under test/fuzz (npm ci --prefix test/fuzz), jq and yq.
+# the seeds and the index it drew. test/fuzz/schema.mjs draws schemas from
+# the seed for the value, one derived from it, two that one loosened or
+# broken, and two free of it, and test/silt-validate.sh holds silt__validate
+# over each to shellops' jq validator, error for error. A case that fails
+# is kept under the work directory and named with its seed, what differed
+# in its report file, so it reproduces, reduces to a golden by hand, and
+# files as an issue through test/silt-fuzz-report.sh. SILT_TRANSCRIPT names
+# the implementation under test as test/silt-twins.sh reads it. Needs node
+# with fast-check installed under test/fuzz (npm ci --prefix test/fuzz), jq
+# and yq.
 #
 # Usage: test/silt-fuzz.sh [--seeds <count>] [--from <seed>] [--keep <dir>]
 #
@@ -80,6 +84,7 @@ run_case() {
   check_twins "$dir" > "$dir/report" 2>&1 || status=1
   check_written "$dir" >> "$dir/report" 2>&1 || status=1
   check_stored "$dir" >> "$dir/report" 2>&1 || status=1
+  check_validated "$dir" >> "$dir/report" 2>&1 || status=1
 
   if [ "$status" -ne 0 ]; then
     cat "$dir/report"
@@ -92,7 +97,7 @@ run_case() {
 
 # The case's files: the value, its YAML spellings, its TOML when TOML can
 # hold it, its .strh and .strt with their index and the seeds they were drawn
-# under, its paths and its twins. The YAML and the TOML twins are left out
+# under, the schemas drawn for it, its paths and its twins. The YAML and the TOML twins are left out
 # when yq cannot read its own spelling back as the value, which it cannot
 # for a string ending in a space.
 write_case() {
@@ -112,6 +117,7 @@ write_case() {
   fi
 
   node "$FUZZ/store.mjs" "$seed" "$dir" > "$dir/seeds"
+  node "$FUZZ/schema.mjs" "$seed" "$dir"
   jq -r -f "$FUZZ/paths.jq" "$dir/value.json" > "$dir/paths"
   root="$(jq -r type "$dir/value.json")"
   awk -v seed="$seed" -v root="$root" -v yaml="$yaml" -v toml="$toml" -f "$FUZZ/calls.awk" "$dir/paths" > "$dir/value.twins"
@@ -177,6 +183,13 @@ check_stored() {
   cmp -s "$dir/value.strh" "$dir/stored.strh" || { printf 'to_strh is not the .strh node drew: %s\n' "$dir/stored.strh"; status=1; }
   cmp -s "$dir/value.strt" "$dir/stored.strt" || { printf 'to_strt is not the .strt node drew: %s\n' "$dir/stored.strt"; status=1; }
   return "$status"
+}
+
+# The value against each schema drawn for it: silt__validate answers the
+# errors the jq validator reports, through test/silt-validate.sh.
+check_validated() {
+  bash "$REPO/test/silt-validate.sh" "$1/schemas.json" > "$1/validated.log" 2>&1 \
+    || { cat "$1/validated.log"; return 1; }
 }
 
 # The answer lines of block number <index> of a transcript.

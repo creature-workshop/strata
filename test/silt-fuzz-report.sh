@@ -119,10 +119,14 @@ write_description() {
   done < "$WORK/cases"
 }
 
-# The opening words, from test/fuzz/report-intro.md, and the links back at
-# the run, when CI set them.
+# The opening words, how a case reproduces and where it reduces to, and
+# the links back at the run, when CI set them.
 write_run_links() {
-  cat "$FUZZ/report-intro.md"
+  # shellcheck disable=SC2016  # the backticks are the issue's markdown
+  printf '%s\n' \
+    'Filed by the nightly fuzz, `test/silt-fuzz.sh`, from the run below.' \
+    'Each case reproduces with `bash test/silt-fuzz.sh --seeds 1 --from <seed>` on its tier (`SILT_THRESHOLD=0` for awk).' \
+    'A twin reduces by hand into a golden fileset, `test/fixtures/silt/<name>/`, and a schema, kept in the seed'"'"'s `schemas.json`, into a case of `test/fixtures/silt/validate/cases/cases.json`.'
   if [ -n "${CI_PIPELINE_URL:-}" ]; then
     printf -- '- Pipeline: %s\n' "$CI_PIPELINE_URL"
   fi

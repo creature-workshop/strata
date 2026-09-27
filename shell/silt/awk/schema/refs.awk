@@ -62,8 +62,10 @@ function is_schema(node) {
 # records an error if the reference cannot be followed.
 #
 #   ref    The reference as written, for example "#/$defs/name".
-#   seen   The pointers already followed for this value, each surrounded by
-#          newlines. Used to detect circular references.
+#   seen   The pointers already followed for this value, each written as
+#          "\n<pointer>\n" with the pointer between "<" and ">". Used to
+#          detect circular references. The brackets keep two entries side by
+#          side from looking like the empty pointer, which is the root.
 function follow_ref(ref, value, path, seen, __at, __fragment, __target) {
   __at = index(ref, "#")
   __fragment = (__at > 0) ? substr(ref, __at + 1) : ""
@@ -76,10 +78,10 @@ function follow_ref(ref, value, path, seen, __at, __fragment, __target) {
   __target = resolve_pointer(__fragment)
   if (!is_schema(__target)) {
     add_error(path, "$ref '" ref "' does not resolve to a schema")
-  } else if (index(seen, "\n" __fragment "\n") > 0) {
+  } else if (index(seen, "\n<" __fragment ">\n") > 0) {
     add_error(path, "circular $ref '" ref "'")
   } else {
-    validate(__target, value, path, seen "\n" __fragment "\n")
+    validate(__target, value, path, seen "\n<" __fragment ">\n")
   }
 }
 
