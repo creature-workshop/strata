@@ -80,6 +80,8 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__difference the elements of a list another does not hold
   silt__intersect the elements of a list another holds too
   silt__merge     one map laid over another, one level deep
+  silt__deepmerge one map laid over another, at every depth
+  silt__flatten   a tree of named nodes as one map, keyed by the path to each
   silt__references the other schema documents a schema refers to
   silt__validate  the validation errors of a document against a JSON Schema
   silt__read      the document a text spells, written as SILT or as JSON
@@ -188,6 +190,8 @@ __silt__home || return 1
 . "$__silt__DIR/difference.sh"
 . "$__silt__DIR/intersect.sh"
 . "$__silt__DIR/merge.sh"
+. "$__silt__DIR/deepmerge.sh"
+. "$__silt__DIR/flatten.sh"
 . "$__silt__DIR/validate.sh"
 . "$__silt__DIR/translate.sh"
 . "$__silt__DIR/read.sh"

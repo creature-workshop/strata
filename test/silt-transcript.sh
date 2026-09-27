@@ -42,7 +42,7 @@
 # read that register, and a writer's words may name one as "$<name>": obj,
 # arr and split take their words alone; bind takes keys, and with takes
 # keys, then --, then a command; push, set, patch, concat, join, equals,
-# merge, difference, intersect, validate, to_strh and to_strt take the
+# merge, deepmerge, flatten, difference, intersect, validate, to_strh and to_strt take the
 # document first;
 # str and time take the rest of the line as their text. now takes no
 # argument, and its result is printed with every digit replaced by 9,
@@ -144,7 +144,7 @@ transcript__run_call() {
 
   # shellcheck disable=SC2086  # a writer's words are split on purpose
   case "${1%% *}" in
-    obj | arr | bind | with | apply | push | set | patch | get-first | string-first | concat | join | split | equals | merge | difference | intersect | validate | to_strh | to_strt) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
+    obj | arr | bind | with | apply | push | set | patch | get-first | string-first | concat | join | split | equals | merge | deepmerge | flatten | difference | intersect | validate | to_strh | to_strt) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
     map | filter | find | any | all | reduce | project) transcript__run_collection "${1%% *}" $__transcript__run_call__rest ;;
     *) transcript__run_verb "${1%% *}" "$__transcript__run_call__rest" ;;
   esac

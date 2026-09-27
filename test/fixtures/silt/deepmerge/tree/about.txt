@@ -1,0 +1,1 @@
+A map from a name to a node, where a node holds more nodes under the key areas, three levels deep. One name holds a space, one node has an empty map of nodes, one node is a str and one is the empty map.
