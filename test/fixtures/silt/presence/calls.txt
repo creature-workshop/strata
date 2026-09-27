@@ -1,0 +1,81 @@
+# defined
+defined
+as n get .nothing
+defined @n
+as f get .off
+defined @f
+as missing get .missing
+defined @missing
+defined-word
+
+# empty
+empty
+as none get .none
+empty @none
+as bare get .bare
+empty @bare
+as tests get .tests
+empty @tests
+empty @f
+empty @n
+empty-word
+
+# not
+as flag get .flag
+not @flag
+not @f
+not-word true
+not-word false
+not-word
+not-word yes
+not @n
+
+# bool and null
+bool true
+bool false
+bool yes
+bool
+null
+
+# type at a path
+type
+type .arrays
+type ."a.b"
+type .nothing
+type .flag
+type .none
+type .bare
+type .tests
+type .tests[0]
+type .nested.depth
+type .missing
+
+# option
+option arrays replace
+option missing replace
+option a.b 0
+option nothing fallback
+option tests fallback
+option flag false
+option-bare arrays
+option-bare missing
+
+# option_is
+option_is arrays union
+option_is arrays concat
+option_is missing
+option_is nothing null
+option_is flag true
+option_is a.b 3
+
+# succeeds and fails
+succeeds true
+succeeds false
+fails true
+fails false
+succeeds [ 1 -lt 2 ]
+fails [ 1 -lt 2 ]
+succeeds-reading text grep -q x
+fails-reading text grep -q z
+succeeds transcript__document_is_list
+succeeds @tests transcript__document_is_list

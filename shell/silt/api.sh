@@ -19,7 +19,7 @@ predicate answers in a register rather than printing, which would cost the
 subshell the library exists to avoid. A document past __silt__THRESHOLD
 lines belongs to the awk tier, which answers the same call the same way.
 
-  silt__type      the kind of value a document is
+  silt__type      the kind of value a document is, or of the value at a path
   silt__get       the value at a path, as a document of its own
   silt__scalar    the value text of a scalar document
   silt__string    the text at a path, a str unquoted
@@ -51,6 +51,15 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__is_true   whether a document is the bool true
   silt__is_false  whether a document is the bool false
   silt__is_zero   whether a document is the int 0
+  silt__not       the opposite of a bool
+  silt__defined   whether a value is a document and is not a null
+  silt__empty     whether a map or a list has no members
+  silt__bool      a bool document from the word true or false
+  silt__null      the null document
+  silt__option    the text of one option in a map of options, or a default
+  silt__option_is whether one option has the text given
+  silt__succeeds  whether a command exits with status 0
+  silt__fails     whether a command exits with another status
   silt__first     the first element of a list
   silt__last      the last element of a list
   silt__slice     the elements of a list from one index up to another
@@ -183,3 +192,7 @@ __silt__home || return 1
 . "$__silt__DIR/pluck.sh"
 . "$__silt__DIR/project.sh"
 . "$__silt__DIR/truth.sh"
+. "$__silt__DIR/defined.sh"
+. "$__silt__DIR/bool.sh"
+. "$__silt__DIR/option.sh"
+. "$__silt__DIR/command.sh"

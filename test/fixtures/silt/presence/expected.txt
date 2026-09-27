@@ -1,0 +1,132 @@
+## defined
+true
+## as n get .nothing
+0.:null
+## defined @n
+false
+## as f get .off
+0.:bool=false
+## defined @f
+true
+## as missing get .missing
+
+## defined @missing
+false
+## defined-word
+false
+## empty
+false
+## as none get .none
+0.:list
+## empty @none
+true
+## as bare get .bare
+0.:map
+## empty @bare
+true
+## as tests get .tests
+0.0:str="a"
+## empty @tests
+false
+## empty @f
+!! 1 ERROR: silt: empty: not a map or a list: '0.:bool=false'
+## empty @n
+!! 1 ERROR: silt: empty: not a map or a list: '0.:null'
+## empty-word
+!! 1 ERROR: silt: empty: not a map or a list: ''
+## as flag get .flag
+0.:bool=true
+## not @flag
+0.:bool=false
+## not @f
+0.:bool=true
+## not-word true
+!! 1 ERROR: silt: not: not a bool document: 'true'
+## not-word false
+!! 1 ERROR: silt: not: not a bool document: 'false'
+## not-word
+!! 1 ERROR: silt: not: not a bool document: ''
+## not-word yes
+!! 1 ERROR: silt: not: not a bool document: 'yes'
+## not @n
+!! 1 ERROR: silt: not: not a bool document: '0.:null'
+## bool true
+0.:bool=true
+## bool false
+0.:bool=false
+## bool yes
+!! 1 ERROR: silt: bool: not true or false: 'yes'
+## bool
+!! 1 ERROR: silt: bool: not true or false: ''
+## null
+0.:null
+## type
+map
+## type .arrays
+str
+## type ."a.b"
+int
+## type .nothing
+null
+## type .flag
+bool
+## type .none
+list
+## type .bare
+map
+## type .tests
+list
+## type .tests[0]
+str
+## type .nested.depth
+float
+## type .missing
+
+## option arrays replace
+union
+## option missing replace
+replace
+## option a.b 0
+3
+## option nothing fallback
+fallback
+## option tests fallback
+fallback
+## option flag false
+true
+## option-bare arrays
+union
+## option-bare missing
+
+## option_is arrays union
+true
+## option_is arrays concat
+false
+## option_is missing
+false
+## option_is nothing null
+false
+## option_is flag true
+true
+## option_is a.b 3
+true
+## succeeds true
+true
+## succeeds false
+false
+## fails true
+false
+## fails false
+true
+## succeeds [ 1 -lt 2 ]
+true
+## fails [ 1 -lt 2 ]
+false
+## succeeds-reading text grep -q x
+true
+## fails-reading text grep -q z
+true
+## succeeds transcript__document_is_list
+false
+## succeeds @tests transcript__document_is_list
+true
