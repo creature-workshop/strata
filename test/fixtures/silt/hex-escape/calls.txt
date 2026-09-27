@@ -1,0 +1,2 @@
+as h from_toml hex-escape/hex-escape.toml
+to_json @h

@@ -51,8 +51,8 @@ parse_args() {
 # once on the shell tier and once with every walk handed to the awk tier.
 trace_goldens() {
   local calls name
-  for calls in "$FIXTURES"/*.calls; do
-    name="$(basename "$calls" .calls)"
+  for calls in "$FIXTURES"/*/calls.txt; do
+    name="$(basename "$(dirname "$calls")")"
     traced "$REPO/test/silt-transcript.sh" "$LIBRARY/api.sh" "$calls" "$(document_of "$name")"
     SILT_THRESHOLD=0 traced "$REPO/test/silt-transcript.sh" "$LIBRARY/api.sh" "$calls" "$(document_of "$name")"
   done
@@ -78,8 +78,8 @@ traced() {
 
 # The document a fileset's calls run against, or nothing.
 document_of() {
-  if [ -f "$FIXTURES/$1.silt" ]; then
-    printf '%s' "$FIXTURES/$1.silt"
+  if [ -f "$FIXTURES/$1/document.silt" ]; then
+    printf '%s' "$FIXTURES/$1/document.silt"
   elif [ -f "$LIBRARY/$1.fixture.silt" ]; then
     printf '%s' "$LIBRARY/$1.fixture.silt"
   fi

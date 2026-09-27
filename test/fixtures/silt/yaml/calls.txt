@@ -1,0 +1,18 @@
+as y from_yaml awkward/awkward.yaml
+as j from_json awkward-value/awkward-value.json
+equals @y $j
+to_yaml @y
+as w from_yaml written/written.yaml
+equals @y $w
+to_yaml @w
+as c from_yaml comment/comment.yaml
+to_yaml @c
+as n from_yaml numbers/numbers.yaml
+to_json @n
+to_yaml @n
+from_yaml anchor/anchor.yaml
+from_yaml merge-key/merge-key.yaml
+from_yaml second-document/second-document.yaml
+from_yaml tab/tab.yaml
+from_yaml out-of-place/out-of-place.yaml
+from_yaml escape/escape.yaml

@@ -1,0 +1,2 @@
+as c from_json control-block/control-block.json
+to_yaml @c

@@ -1,6 +1,6 @@
 #!/bin/sh
 # Writes the transcript of one golden fileset for test/silt-goldens.bats:
-# every call in the .calls file under a "## " line, its answer below it, and
+# every call in the calls file under a "## " line, its answer below it, and
 # "!! <status> <message>" when the verb refuses. POSIX sh, so the same goldens
 # are checked under every shell the bats file names. Its functions carry the
 # transcript__ prefix because it sources the library into its own shell.

@@ -1,0 +1,12 @@
+## as c from_json control-block/control-block.json
+0."control":str="one\u0001\ntwo"
+0."plain":str="x\ny"
+0."tab":str="a\tb\nc"
+## to_yaml @c
+control: "one\u0001\ntwo"
+plain: |-
+  x
+  y
+tab: |-
+  a	b
+  c

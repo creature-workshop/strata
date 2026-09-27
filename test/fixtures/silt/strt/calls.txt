@@ -1,0 +1,28 @@
+as index split runner,count,ratio,clean,nothing,empty,none,tests,test/a.bats,status,reads,test/b.bats,a\040"quoted"\040key:\040with.dots,text,unicode ,
+len @index
+as m from_strt map/map.strt $index
+type @m
+len @m
+string @m .clean
+string @m .ratio
+get @m .tests
+string @m ."a \"quoted\" key: with.dots"
+to_strt @m $index
+as odd set @m .k 0.:blob=x
+to_strt @odd $index
+as short split runner,count ,
+from_strt map/map.strt $short
+as none arr
+from_strt map/map.strt $none
+as ints arr 0.:int=1
+from_strt map/map.strt $ints
+as s str x
+from_strt map/map.strt $s
+to_strt @m $short
+to_strt @m $s
+as e arr
+to_strt @e $index
+from_strt reads/reads.silt $index
+from_strt bool/bool.strt $index
+from_strt code/code.strt $index
+from_strt key/key.strt $index

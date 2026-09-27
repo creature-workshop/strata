@@ -1,0 +1,16 @@
+# YAML spells numbers JSON does not; each keeps its spelling in a map.
+hex: 0x1F
+octal: 0o17
+plus: +5
+zeros: 007
+dot: 1.
+lead: .5
+inf: -.inf
+nan: .NaN
+underscore: 1_000
+plain: 1e5
+upper: 1.0E+05
+zero: 0.0
+negzero: -0
+yes: True
+nothing: NULL

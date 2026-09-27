@@ -1,0 +1,51 @@
+## as j from_json awkward/awkward.json
+0."":str="an empty key"
+0."a \"quoted\" key: with.dots\nand a line":str="every mark a line is split on"
+0."clean":bool=true
+0."commit":null
+0."count":int=3
+0."entry":list
+1.0:str="nested"
+1.1:list
+2.0:str="arrays"
+2.1:list
+0."item":str="a key the mapping keeps"
+0."ratio":float=-1.5e3
+0."recorded_at":str="2026-09-18T20:00:00Z"
+0."suites":map
+1."unit":map
+2."runner":str="bats"
+2."tests":map
+3."test/a.bats":map
+4."notes":map
+4."probes":list
+4."reads":list
+5.0:str="lib/a.sh"
+5.1:str="test/a.bats"
+4."status":str="passed"
+0."text":str="a \"quote\", a \\ backslash,\na line\tand a tab"
+0."tracer":str="strace"
+## to_json @j
+{"":"an empty key","a \"quoted\" key: with.dots\nand a line":"every mark a line is split on","clean":true,"commit":null,"count":3,"entry":["nested",["arrays",[]]],"item":"a key the mapping keeps","ratio":-1.5e3,"recorded_at":"2026-09-18T20:00:00Z","suites":{"unit":{"runner":"bats","tests":{"test/a.bats":{"notes":{},"probes":[],"reads":["lib/a.sh","test/a.bats"],"status":"passed"}}}},"text":"a \"quote\", a \\ backslash,\na line\tand a tab","tracer":"strace"}
+## type @j
+map
+## get @j .suites.unit.tests
+0."test/a.bats":map
+1."notes":map
+1."probes":list
+1."reads":list
+2.0:str="lib/a.sh"
+2.1:str="test/a.bats"
+1."status":str="passed"
+## as s from_json scalar/scalar.json
+0.:str="x"
+## to_json @s
+"x"
+## from_json repeated/repeated.json
+!! 1 ERROR: silt: a key its map already holds: "a"
+## from_json open/open.json
+!! 1 ERROR: silt: json line 1: the document ends before its value
+## from_json wide/wide.json
+!! 1 ERROR: silt: an int outside 64 bits: 9223372036854775808
+## from_json control/control.json
+!! 1 ERROR: silt: json line 1: a control character inside a string

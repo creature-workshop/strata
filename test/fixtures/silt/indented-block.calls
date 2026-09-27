@@ -1,3 +1,0 @@
-as b from_yaml indented-block.yaml
-to_json @b
-to_yaml @b

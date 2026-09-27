@@ -1,2 +1,0 @@
-as p from_yaml plain-null.yaml
-to_json @p
