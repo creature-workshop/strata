@@ -6,14 +6,14 @@
 # differs, with both answers, and fails when any does. SHELLOPS_DIR names
 # the shellops whose validator is the oracle, the vendored one when not set.
 #
-# Usage: test/silt-validate.sh [<cases>]; test/fixtures/silt/validate/cases.json
+# Usage: test/silt-validate.sh [<cases>]; test/fixtures/silt/validate/cases/cases.json
 # when none is given
 
 set -uo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 STRUCTS="${SHELLOPS_DIR:-$REPO/shell/.ops}/lib/structs"
-CASES="${1:-$REPO/test/fixtures/silt/validate/cases.json}"
+CASES="${1:-$REPO/test/fixtures/silt/validate/cases/cases.json}"
 
 export SILT_DIR="$REPO/shell/silt"
 # shellcheck source=../shell/silt/api.sh

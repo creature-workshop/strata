@@ -1,0 +1,3 @@
+A list of schemas, each with a value and a name. test/silt-validate.sh
+checks that silt__validate and the jq validator of shellops report the
+same errors over every one. No call of the fileset reads it.

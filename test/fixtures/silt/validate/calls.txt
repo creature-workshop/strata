@@ -1,4 +1,4 @@
-as s from_json validate.schema.json
+as s from_json schema/schema.json
 # Valid, a time checked as a string
 as at time 2026-09-22T08:10:04.5+02:00
 as org str ksoft
