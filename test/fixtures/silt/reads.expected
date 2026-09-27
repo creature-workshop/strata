@@ -16,7 +16,7 @@ true
 ## string .[0]
 lib/a.sh
 ## scalar
-!! 1 silt: not a scalar document, its first line: 0.0:str="lib/a.sh"
+!! 1 ERROR: silt: not a scalar document, its first line: 0.0:str="lib/a.sh"
 ## get
 0.0:str="lib/a.sh"
 0.1:str="test/a.bats"

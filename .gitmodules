@@ -1,3 +1,6 @@
 [submodule "shell/.ops"]
 	path = shell/.ops
 	url = ../shellops.git
+[submodule "shell/.logs"]
+	path = shell/.logs
+	url = ../shell-logs.git

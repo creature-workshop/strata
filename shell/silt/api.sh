@@ -37,20 +37,27 @@ A path names members from the top: ".a.b" the member b of the member a,
 document, and a key holding "." or "[" is quoted the way JSON spells it,
 `."test/a.bats"` or `["test/a.bats"]`, and is matched by that spelling.
 
-The library is this file and the ones it sources beside it: constants, answer,
-parse, text, path, and one per verb. A caller sources api.sh alone; SILT_DIR
-names this directory where the shell cannot tell (dash), bash needs nothing.
+The library is this file and the ones it sources beside it, and it reports
+through shell-logs, the submodule at shell/.logs. A caller sources api.sh
+alone; SILT_DIR names this directory where the shell cannot tell (dash).
 MODULE
 
 : <<'FUN'
-Sets __silt__DIR to the directory api.sh sits in, and refuses when parse.sh
-is not there.
+Sets __silt__DIR to the directory api.sh sits in, and __silt__LOGS to the
+shell-logs library beside it. Refuses when parse.sh is not there, or when
+the shell-logs submodule is not checked out.
 FUN
 __silt__home() {
   __silt__guess_home
 
   if [ ! -f "$__silt__DIR/parse.sh" ]; then
     printf 'silt: %s holds no parse.sh; set SILT_DIR to the directory of api.sh\n' "$__silt__DIR" >&2
+    return 1
+  fi
+
+  __silt__LOGS="$__silt__DIR/../.logs/shell/log/api.sh"
+  if [ ! -f "$__silt__LOGS" ]; then
+    printf 'silt: shell-logs is not checked out at %s; run git submodule update --init\n' "$__silt__DIR/../.logs" >&2
     return 1
   fi
 }
@@ -76,6 +83,7 @@ __silt__guess_home() {
 }
 
 __silt__home || return 1
+. "$__silt__LOGS"
 . "$__silt__DIR/constants.sh"
 . "$__silt__DIR/answer.sh"
 . "$__silt__DIR/parse.sh"

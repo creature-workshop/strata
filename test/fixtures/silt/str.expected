@@ -11,4 +11,4 @@ bats
 ## has .x
 false
 ## keys
-!! 1 silt: str has no keys
+!! 1 ERROR: silt: str has no keys
