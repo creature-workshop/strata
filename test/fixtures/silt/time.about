@@ -1,0 +1,5 @@
+Times built from text with an offset, and from the clock. Every time comes
+out in UTC with nine digits after the point, so two spellings of the same
+instant become the same document. Text with no offset, a field out of range,
+or more than nine fraction digits is refused. Written to JSON a time is a
+string, and that string reads back as a string, never as a time.

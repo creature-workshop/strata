@@ -11,13 +11,13 @@ document's members, string keys making it a map and indices a list
 (ADR.4@strata), and one keyless line makes it a scalar (ADR.12@strata). A
 str's value is its JSON literal, quotes and escapes included (ADR.3@strata).
 
-Every verb answers in the variable the caller names first, and none starts a
-process: a verb splits the document into its own positional parameters once,
-in C, with IFS a newline and globbing off, and reads a line at a time from
-there; SILT has no empty line, which a split would drop. A predicate answers
-in a register rather than printing, since printing would cost the subshell
-the library exists to avoid. A document past __silt__THRESHOLD lines belongs
-to the awk tier, which answers the same call the same way.
+Every verb answers in the variable the caller names first, and none but
+silt__now starts a process: a verb splits the document into its positional
+parameters once, in C, with IFS a newline and globbing off, and reads a line
+at a time from there; SILT has no empty line, which a split would drop. A
+predicate answers in a register rather than printing, which would cost the
+subshell the library exists to avoid. A document past __silt__THRESHOLD
+lines belongs to the awk tier, which answers the same call the same way.
 
   silt__type      the kind of value a document is
   silt__get       the value at a path, as a document of its own
@@ -37,6 +37,8 @@ to the awk tier, which answers the same call the same way.
   silt__unwrap    a JSON string literal to text
   silt__wrap      text to a JSON string literal
   silt__str       a str document from text
+  silt__time      a time document from a date-time carrying an offset
+  silt__now       a time document from the clock
   silt__obj       a map from key and document pairs
   silt__arr       a list from documents
   silt__push      documents appended to a list
@@ -135,6 +137,7 @@ __silt__home || return 1
 . "$__silt__DIR/walk.sh"
 . "$__silt__DIR/nest.sh"
 . "$__silt__DIR/str.sh"
+. "$__silt__DIR/time.sh"
 . "$__silt__DIR/obj.sh"
 . "$__silt__DIR/arr.sh"
 . "$__silt__DIR/push.sh"
