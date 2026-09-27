@@ -1,1 +1,1 @@
-a time, read back from JSON
+JSON input for the time test

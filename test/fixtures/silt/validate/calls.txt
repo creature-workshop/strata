@@ -1,26 +1,26 @@
 as s from_json schema/schema.json
-# Valid, a time checked as a string
+# A valid document. The time is validated as a string.
 as at time 2026-09-22T08:10:04.5+02:00
 as org str ksoft
 as good obj org $org at $at
 validate @good $s
-# Wrong in several places, inf read as the map JSON would carry
+# A document with several errors. inf is validated as a map.
 as tags split silt,x,silt ,
 as loud str KSoft
 as bad obj org $loud ratio 0.:float=inf tags $tags extra 0.:null
 validate @bad $s
 as two set @good .ratio 0.:float=1.5
 validate @two $s
-# A scalar and an empty collection as the document
+# A single value and an empty list as the document
 as number obj type $org
 as wants set @number .type 0.:str="number"
 validate @org $wants
 as none arr
 validate @none $wants
-# The schema true and the schema false
+# The schemas true and false
 validate @good 0.:bool=true
 validate @good 0.:bool=false
-# Refused
+# Invalid schemas and documents
 as n obj n 0.:int=3
 as three get @n .n
 validate @good 0.:int=3

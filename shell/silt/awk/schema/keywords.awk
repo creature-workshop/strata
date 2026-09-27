@@ -1,39 +1,42 @@
-# A schema's keywords read with their operands checked, and an error kept.
-# A keyword whose operand is of the wrong kind is refused, since the schema
-# is then at fault and not the value. It holds functions alone. Loaded after
+# Functions for recording a validation error and for reading a keyword's
+# operand from a schema. If an operand has the wrong type, the schema is
+# invalid, so the program exits with an error instead of recording a
+# validation error. This file contains functions only. Load after
 # schema/tree.awk and schema/values.awk.
 #
-#   ERROR[1..ERRORS]   the errors kept, in the order they were met
+#   ERROR[1..ERRORS]   the recorded errors, in the order they were found
 
-# Keeps an error against the place in the value it was met at.
-function fail(path, message) {
+# Records a validation error for the value at the given path.
+function add_error(path, message) {
   ERRORS++
   ERROR[ERRORS] = path ": " message
 }
 
-# The number a keyword gives. Refuses any other operand.
-function number_under(schema, keyword) {
+# Returns the operand of a keyword as a number. Exits with an error if the
+# operand is not a number.
+function number_operand(schema, keyword) {
   if (!is_number(member(schema, keyword))) {
-    refuse("a schema's " keyword " takes a number, not " json_text(member(schema, keyword)))
+    refuse("schema error: " keyword " must be a number, got " json_text(member(schema, keyword)))
   }
 
   return number_of(member(schema, keyword))
 }
 
-# The text a keyword gives. Refuses any other operand.
-function text_under(schema, keyword) {
+# Returns the operand of a keyword as text. Exits with an error if the
+# operand is not a string.
+function string_operand(schema, keyword) {
   if (TYPE_OF[member(schema, keyword)] != "str") {
-    refuse("a schema's " keyword " takes a string, not " json_text(member(schema, keyword)))
+    refuse("schema error: " keyword " must be a string, got " json_text(member(schema, keyword)))
   }
 
   return text_of(member(schema, keyword))
 }
 
-# The collection a keyword gives, of the kind named, map or list. Refuses
-# any other operand.
-function collection_under(schema, keyword, kind) {
+# Returns the node of a keyword's operand, which must be of the given kind,
+# map or list. Exits with an error if it is not.
+function collection_operand(schema, keyword, kind) {
   if (TYPE_OF[member(schema, keyword)] != kind) {
-    refuse("a schema's " keyword " takes a " kind ", not " json_text(member(schema, keyword)))
+    refuse("schema error: " keyword " must be a " kind ", got " json_text(member(schema, keyword)))
   }
 
   return member(schema, keyword)

@@ -1,30 +1,42 @@
-# The errors the document on stdin meets against the JSON Schema in
-# SILT_SPILL, as a list of str, empty when the document is valid:
-# silt__validate. An error names the place in the value it was met at, from
-# "$" down, and the same error met twice is told once. The keywords read
-# are type, enum, const, minLength, maxLength, pattern, minimum, maximum,
-# exclusiveMinimum, exclusiveMaximum, multipleOf, required, properties,
-# patternProperties, additionalProperties, minItems, maxItems, uniqueItems,
-# items, allOf, anyOf, oneOf, not and $ref; any other is passed over.
-# Loaded after lines.awk, order.awk and every file under schema/.
+# Validates the document on stdin against the JSON Schema in the file named
+# by SILT_SPILL, and prints the validation errors as a list of strings. Prints
+# an empty list if the document is valid. This is the awk program behind
+# silt__validate.
 #
-#   0."n":str="x"   spill  0."properties":map      ->  0.0:str="$.n: expected number, got string"
-#                          1."n":map
-#                          2."type":str="number"
+# Each error starts with the path to the invalid value, beginning at "$".
+# Duplicate errors are printed once.
+#
+# Supported keywords: type, enum, const, minLength, maxLength, pattern,
+# minimum, maximum, exclusiveMinimum, exclusiveMaximum, multipleOf, required,
+# properties, patternProperties, additionalProperties, minItems, maxItems,
+# uniqueItems, items, allOf, anyOf, oneOf, not and $ref. Other keywords are
+# ignored.
+#
+# Load after lines.awk, order.awk and every file under schema/.
+#
+#   0."n":str="x"   schema  0."properties":map      ->  0.0:str="$.n: expected number, got string"
+#                           1."n":map
+#                           2."type":str="number"
 
-# Keeps the errors the value meets against the schema at a place in the
-# value: none against the schema true, one against the schema false, and
-# each keyword's against a map. <seen> holds the references followed to
-# this schema at this place. Refuses a schema that is neither.
+# Validates one value against one schema and records any errors.
+#
+#   schema  The schema node. A schema of true accepts every value, and a
+#           schema of false rejects every value.
+#   value   The value node.
+#   path    The path to the value, used in error messages.
+#   seen    The $ref targets already followed for this value, used to detect
+#           circular references.
+#
+# Exits with an error if the schema is neither a map nor a bool.
 function validate(schema, value, path, seen) {
   if (TYPE_OF[schema] == "bool") {
     if (VALUE_OF[schema] == "false") {
-      fail(path, "value disallowed by 'false' schema")
+      add_error(path, "value disallowed by 'false' schema")
     }
     return
   }
   if (TYPE_OF[schema] != "map") {
-    refuse("a schema is a map or a bool, not " json_text(schema))
+    refuse("schema error: a schema must be a map or a bool, got " json_text(schema))
   }
 
   check_ref(schema, value, path, seen)
@@ -38,8 +50,8 @@ function validate(schema, value, path, seen) {
   check_composition(schema, value, path, seen)
 }
 
-# Prints the errors kept as a list of str, each told once, in the order
-# they were met; the empty list when none was.
+# Prints the recorded errors as a list of strings, in the order they were
+# found, skipping duplicates. Prints an empty list if there are none.
 function print_errors(__i, __told, __count) {
   __count = 0
 
@@ -58,7 +70,7 @@ function print_errors(__i, __told, __count) {
   }
 }
 
-# Keeps every line of the value for END.
+# Stores each input line so the END block can process the whole document.
 function main() {
   take($0)
 }
@@ -75,7 +87,7 @@ END {
   }
 
   build_tree(1)
-  take_spill()
+  read_schema_lines()
   build_tree(2)
   validate(ROOT[2], ROOT[1], "$", "")
   print_errors()

@@ -1,4 +1,4 @@
-# One instant, spelled four ways
+# The same moment written four different ways
 as t time 2026-09-22T08:10:04.5+02:00
 as u time 2026-09-22T06:10:04.500Z
 time 2026-09-22t06:10:04.5z
@@ -6,7 +6,7 @@ time 2026-09-22 06:10:04.500000000Z
 type @t
 scalar @t
 equals @t $u
-# An offset that carries the clock over midnight, the month and the year
+# Offsets that move the date across midnight, a month end and a year end
 time 2026-01-01T01:30:00+02:00
 time 2025-12-31T23:30:00-01:00
 time 2024-02-28T23:00:00-01:30
@@ -15,7 +15,7 @@ time 1900-02-28T23:00:00-01:00
 time 2024-01-01T00:00:00-00:01
 time 2026-06-30T23:59:60.123456789Z
 time 0000-01-01T00:00:00Z
-# Refused
+# Invalid input
 time 2026-09-22T06:10:04
 time 2026-09-22T06:10:04.1234567891Z
 time 2026-09-22T06:10:04.Z
@@ -35,21 +35,21 @@ time 0000-01-01T00:00:00+00:01
 time 9999-12-31T23:59:59-00:01
 time yesterday
 time
-# The clock
+# The current time
 now
-# Out to JSON as a string, and back as a string
+# To JSON and back
 to_json @t
 as m obj at $t
 to_json @m
 as back from_json time-json/time.json
 equals @back $m
-# Out to YAML and TOML, and back
+# To YAML and TOML and back
 to_yaml @m
 to_toml @m
 from_yaml time-yaml/time.yaml
 as toml from_toml time-toml/time.toml
 equals @toml $m
-# Out to .strh and .strt, the time a leaf like any other
+# To .strh and .strt
 as index split at ,
 as strh to_strh @m 1299709 104729 1
 to_strt @m $index
