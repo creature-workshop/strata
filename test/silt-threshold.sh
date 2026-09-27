@@ -3,10 +3,12 @@
 # flat map of N string leaves, the time of one silt__get of the last key with
 # the walk forced to the shell (SILT_THRESHOLD past N) and forced to awk
 # (SILT_THRESHOLD=0), under dash and under bash, in milliseconds per call
-# over a few calls. The number the constant in shell/silt/constants.sh
-# carries is read off the bash column, where the two cross first.
+# over a few calls, as tab-separated rows; pipe through column -t for a
+# table. The number the constant in shell/silt/constants.sh carries is read
+# off the bash columns, where the two cross first.
 #
-# Usage: test/silt-threshold.sh [<lines>...]; 50 100 200 400 800 1600 when none
+# Usage: test/silt-threshold.sh [<lines>...] | column -t
+#        50 100 200 400 800 1600 lines when none are given
 
 set -euo pipefail
 
@@ -19,18 +21,18 @@ main() {
     sizes=(50 100 200 400 800 1600)
   fi
 
-  printf '%6s  %-12s %-12s  %-12s %-12s\n' lines 'dash shell' 'dash awk' 'bash shell' 'bash awk'
+  printf 'lines\tdash shell\tdash awk\tbash shell\tbash awk\n'
   local lines
   for lines in "${sizes[@]}"; do
     row "$lines"
   done
 }
 
-# One row: the four timings for a document of <lines> lines.
+# One row, tab-separated: the four timings for a document of <lines> lines.
 row() {
   local lines="$1" doc
   doc="$(wide_map "$lines")"
-  printf '%6s  %-12s %-12s  %-12s %-12s\n' "$lines" \
+  printf '%s\t%s\t%s\t%s\t%s\n' "$lines" \
     "$(timed dash "$doc" "$lines" "$((lines + 1))")" \
     "$(timed dash "$doc" "$lines" 0)" \
     "$(timed bash "$doc" "$lines" "$((lines + 1))")" \
