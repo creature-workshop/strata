@@ -2,8 +2,9 @@
 # run over the value read from value.json, each paired with the jq program
 # that must answer the same over the JSON, "<call> => <jq program>". The
 # paths come in on stdin as test/fuzz/paths.jq prints them; a seed picks
-# which are exercised, drawn by the same generator value.awk uses, and the
-# root's type comes in as -v root=, and -v yaml=0 leaves the YAML out.
+# which are exercised, drawn by a Lehmer generator of this file's own, the
+# root's type comes in as -v root=, -v yaml=0 leaves the YAML out, and
+# -v toml=1 brings the TOML in.
 #
 #   awk -v seed=7 -v root=object -f calls.awk paths  ->  as d from_json value.json
 #                                                        to_json @d => tojson
@@ -29,9 +30,10 @@ function keep_path(line, __part) {
   TYPE[PATHS] = __part[3]
 }
 
-# The calls every case makes over the root: read it, write it back, and,
-# unless -v yaml=0 says yq could not spell the value, read it again through
-# YAML in both styles yq writes.
+# The calls every case makes over the root: read it, write it back, and
+# read it again through YAML in both styles yq writes unless -v yaml=0 says
+# yq could not spell the value, and through TOML when -v toml=1 says TOML
+# holds it.
 function root_calls() {
   print "as d from_json value.json"
   print "to_json @d => tojson"
@@ -43,6 +45,10 @@ function root_calls() {
     print "equals @d $y => true"
     print "as f from_yaml flow.yaml"
     print "equals @d $f => true"
+  }
+  if (toml != 0) {
+    print "as t from_toml table.toml"
+    print "equals @d $t => true"
   }
 }
 
@@ -88,8 +94,9 @@ function set_calls(i) {
 }
 
 # The calls over one path, by the type of the value there. A set is drawn
-# only for a path with no space in it, since the transcript splits a
-# writer's words on spaces.
+# only for a path with no space and no backslash in it, since the
+# transcript splits a writer's words on spaces and reads them through
+# printf %b.
 function path_calls(i) {
   if (TYPE[i] == "object" || TYPE[i] == "array") {
     collection_calls(i)
@@ -97,7 +104,7 @@ function path_calls(i) {
     scalar_calls(i)
   }
 
-  if (pick(3) == 0 && index(SILT[i], " ") == 0) {
+  if (pick(3) == 0 && index(SILT[i], " ") == 0 && index(SILT[i], "\\") == 0) {
     set_calls(i)
   }
 }

@@ -12,8 +12,10 @@
 # `shell--lint` and `shell--test` check and run the shell under `shell/`, the
 # SILT library first, with the bats the vendored shellops carries.
 # `silt-fuzz` runs test/silt-fuzz.sh over a few hundred seeds against jq and
-# yq on a pipeline schedule, never on a merge request; the seeds start at the
-# hour, so every night draws new values and a failure names its seed.
+# yq on a pipeline schedule, or by hand from the web, never on a merge
+# request; its tools come from ops.lock through cli/install, and the seeds
+# start at the hour, so every night draws new values and a failure names its
+# seed.
 
 include:
   - component: $CI_SERVER_FQDN/ksoft/creatures/forge--code-review-hygiene@0.19.1
@@ -42,18 +44,17 @@ ksoft/govern/update-labels:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 silt-fuzz:
+  extends: .shellops
   stage: validation
-  image: ubuntu:22.04
   needs: []
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
-    YQ_VERSION: v4.53.6
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
-  before_script:
-    - apt-get update -qq && apt-get install -y -qq --no-install-recommends bash dash jq mawk curl ca-certificates > /dev/null
-    - curl -fsSL "https://github.com/mikefarah/yq/releases/download/$YQ_VERSION/yq_linux_amd64" -o /usr/local/bin/yq && chmod +x /usr/local/bin/yq
+    - if: $CI_PIPELINE_SOURCE == "web"
   script:
+    - $SHELLOPS_DIR/cli/install dash mawk yq node
+    - npm ci --prefix test/fuzz --no-audit --no-fund
     - SILT_THRESHOLD=1000000 bash test/silt-fuzz.sh --seeds 300 --from "$(date +%s | cut -c1-8)" --keep fuzz-failures
     - SILT_THRESHOLD=0 bash test/silt-fuzz.sh --seeds 300 --from "$(date +%s | cut -c2-9)" --keep fuzz-failures
   artifacts:

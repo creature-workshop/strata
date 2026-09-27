@@ -40,7 +40,7 @@ require_usage() {
 write_calls() {
   local dir
   dir="$(cd "$(dirname "$1")" && pwd)"
-  sed -E -e 's/ => .*$//' -e "s#^((as [A-Za-z0-9_]+ )?from_(json|yaml)) ([^/])#\1 $dir/\4#" "$1"
+  sed -E -e 's/ => .*$//' -e "s#^((as [A-Za-z0-9_]+ )?from_(json|yaml|toml)) ([^/])#\1 $dir/\4#" "$1"
 }
 
 # Every pair of the twins file against the transcript, by line.

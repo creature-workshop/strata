@@ -11,15 +11,14 @@
 # type, scalar, len, keys, canon, to_json, to_yaml and to_toml take the
 # document; get, string and has take it and a path; from_json, from_yaml and
 # from_toml take a file, beside the calls file unless absolute, and read it
-# on stdin; unwrap
-# takes the literal; wrap and transcript__roundtrip take text read through
-# printf %b, so a line can spell a newline or a control character; each takes
-# an extra argument for its callback, and each-until the key at which the
-# callback returns 3. A call written "as <name> <call>" keeps its answer in a
-# register, "@<name>" in place of the document makes a call read that
-# register, and a writer's words may name one as "$<name>": obj, arr and
-# split take their words alone; push, set, concat, join and equals take the
-# document first; str takes the rest of the line as its text.
+# on stdin; unwrap takes the literal; wrap and transcript__roundtrip take
+# text read through printf %b, so a line can spell a newline or a control
+# character; each takes an extra argument for its callback, and each-until
+# the key at which the callback returns 3. A call written "as <name> <call>"
+# keeps its answer in a register, "@<name>" in place of the document makes a
+# call read that register, and a writer's words may name one as "$<name>":
+# obj, arr and split take their words alone; push, set, concat, join and
+# equals take the document first; str takes the rest of the line as its text.
 
 set -u
 
