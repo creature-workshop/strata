@@ -62,3 +62,32 @@ j = 3
 k = 2
 ## to_json @t
 {"name":"x","zeta":{"k":1,"sub":{"j":3}},"alpha":{"k":2}}
+## as js from_json --sort unsorted-json/unsorted.json
+0."10":str="x"
+0."2":str="y"
+0."a":null
+0."b":list
+1.0:int=1
+1.1:map
+2."y":int=2
+2."z":int=1
+## to_json @js
+{"10":"x","2":"y","a":null,"b":[1,{"y":2,"z":1}]}
+## as ys from_yaml -s unsorted-yaml/unsorted.yaml
+0."10":str="x"
+0."a":map
+1."c":int=2
+1."z":int=1
+0."b":int=1
+## to_json @ys
+{"10":"x","a":{"c":2,"z":1},"b":1}
+## as ts from_toml --sort unsorted-toml/unsorted.toml
+0."alpha":map
+1."k":int=2
+0."name":str="x"
+0."zeta":map
+1."k":int=1
+1."sub":map
+2."j":int=3
+## to_json @ts
+{"alpha":{"k":2},"name":"x","zeta":{"k":1,"sub":{"j":3}}}

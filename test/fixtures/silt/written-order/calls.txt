@@ -10,3 +10,9 @@ to_json @y
 as t from_toml unsorted-toml/unsorted.toml
 to_toml @t
 to_json @t
+as js from_json --sort unsorted-json/unsorted.json
+to_json @js
+as ys from_yaml -s unsorted-yaml/unsorted.yaml
+to_json @ys
+as ts from_toml --sort unsorted-toml/unsorted.toml
+to_json @ts

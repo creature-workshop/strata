@@ -16,7 +16,9 @@
 # and read-register the text a register holds; get, string, has and pluck
 # take the document and a path; string-or takes a default word, then the path;
 # from_json, from_yaml, from_toml and from_strh take a file, beside the calls
-# file unless absolute, and read it on stdin, and from_strt such a file and
+# file unless absolute, and read it on stdin, from_json, from_yaml and
+# from_toml with -s or --sort in front of the file when the call sorts, and
+# from_strt such a file and
 # then the register holding the corpus's keys; unwrap takes the literal; wrap
 # and transcript__roundtrip take text read through printf %b, so a line can
 # spell a newline or a control character; each takes an extra argument for
@@ -190,7 +192,8 @@ transcript__run_verb() {
     line) transcript__line ;;
     get | string | has | pluck) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
     string-or) transcript__capture silt__string ANSWER "$DOCUMENT_FOR_CALL" "$(transcript__argument_of "$2")" "$(transcript__unescape "${2%% *}")" ;;
-    from_json | from_yaml | from_toml | from_strh) transcript__capture "silt__$1" ANSWER < "$(transcript__file_of "$2")" ;;
+    from_json | from_yaml | from_toml) transcript__read_file "$1" "$2" ;;
+    from_strh) transcript__capture silt__from_strh ANSWER < "$(transcript__file_of "$2")" ;;
     from_strt) transcript__capture silt__from_strt ANSWER "$(transcript__register_of "${2#* }")" < "$(transcript__file_of "${2%% *}")" ;;
     unwrap) transcript__capture silt__unwrap ANSWER "$2" ;;
     wrap) transcript__capture silt__wrap ANSWER "$(transcript__unescape "$2")" ;;
@@ -203,6 +206,15 @@ transcript__run_verb() {
     each-string) transcript__capture silt__each transcript__note_string "$DOCUMENT_FOR_CALL" "$2" ;;
     each-nested) transcript__capture silt__each transcript__note_nested "$DOCUMENT_FOR_CALL" '' ;;
     *) STATUS=127 ;;
+  esac
+}
+
+# Runs a reader of JSON, YAML or TOML on the file the call names, with the
+# flag -s or --sort when the call has it in front of the file.
+transcript__read_file() {
+  case "$2" in
+    '-s '* | '--sort '*) transcript__capture "silt__$1" "${2%% *}" ANSWER < "$(transcript__file_of "${2#* }")" ;;
+    *) transcript__capture "silt__$1" ANSWER < "$(transcript__file_of "$2")" ;;
   esac
 }
 

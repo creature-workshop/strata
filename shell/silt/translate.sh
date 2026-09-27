@@ -5,8 +5,9 @@ The translators: a JSON, a YAML, a TOML, a .strh or a .strt document read
 into SILT, and a SILT document written out as any of the five. Each is one
 awk start, the document in on stdin or handed over. The JSON, YAML and TOML
 readers keep the members of a map in the order the document wrote them, so
-a document that is read and written back has the same order. Use
-silt__canon to put a document in canonical order.
+a document that is read and written back has the same order. Each of the
+three takes -s or --sort before its first argument, and then returns the
+document in canonical order, as silt__canon does.
 MODULE
 
 : <<'PUB_FUN'
@@ -20,18 +21,16 @@ twice, and a number outside 64 bits or binary64, naming the line.
   1.0:int=1
   0."a":null'
 
+  silt__from_json --sort doc < map.json   ->  doc='0."a":null
+  0."b":list
+  1.0:int=1'
+
 args:
-  $1  The name of the variable to answer in
+  -s, --sort  Put the members of every map in canonical order
+  $1          The name of the variable to answer in
 PUB_FUN
 silt__from_json() {
-  __silt__out "$1" || return 1
-  __silt__from_json__out="$__silt__OUT"
-
-  __silt__ANSWER=''
-  __silt__translate_stdin 'translators/write translators/json/from' || return 1
-
-  __silt__OUT="$__silt__from_json__out"
-  __silt__answer
+  __silt__read_stdin 'translators/write translators/json/from' "$@"
 }
 
 : <<'PUB_FUN'
@@ -73,17 +72,11 @@ second document, and a scalar or a flow collection that runs over lines.
   1.0:str="test"'
 
 args:
-  $1  The name of the variable to answer in
+  -s, --sort  Put the members of every map in canonical order
+  $1          The name of the variable to answer in
 PUB_FUN
 silt__from_yaml() {
-  __silt__out "$1" || return 1
-  __silt__from_yaml__out="$__silt__OUT"
-
-  __silt__ANSWER=''
-  __silt__translate_stdin 'translators/write translators/numbers translators/yaml/lines translators/yaml/scalars translators/yaml/values translators/yaml/flow translators/yaml/blocks translators/yaml/tree translators/yaml/from' || return 1
-
-  __silt__OUT="$__silt__from_yaml__out"
-  __silt__answer
+  __silt__read_stdin 'translators/write translators/numbers translators/yaml/lines translators/yaml/scalars translators/yaml/values translators/yaml/flow translators/yaml/blocks translators/yaml/tree translators/yaml/from' "$@"
 }
 
 : <<'PUB_FUN'
@@ -129,17 +122,11 @@ past nine digits, and an int outside 64 bits.
   1."version":str="1.2.3"'
 
 args:
-  $1  The name of the variable to answer in
+  -s, --sort  Put the members of every map in canonical order
+  $1          The name of the variable to answer in
 PUB_FUN
 silt__from_toml() {
-  __silt__out "$1" || return 1
-  __silt__from_toml__out="$__silt__OUT"
-
-  __silt__ANSWER=''
-  __silt__translate_stdin 'translators/write translators/numbers translators/toml/text translators/toml/strings translators/toml/tree translators/toml/times translators/toml/scalars translators/toml/values translators/toml/from' || return 1
-
-  __silt__OUT="$__silt__from_toml__out"
-  __silt__answer
+  __silt__read_stdin 'translators/write translators/numbers translators/toml/text translators/toml/strings translators/toml/tree translators/toml/times translators/toml/scalars translators/toml/values translators/toml/from' "$@"
 }
 
 : <<'PUB_FUN'
@@ -340,4 +327,63 @@ __silt__translate_stdin() {
   __silt__HANDED=true
   __silt__HANDED_OUT="$(__silt__tier "$1")" || return $?
   __silt__absorb_handed
+}
+
+: <<'FUN'
+Reads the document on stdin with the awk programs named, and assigns the
+SILT document to the caller's variable. With -s or --sort in front of the
+variable's name, the members of every map are in canonical order. Without
+it, they are in the order the document wrote them.
+
+  __silt__read_stdin 'translators/write translators/json/from' --sort doc
+
+args:
+  $1          The programs' names, as __silt__translate_stdin takes them
+  -s, --sort  Put the members of every map in canonical order
+  $2          The name of the variable to answer in
+FUN
+__silt__read_stdin() {
+  __silt__read_stdin__programs="$1"
+  shift
+  __silt__take_sort_flag "${1:-}"
+  if [ "$__silt__SORT" = true ]; then
+    shift
+  fi
+  __silt__out "${1:-}" || return 1
+  __silt__read_stdin__out="$__silt__OUT"
+
+  __silt__ANSWER=''
+  __silt__translate_stdin "$__silt__read_stdin__programs" || return 1
+  __silt__sort_answer_if_asked || return 1
+
+  __silt__OUT="$__silt__read_stdin__out"
+  __silt__answer
+}
+
+: <<'FUN'
+Sets __silt__SORT to true when the argument is -s or --sort, and to false
+otherwise.
+
+args:
+  $1  The first argument of a reader
+FUN
+__silt__take_sort_flag() {
+  case "$1" in
+    -s | --sort) __silt__SORT=true ;;
+    *) __silt__SORT=false ;;
+  esac
+}
+
+: <<'FUN'
+Puts the document in __silt__ANSWER in canonical order when __silt__SORT is
+true, and leaves it unchanged otherwise.
+FUN
+__silt__sort_answer_if_asked() {
+  if [ "$__silt__SORT" != true ]; then
+    return 0
+  fi
+
+  __silt__SORTED=''
+  silt__canon __silt__SORTED "$__silt__ANSWER" || return 1
+  __silt__ANSWER="$__silt__SORTED"
 }
