@@ -21,7 +21,7 @@
 ## get-first
 
 ## get-first .missing --default
-!! 1 ERROR: silt: --default takes a value
+!! 1 ERROR: silt: --default requires a value
 ## string-first .missing .suite.runner
 bats
 ## string-first .nothing .missing --default none
@@ -167,4 +167,4 @@ none
 ## push --at .missing 0.:int=1
 !! 1 ERROR: silt: push found no list at '.missing'
 ## push --at
-!! 1 ERROR: silt: --at takes a path
+!! 1 ERROR: silt: --at requires a path

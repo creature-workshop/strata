@@ -63,7 +63,7 @@ __silt__push_at() {
   shift "$(($# < 4 ? $# : 4))"
 
   if [ -z "$__silt__push_at__path" ]; then
-    __silt__fail '--at takes a path'
+    __silt__fail '--at requires a path'
     return 1
   fi
 

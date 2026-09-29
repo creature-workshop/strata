@@ -53,7 +53,7 @@ args:
 FUN
 __silt__paths__keep_default() {
   if [ "$#" -lt 2 ]; then
-    __silt__fail '--default takes a value'
+    __silt__fail '--default requires a value'
     return 1
   fi
 
