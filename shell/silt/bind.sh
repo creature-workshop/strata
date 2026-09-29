@@ -72,7 +72,7 @@ The command can call silt__with itself, with the same prefix and keys.
 
 registers:
   __silt__bind__WITHS  How many calls of silt__with are running, this one
-                 included
+                       included
 
 args:
   $1  The prefix of the variables' names
@@ -87,6 +87,7 @@ silt__with() {
   set -- "$?"
 
   eval "__silt__bind__restore \"\$__silt__with__names_$__silt__bind__WITHS\""
+  unset "__silt__with__names_$__silt__bind__WITHS"
   __silt__bind__WITHS=$((__silt__bind__WITHS - 1))
   return "$1"
 }
