@@ -37,7 +37,8 @@
 # after it; project takes its keys. A call written "as <name> <call>" keeps
 # its answer in a register, "@<name>" in place of the document makes a call
 # read that register, and a writer's words may name one as "$<name>": obj,
-# arr and split take their words alone; push, set, concat, join, equals,
+# arr and split take their words alone; bind takes keys, and with takes
+# keys, then --, then a command; push, set, concat, join, equals,
 # merge, difference, intersect, validate, to_strh and to_strt take the
 # document first;
 # str and time take the rest of the line as their text. now takes no
@@ -140,7 +141,7 @@ transcript__run_call() {
 
   # shellcheck disable=SC2086  # a writer's words are split on purpose
   case "${1%% *}" in
-    obj | arr | push | set | concat | join | split | equals | merge | difference | intersect | validate | to_strh | to_strt) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
+    obj | arr | bind | with | push | set | concat | join | split | equals | merge | difference | intersect | validate | to_strh | to_strt) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
     map | filter | find | any | all | project) transcript__run_collection "${1%% *}" $__transcript__run_call__rest ;;
     *) transcript__run_verb "${1%% *}" "$__transcript__run_call__rest" ;;
   esac
@@ -172,6 +173,8 @@ transcript__run_writer() {
 
   case "$__transcript__run_writer__verb" in
     obj | arr | split) transcript__capture "silt__$__transcript__run_writer__verb" ANSWER "$@" ;;
+    bind) transcript__bind "$@" ;;
+    with) transcript__with "$@" ;;
     to_strh | to_strt) transcript__translate "$__transcript__run_writer__verb" "$DOCUMENT_FOR_CALL" "$@" ;;
     *) transcript__capture "silt__$__transcript__run_writer__verb" ANSWER "$DOCUMENT_FOR_CALL" "$@" ;;
   esac
@@ -458,6 +461,58 @@ transcript__holds_more_than() {
   else
     transcript__answer "$1" false
   fi
+}
+
+# Runs bind with the prefix BOUND_ on the keys given, and notes each
+# variable. Then runs unbind on the same keys, and notes each variable again.
+transcript__bind() {
+  transcript__capture silt__bind BOUND_ "$DOCUMENT_FOR_CALL" "$@"
+  if [ "$STATUS" -ne 0 ]; then
+    return
+  fi
+
+  transcript__note_bound "$@"
+  transcript__capture silt__unbind BOUND_ "$@"
+  ANSWER="$ANSWER${__silt__NL}after unbind:"
+  transcript__note_bound "$@"
+}
+
+# Runs with, with the prefix BOUND_, on the words given: keys, then --, then
+# a command. BOUND_id has a value before the call, so the transcript shows
+# that with puts it back. Notes BOUND_id and BOUND_name after the call.
+transcript__with() {
+  # shellcheck disable=SC2034  # read by name in transcript__note_bound
+  BOUND_id='the value before'
+  unset BOUND_name
+  transcript__capture silt__with BOUND_ "$DOCUMENT_FOR_CALL" "$@"
+
+  ANSWER="$ANSWER${ANSWER:+$__silt__NL}after with:"
+  transcript__note_bound id name
+  unset BOUND_id
+}
+
+# Notes the variable that each key gives with the prefix BOUND_: its name
+# and its value, or that it is unset.
+transcript__note_bound() {
+  for KEY in "$@"; do
+    __silt__bind__underscored "$KEY"
+    eval "ANSWER=\"\$ANSWER\${ANSWER:+\$__silt__NL}BOUND_$__silt__bind__UNDERSCORED=\${BOUND_$__silt__bind__UNDERSCORED-unset}\""
+  done
+}
+
+# A command for with: notes the variables of the keys given, and returns
+# the status 4.
+transcript__show_bound() {
+  transcript__note_bound "$@"
+  return 4
+}
+
+# A command for with that runs with itself on another document, with the
+# same prefix and the key id, and notes BOUND_id before, inside and after.
+transcript__with_again() {
+  transcript__note_bound id
+  silt__with BOUND_ '0."id":str="inner"' id -- transcript__note_bound id
+  transcript__note_bound id
 }
 
 # Assigns an answer to the variable a callback was told to answer in.

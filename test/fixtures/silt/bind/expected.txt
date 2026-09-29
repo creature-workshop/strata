@@ -1,0 +1,108 @@
+## bind id name done ratio
+BOUND_id=42
+BOUND_name=close the $issue "now"
+BOUND_done=false
+BOUND_ratio=1.5
+after unbind:
+BOUND_id=unset
+BOUND_name=unset
+BOUND_done=unset
+BOUND_ratio=unset
+## bind nothing missing
+BOUND_nothing=
+BOUND_missing=
+after unbind:
+BOUND_nothing=unset
+BOUND_missing=unset
+## bind state tags empty
+BOUND_state=0."type":str="started"
+0."since":map
+1."day":int=3
+BOUND_tags=0.0:str="x"
+0.1:str="y"
+BOUND_empty=0.:list
+after unbind:
+BOUND_state=unset
+BOUND_tags=unset
+BOUND_empty=unset
+## bind state.type state.since.day state.missing state.type.deeper
+BOUND_state_type=started
+BOUND_state_since_day=3
+BOUND_state_missing=
+BOUND_state_type_deeper=
+after unbind:
+BOUND_state_type=unset
+BOUND_state_since_day=unset
+BOUND_state_missing=unset
+BOUND_state_type_deeper=unset
+## bind id id
+!! 1 ERROR: silt: two keys give the variable BOUND_id
+## bind state.type state_type
+!! 1 ERROR: silt: two keys give the variable BOUND_state_type
+## bind a-b
+!! 1 ERROR: silt: a key is names joined by dots, and 'a-b' is not; read that field with silt__get
+## bind .id
+!! 1 ERROR: silt: a key is names joined by dots, and '.id' is not; read that field with silt__get
+## bind id.
+!! 1 ERROR: silt: a key is names joined by dots, and 'id.' is not; read that field with silt__get
+## bind state..type
+!! 1 ERROR: silt: a key is names joined by dots, and 'state..type' is not; read that field with silt__get
+## bind
+
+after unbind:
+## as scalar str text
+0.:str="text"
+## bind @scalar id
+BOUND_id=
+after unbind:
+BOUND_id=unset
+## with id name state.type -- transcript__show_bound id name state.type
+BOUND_id=42
+BOUND_name=close the $issue "now"
+BOUND_state_type=started
+after with:
+BOUND_id=the value before
+BOUND_name=unset
+!! 4 
+## with id -- transcript__with_again
+BOUND_id=42
+BOUND_id=inner
+BOUND_id=42
+after with:
+BOUND_id=the value before
+BOUND_name=unset
+## with id -- true
+after with:
+BOUND_id=the value before
+BOUND_name=unset
+## with id -- false
+after with:
+BOUND_id=the value before
+BOUND_name=unset
+!! 1 
+## with -- transcript__show_bound id
+BOUND_id=the value before
+after with:
+BOUND_id=the value before
+BOUND_name=unset
+!! 4 
+## with id name
+after with:
+BOUND_id=the value before
+BOUND_name=unset
+!! 1 ERROR: silt: with requires its keys, then --, then a command
+## with id --
+after with:
+BOUND_id=the value before
+BOUND_name=unset
+!! 1 ERROR: silt: with requires its keys, then --, then a command
+## with id id -- true
+after with:
+BOUND_id=the value before
+BOUND_name=unset
+!! 1 ERROR: silt: two keys give the variable BOUND_id
+## with a-b -- true
+after with:
+BOUND_id=the value before
+BOUND_name=unset
+!! 1 ERROR: silt: a key is names joined by dots, and 'a-b' is not; read that field with silt__get
