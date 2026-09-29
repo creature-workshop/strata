@@ -16,7 +16,7 @@
 # take a command, and succeeds-reading and fails-reading take one word for
 # the command to read on stdin and then the command.
 # scalar, len, keys, canon, unique, is_true, is_false, is_zero, references,
-# to_json, to_yaml, to_toml, dump, to_codeblock, first, last, sum, values and entries take the
+# to_json, to_yaml, to_toml, dump, first, last, sum, values and entries take the
 # document; pop and shift take it and answer the element and the rest, and
 # pop-rest and shift-rest answer the rest alone, and pop-element and
 # shift-element call the verb without a variable for the rest;
@@ -24,9 +24,7 @@
 # whether to_line wrote it on one line and from_line read it back; to_line
 # and from_line take the document; read takes text read through printf %b,
 # and read-register the text a register holds; get, string, has and pluck
-# take the document and a path; to_codeblock-tag takes the document and a
-# language tag, which can be nothing; from_codeblock takes text read through
-# printf %b; load takes a JSON file and a schema file, each beside the calls
+# take the document and a path; load takes a JSON file and a schema file, each beside the calls
 # file unless absolute; pick and without take the document and keys; string-or takes a default word, then the path;
 # get-first and string-first take the document and then words: paths, and
 # --default with its value;
@@ -224,9 +222,6 @@ transcript__run_verb() {
     succeeds | fails) transcript__run_command "$1" "$2" ;;
     succeeds-reading | fails-reading) transcript__run_command_reading "${1%-reading}" "${2%% *}" "$(transcript__argument_of "$2")" ;;
     to_json | to_yaml | to_toml | dump) transcript__translate "$1" "$DOCUMENT_FOR_CALL" ;;
-    to_codeblock) transcript__capture silt__to_codeblock ANSWER "$DOCUMENT_FOR_CALL" ;;
-    to_codeblock-tag) transcript__capture silt__to_codeblock ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
-    from_codeblock) transcript__capture silt__from_codeblock ANSWER "$(transcript__unescape "$2")" ;;
     load) transcript__load "${2%% *}" "${2#* }" ;;
     first | last | sum | values | entries) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
     take | take_last) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;

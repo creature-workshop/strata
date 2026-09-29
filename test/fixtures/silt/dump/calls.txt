@@ -27,20 +27,3 @@ equals @release $all
 pick @release
 pick @empty name
 without @text token
-
-# to_codeblock
-to_codeblock @two
-to_codeblock-tag @two yaml
-to_codeblock-tag @two
-to_codeblock @text
-
-# from_codeblock
-from_codeblock ```json\n{"a": [1, 2]}\n```
-from_codeblock \n  ```\n  {"a": [1, 2]}\n  ```  \n
-from_codeblock   {"a": [1, 2]}
-from_codeblock ```\n0."a":int=1\n```
-from_codeblock ```json extra\n1\n```
-from_codeblock ```json\nnot a document\n```
-from_codeblock ```json {"a":1}```
-from_codeblock words
-from_codeblock

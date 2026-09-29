@@ -90,8 +90,6 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__from_json the JSON on stdin as a document
   silt__to_json   a document as one line of JSON
   silt__dump      a document as JSON on several lines, for a person to read
-  silt__to_codeblock   that JSON inside a Markdown code fence
-  silt__from_codeblock the document in a text that may be inside a fence
   silt__load      a JSON file as a document, checked against a schema file
   silt__pick      a map with only the keys given
   silt__without   a map without the keys given
