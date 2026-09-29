@@ -234,11 +234,11 @@ true
 ## deepmerge @none $none
 0.:map
 ## deepmerge @first $second --lists sorted
-!! 1 ERROR: silt: deepmerge takes --lists replace, concat or union, not '--lists sorted'
+!! 1 ERROR: silt: deepmerge accepts --lists replace, concat or union, not '--lists sorted'
 ## deepmerge @first $second --lists
-!! 1 ERROR: silt: deepmerge takes --lists replace, concat or union, not '--lists '
+!! 1 ERROR: silt: deepmerge accepts --lists replace, concat or union, not '--lists '
 ## deepmerge @first $second --arrays union
-!! 1 ERROR: silt: deepmerge takes --lists replace, concat or union, not '--arrays union'
+!! 1 ERROR: silt: deepmerge accepts --lists replace, concat or union, not '--arrays union'
 ## as list arr 0.:int=1
 0.0:int=1
 ## deepmerge @first $list
