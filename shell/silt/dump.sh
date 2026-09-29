@@ -10,18 +10,25 @@ line, indented by two spaces for each level, with a space after the colon
 of a key. An empty map is {} and an empty list is []. It is what jq prints
 for a value by default.
 
-  silt__dump text '0."a":null
+  doc="$(cat <<'SILT'
+  0."a":null
   0."b":list
-  1.0:int=1'   ->  text='{
-                     "a": null,
-                     "b": [
-                       1
-                     ]
-                   }'
+  1.0:int=1
+  SILT
+  )"
+  silt__dump text "$doc"
+
+  text is:
+    {
+      "a": null,
+      "b": [
+        1
+      ]
+    }
 
 registers:
-  __silt__dump__INDENT  The number of spaces for each level while the JSON is
-                  written, and empty at any other time
+  __silt__dump__INDENT  The number of spaces for each level while the JSON
+                        is written, and empty at any other time
 
 args:
   -s, --sort  Put the members of every map in canonical order
