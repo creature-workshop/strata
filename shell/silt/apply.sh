@@ -1,9 +1,9 @@
 #!/bin/sh
 
-: <<'MODULE'
+: <<'FRAGMENT'
 silt__apply: a command run once, with the elements of a list as its last
 arguments.
-MODULE
+FRAGMENT
 
 : <<'PUB_FUN'
 Runs a command once, with the text of each element of a list added after

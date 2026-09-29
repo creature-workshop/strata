@@ -1,9 +1,9 @@
 #!/bin/sh
 
-: <<'MODULE'
+: <<'FRAGMENT'
 silt__reduce: one value built from the members of a map or a list, a
 member at a time.
-MODULE
+FRAGMENT
 
 : <<'PUB_FUN'
 Answers the value that a callback builds from the members of a map or a
