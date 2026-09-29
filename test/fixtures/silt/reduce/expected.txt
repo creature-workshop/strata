@@ -27,7 +27,7 @@
 ## reduce answers_nothing
 !! 1 ERROR: silt: no document answered for unit
 ## reduce add --from
-!! 1 ERROR: silt: --from takes a document
+!! 1 ERROR: silt: --from requires a document
 ## as runner get .unit.runner
 0.:str="bats"
 ## reduce @runner keys_so_far
@@ -57,7 +57,7 @@
 ## apply @files false
 !! 1 
 ## apply @files
-!! 1 ERROR: silt: apply takes a command
+!! 1 ERROR: silt: apply requires a command
 ## apply transcript__arguments
 !! 1 ERROR: silt: apply takes a list, not a map
 ## each @files

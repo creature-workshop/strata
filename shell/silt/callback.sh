@@ -14,7 +14,7 @@ MODULE
 The variables in which the verbs built on silt__each keep their results
 while a loop runs.
 CONST
-__silt__LOOP_RESULTS='__silt__COLLECTED __silt__KEPT __silt__HIT __silt__ANY __silt__ALL __silt__REDUCED'
+__silt__LOOP_RESULTS='__silt__COLLECTED __silt__KEPT __silt__HIT __silt__ANY __silt__ALL __silt__reduce__REDUCED'
 
 : <<'FUN'
 Calls the callback on a member and copies its answer to the variable named.

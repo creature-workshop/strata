@@ -22,7 +22,7 @@ included.
   callback <out> <key> <value> <so far> [extras...]  ->  answers a document in <out>
 
 registers:
-  __silt__REDUCED  The value built so far
+  __silt__reduce__REDUCED  The value built so far
 
 args:
   $1      The name of the variable to answer in
@@ -33,15 +33,15 @@ args:
 PUB_FUN
 silt__reduce() {
   __silt__out "$1" || return 1
-  __silt__reduce_members "$@" || return $?
+  __silt__reduce__members "$@" || return $?
 
-  __silt__ANSWER="$__silt__REDUCED"
+  __silt__ANSWER="$__silt__reduce__REDUCED"
   __silt__answer_in "$1"
 }
 
 : <<'FUN'
 Walks the members, and keeps the value the callback builds in
-__silt__REDUCED.
+__silt__reduce__REDUCED.
 
 args:
   $1  The name of the variable to answer in, unread here
@@ -49,18 +49,18 @@ args:
   $3  The callback
   $@  --from and its document when given, then the extras
 FUN
-__silt__reduce_members() {
-  __silt__reduce_members__doc="$2"
-  __silt__reduce_members__callback="${3:-}"
+__silt__reduce__members() {
+  __silt__reduce__members__doc="$2"
+  __silt__reduce__members__callback="${3:-}"
   shift "$(($# < 3 ? $# : 3))"
 
-  __silt__REDUCED='0.:list'
+  __silt__reduce__REDUCED='0.:list'
   if [ "${1:-}" = --from ]; then
-    __silt__reduce_from "$@" || return 1
+    __silt__reduce__from "$@" || return 1
     shift 2
   fi
 
-  silt__each "$__silt__reduce_members__doc" __silt__reduce_member "$__silt__reduce_members__callback" "$@"
+  silt__each "$__silt__reduce__members__doc" __silt__reduce__member "$__silt__reduce__members__callback" "$@"
 }
 
 : <<'FUN'
@@ -71,13 +71,13 @@ args:
   $1  --from
   $2  The document
 FUN
-__silt__reduce_from() {
+__silt__reduce__from() {
   if [ "$#" -lt 2 ] || [ -z "$2" ]; then
-    __silt__fail '--from takes a document'
+    __silt__fail '--from requires a document'
     return 1
   fi
 
-  __silt__REDUCED="$2"
+  __silt__reduce__REDUCED="$2"
 }
 
 : <<'FUN'
@@ -90,18 +90,18 @@ args:
   $3  The callback
   $@  The extras
 FUN
-__silt__reduce_member() {
-  __silt__reduce_member__key="$1"
-  __silt__reduce_member__value="$2"
-  __silt__reduce_member__callback="$3"
+__silt__reduce__member() {
+  __silt__reduce__member__key="$1"
+  __silt__reduce__member__value="$2"
+  __silt__reduce__member__callback="$3"
   shift 3
 
-  __silt__NEXT=''
-  __silt__ask __silt__NEXT "$__silt__reduce_member__key" "$__silt__reduce_member__value" "$__silt__reduce_member__callback" "$__silt__REDUCED" "$@" || return $?
+  __silt__reduce__NEXT=''
+  __silt__ask __silt__reduce__NEXT "$__silt__reduce__member__key" "$__silt__reduce__member__value" "$__silt__reduce__member__callback" "$__silt__reduce__REDUCED" "$@" || return $?
 
-  if [ -z "$__silt__NEXT" ]; then
-    __silt__fail "no document answered for $__silt__reduce_member__key"
+  if [ -z "$__silt__reduce__NEXT" ]; then
+    __silt__fail "no document answered for $__silt__reduce__member__key"
     return 1
   fi
-  __silt__REDUCED="$__silt__NEXT"
+  __silt__reduce__REDUCED="$__silt__reduce__NEXT"
 }

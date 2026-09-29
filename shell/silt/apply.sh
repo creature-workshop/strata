@@ -22,7 +22,7 @@ PUB_FUN
 silt__apply() {
   __silt__require_list "${1:-}" apply || return 1
   if [ "$#" -lt 2 ]; then
-    __silt__fail 'apply takes a command'
+    __silt__fail 'apply requires a command'
     return 1
   fi
   __silt__apply__list="$1"
