@@ -1,10 +1,10 @@
 #!/bin/sh
 
-: <<'MODULE'
+: <<'FRAGMENT'
 Helpers for a call that takes several paths. One helper finds the first
 path that has a value. The other puts each value of a list of path and
 value pairs at its path.
-MODULE
+FRAGMENT
 
 : <<'FUN'
 Reads a list of paths, with --default and its value anywhere among them,
