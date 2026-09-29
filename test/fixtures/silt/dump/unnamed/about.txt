@@ -1,0 +1,1 @@
+A map with no name, and a draft that is a str where the schema requires a boolean.

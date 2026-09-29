@@ -1,0 +1,1 @@
+A release as a forge returns it, with a secret in it. The calls read it from a file and check it against a schema, write it as JSON on several lines, and take the secret out before writing it.

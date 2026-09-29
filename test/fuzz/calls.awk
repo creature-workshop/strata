@@ -220,13 +220,15 @@ function type_calls(i) {
 }
 
 # Prints the calls that apply to every collection, a map or a list: read
-# the value, write it as JSON, count its members, run the verbs that loop
+# the value, write it as JSON on one line and on several lines, count its
+# members, run the verbs that loop
 # over its members, list its values, and write it on one line and read it
 # back.
 function any_collection_calls(i) {
   print "as s" i " get @d " SILT[i]
   print "to_json @s" i " => getpath(" JQ[i] ") | tojson"
   print "len @s" i " => getpath(" JQ[i] ") | length"
+  print "dump-json @s" i " => getpath(" JQ[i] ")"
   print "empty @s" i " => getpath(" JQ[i] ") | length == 0"
   print "defined @s" i " => true"
   each_calls("@s" i, "getpath(" JQ[i] ")", JQ[i])

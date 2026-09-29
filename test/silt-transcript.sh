@@ -16,7 +16,7 @@
 # take a command, and succeeds-reading and fails-reading take one word for
 # the command to read on stdin and then the command.
 # scalar, len, keys, canon, unique, is_true, is_false, is_zero, references,
-# to_json, to_yaml, to_toml, first, last, sum, values and entries take the
+# to_json, to_yaml, to_toml, dump, dump-<format>, which sets SILT_DUMP, first, last, sum, values and entries take the
 # document; pop and shift take it and answer the element and the rest, and
 # pop-rest and shift-rest answer the rest alone, and pop-element and
 # shift-element call the verb without a variable for the rest;
@@ -24,7 +24,8 @@
 # whether to_line wrote it on one line and from_line read it back; to_line
 # and from_line take the document; read takes text read through printf %b,
 # and read-register the text a register holds; get, string, has and pluck
-# take the document and a path; string-or takes a default word, then the path;
+# take the document and a path; load takes a JSON file and a schema file, each beside the calls
+# file unless absolute; pick and without take the document and keys; string-or takes a default word, then the path;
 # get-first and string-first take the document and then words: paths, and
 # --default with its value;
 # from_json, from_yaml, from_toml and from_strh take a file, beside the calls
@@ -144,7 +145,7 @@ transcript__run_call() {
 
   # shellcheck disable=SC2086  # a writer's words are split on purpose
   case "${1%% *}" in
-    obj | arr | bind | with | apply | push | set | patch | get-first | string-first | concat | join | split | equals | merge | deepmerge | flatten | difference | intersect | validate | to_strh | to_strt) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
+    obj | arr | bind | with | apply | push | set | patch | get-first | string-first | concat | join | split | equals | pick | without | merge | deepmerge | flatten | difference | intersect | validate | to_strh | to_strt) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
     map | filter | find | any | all | reduce | project) transcript__run_collection "${1%% *}" $__transcript__run_call__rest ;;
     *) transcript__run_verb "${1%% *}" "$__transcript__run_call__rest" ;;
   esac
@@ -220,7 +221,9 @@ transcript__run_verb() {
     option_is) transcript__capture silt__option_is ANSWER "$DOCUMENT_FOR_CALL" "${2%% *}" "$(transcript__argument_of "$2")" ;;
     succeeds | fails) transcript__run_command "$1" "$2" ;;
     succeeds-reading | fails-reading) transcript__run_command_reading "${1%-reading}" "${2%% *}" "$(transcript__argument_of "$2")" ;;
-    to_json | to_yaml | to_toml) transcript__translate "$1" "$DOCUMENT_FOR_CALL" ;;
+    to_json | to_yaml | to_toml | dump) transcript__translate "$1" "$DOCUMENT_FOR_CALL" ;;
+    dump-*) transcript__dump_as "${1#dump-}" "$DOCUMENT_FOR_CALL" ;;
+    load) transcript__load "${2%% *}" "${2#* }" ;;
     first | last | sum | values | entries) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
     take | take_last) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
     pop | shift) transcript__take_end "$1" ;;
@@ -293,6 +296,20 @@ transcript__translate() {
   fi
 }
 
+# Runs dump with SILT_DUMP set to a format, and unsets it afterwards, so
+# that the next call has the default.
+transcript__dump_as() {
+  SILT_DUMP="$1"
+  export SILT_DUMP
+  shift
+
+  __transcript__dump_as__status=0
+  transcript__translate dump "$@" || __transcript__dump_as__status=$?
+  unset SILT_DUMP
+
+  return "$__transcript__dump_as__status"
+}
+
 # Runs pop or shift, and answers both values: the element under "element:"
 # and the rest of the list under "rest:".
 transcript__take_end() {
@@ -302,6 +319,19 @@ transcript__take_end() {
   if [ "$STATUS" -eq 0 ]; then
     ANSWER="element:$__silt__NL$ELEMENT${__silt__NL}rest:$__silt__NL$REST"
   fi
+}
+
+# Runs load on a JSON file and a schema file. A message names a file by its
+# whole path, which is different in every checkout, so the directory of the
+# calls file is taken out of the messages.
+transcript__load() {
+  transcript__capture silt__load ANSWER "$(transcript__file_of "$1")" "$(transcript__file_of "$2")"
+
+  MESSAGES="$(cat "$STDERR")"
+  while [ "$MESSAGES" != "${MESSAGES#*"$CALLS_DIR/"}" ]; do
+    MESSAGES="${MESSAGES%%"$CALLS_DIR/"*}${MESSAGES#*"$CALLS_DIR/"}"
+  done
+  printf '%s\n' "$MESSAGES" > "$STDERR"
 }
 
 # A file a call reads by name: as given when absolute, else beside the calls file.

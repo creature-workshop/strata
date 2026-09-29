@@ -1,0 +1,32 @@
+# load
+as release load release/release.json schema/release.schema.json
+load unnamed/unnamed.json schema/release.schema.json
+load broken/broken.json schema/release.schema.json
+load missing/missing.json schema/release.schema.json
+load release/release.json missing/missing.schema.json
+
+# dump
+dump @release
+dump-silt @release
+dump-toml @release
+dump-json @release
+dump-json --sort @release
+as none obj
+dump-json @none
+as empty arr
+dump-json @empty
+as text str a "quoted" word
+dump-json @text
+as assets get @release .assets
+dump-json @assets
+
+# pick and without
+as safe without @release token
+dump-json @safe
+as two pick @release name draft missing
+dump-json @two
+as all without @release
+equals @release $all
+pick @release
+pick @empty name
+without @text token
