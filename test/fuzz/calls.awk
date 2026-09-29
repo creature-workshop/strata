@@ -304,21 +304,54 @@ function set_calls(i) {
   print "to_json @t" i " => setpath(" JQ[i] "; 41) | tojson"
 }
 
-# Prints the calls that take several paths: the first path that holds a
-# value, read after a path that holds nothing; two values placed in one
-# call, when the root is a map; and a value appended to the list at the
-# path, when the path holds a list.
+# Prints one twin: a SILT call whose answer is kept in a register, and the
+# jq program that gives the same document.
+#
+#   twin("t1", "set @d .a 0.:int=41", "setpath([\"a\"]; 41)")
+#     ->  as t1 set @d .a 0.:int=41
+#         to_json @t1 => setpath(["a"]; 41) | tojson
+function twin(register, call, jq_program) {
+  print "as " register " " call
+  print "to_json @" register " => " jq_program " | tojson"
+}
+
+# The jq program that reads the value at a path.
+function jq_value(i) {
+  return "getpath(" JQ[i] ")"
+}
+
+# The jq program that puts a value at a path.
+function jq_set(i, value) {
+  return "setpath(" JQ[i] "; " value ")"
+}
+
+# A get of two paths, where the first path has no value.
+function first_path_twin(i) {
+  twin("gf" i, "get-first @d .\"absent\" " SILT[i], jq_value(i))
+}
+
+# A set of two values in one call: one at the path, and one at a new key.
+function two_sets_twin(i) {
+  twin("sp" i, \
+    "set @d " SILT[i] " 0.:int=41 .\"fresh\" 0.:int=42", \
+    jq_set(i, 41) " | setpath([\"fresh\"]; 42)")
+}
+
+# A push of one value to the list at the path.
+function push_at_twin(i) {
+  twin("pa" i, "push @d --at " SILT[i] " 0.:int=7", jq_set(i, jq_value(i) " + [7]"))
+}
+
+# Prints the calls that take several paths. The set of two values needs a
+# root that is a map, and the push needs a list at the path.
 function several_path_calls(i) {
-  print "as gf" i " get-first @d .\"absent\" " SILT[i]
-  print "to_json @gf" i " => getpath(" JQ[i] ") | tojson"
+  first_path_twin(i)
 
   if (root == "object") {
-    print "as sp" i " set @d " SILT[i] " 0.:int=41 .\"fresh\" 0.:int=42"
-    print "to_json @sp" i " => setpath(" JQ[i] "; 41) | setpath([\"fresh\"]; 42) | tojson"
+    two_sets_twin(i)
   }
   if (TYPE[i] == "array") {
-    print "as pa" i " push @d --at " SILT[i] " 0.:int=7"
-    print "to_json @pa" i " => setpath(" JQ[i] "; getpath(" JQ[i] ") + [7]) | tojson"
+    push_at_twin(i)
   }
 }
 
