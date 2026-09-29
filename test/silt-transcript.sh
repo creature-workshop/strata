@@ -34,7 +34,8 @@
 # each-string a path its callback reads, and each-nested nothing: its
 # callback runs each again on every member that is a map or a list. map, filter, find, any and all take
 # the name of one of the callbacks below, without its prefix, and the extras
-# after it; project takes its keys. A call written "as <name> <call>" keeps
+# after it, and reduce takes the same, with --from and a document among the
+# extras; apply takes the list and the words of a command; project takes its keys. A call written "as <name> <call>" keeps
 # its answer in a register, "@<name>" in place of the document makes a call
 # read that register, and a writer's words may name one as "$<name>": obj,
 # arr and split take their words alone; bind takes keys, and with takes
@@ -141,8 +142,8 @@ transcript__run_call() {
 
   # shellcheck disable=SC2086  # a writer's words are split on purpose
   case "${1%% *}" in
-    obj | arr | bind | with | push | set | concat | join | split | equals | merge | difference | intersect | validate | to_strh | to_strt) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
-    map | filter | find | any | all | project) transcript__run_collection "${1%% *}" $__transcript__run_call__rest ;;
+    obj | arr | bind | with | apply | push | set | concat | join | split | equals | merge | difference | intersect | validate | to_strh | to_strt) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
+    map | filter | find | any | all | reduce | project) transcript__run_collection "${1%% *}" $__transcript__run_call__rest ;;
     *) transcript__run_verb "${1%% *}" "$__transcript__run_call__rest" ;;
   esac
 }
@@ -175,6 +176,7 @@ transcript__run_writer() {
     obj | arr | split) transcript__capture "silt__$__transcript__run_writer__verb" ANSWER "$@" ;;
     bind) transcript__bind "$@" ;;
     with) transcript__with "$@" ;;
+    apply) transcript__capture silt__apply "$DOCUMENT_FOR_CALL" "$@" ;;
     to_strh | to_strt) transcript__translate "$__transcript__run_writer__verb" "$DOCUMENT_FOR_CALL" "$@" ;;
     *) transcript__capture "silt__$__transcript__run_writer__verb" ANSWER "$DOCUMENT_FOR_CALL" "$@" ;;
   esac
@@ -513,6 +515,46 @@ transcript__with_again() {
   transcript__note_bound id
   silt__with BOUND_ '0."id":str="inner"' id -- transcript__note_bound id
   transcript__note_bound id
+}
+
+# A callback for reduce: the list built so far with the member's key added
+# to it as a str.
+transcript__keys_so_far() {
+  silt__str KEY_DOCUMENT "$2" || return 1
+  silt__push "$1" "$4" "$KEY_DOCUMENT"
+}
+
+# A callback for reduce: the int built so far with the number given added
+# to it, or with 1 when no number is given.
+transcript__add() {
+  silt__scalar SO_FAR "$4" || return 1
+  transcript__answer "$1" "0.:int=$((SO_FAR + ${5:-1}))"
+}
+
+# A callback for reduce that runs reduce on the member: the int built so
+# far with the number of the member's own members added to it.
+transcript__add_members() {
+  silt__reduce MEMBERS "$3" transcript__add --from 0.:int=0 || return 1
+  silt__scalar SO_FAR "$4" || return 1
+  silt__scalar MEMBERS "$MEMBERS" || return 1
+  transcript__answer "$1" "0.:int=$((SO_FAR + MEMBERS))"
+}
+
+# A callback for reduce that answers nothing.
+transcript__answers_nothing() {
+  :
+}
+
+# A command for apply: notes its arguments, one on each line.
+transcript__arguments() {
+  for ARGUMENT in "$@"; do
+    ANSWER="$ANSWER${ANSWER:+$__silt__NL}[$ARGUMENT]"
+  done
+}
+
+# A predicate: whether the member's key is the text given.
+transcript__key_is() {
+  transcript__answer_whether "$1" "$2" "$4"
 }
 
 # Assigns an answer to the variable a callback was told to answer in.

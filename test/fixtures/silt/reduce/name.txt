@@ -1,0 +1,1 @@
+reduce and apply: one value built from the members, and a command run on a list
