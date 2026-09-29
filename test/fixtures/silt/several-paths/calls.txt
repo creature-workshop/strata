@@ -1,0 +1,55 @@
+# get: the first path that holds a value
+get-first .name .suite.runner
+get-first .missing .suite.runner
+get-first .nothing .missing .tests
+get-first .nothing .count
+get-first .missing .nothing
+get-first .nothing .missing
+get-first .missing .nothing --default 0.:list
+get-first --default 0.:str="d" .missing
+get-first .name --default 0.:str="d"
+get-first --default 0.:str="d"
+get-first
+get-first .missing --default
+
+# string: the same, as text
+string-first .missing .suite.runner
+string-first .nothing .missing --default none
+string-first .missing .tests --default none
+string-first .missing .tests
+string-first .nothing
+string-first .nothing .missing
+string-first .count .name
+string-or none .missing
+
+# set: several pairs
+as two set .name 0.:str="all" .fresh 0.:int=1
+to_json @two
+as chained set .fresh 0.:map .fresh.inside 0.:bool=true
+to_json @chained
+set .name
+set .name 0.:int=1 .fresh
+set .name.deeper 0.:int=1 .fresh 0.:int=2
+as same set
+to_json @same
+
+# patch: a value that is empty is left out
+as missing get .missing
+as patched patch .name $missing .count 0.:int=3 .fresh $missing
+to_json @patched
+as untouched patch .name $missing
+to_json @untouched
+patch .name
+as none patch
+to_json @none
+
+# push: at a path
+as pushed push --at .tests 0.:str="b.bats" 0.:int=2
+to_json @pushed
+as deep push --at .suite.files 0.:null
+to_json @deep
+as unchanged push --at .tests
+to_json @unchanged
+push --at .name 0.:int=1
+push --at .missing 0.:int=1
+push --at

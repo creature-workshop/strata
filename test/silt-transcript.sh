@@ -25,6 +25,8 @@
 # and from_line take the document; read takes text read through printf %b,
 # and read-register the text a register holds; get, string, has and pluck
 # take the document and a path; string-or takes a default word, then the path;
+# get-first and string-first take the document and then words: paths, and
+# --default with its value;
 # from_json, from_yaml, from_toml and from_strh take a file, beside the calls
 # file unless absolute, and read it on stdin, and from_strt such a file and
 # then the register holding the corpus's keys; unwrap takes the literal; wrap
@@ -39,7 +41,7 @@
 # its answer in a register, "@<name>" in place of the document makes a call
 # read that register, and a writer's words may name one as "$<name>": obj,
 # arr and split take their words alone; bind takes keys, and with takes
-# keys, then --, then a command; push, set, concat, join, equals,
+# keys, then --, then a command; push, set, patch, concat, join, equals,
 # merge, difference, intersect, validate, to_strh and to_strt take the
 # document first;
 # str and time take the rest of the line as their text. now takes no
@@ -142,7 +144,7 @@ transcript__run_call() {
 
   # shellcheck disable=SC2086  # a writer's words are split on purpose
   case "${1%% *}" in
-    obj | arr | bind | with | apply | push | set | concat | join | split | equals | merge | difference | intersect | validate | to_strh | to_strt) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
+    obj | arr | bind | with | apply | push | set | patch | get-first | string-first | concat | join | split | equals | merge | difference | intersect | validate | to_strh | to_strt) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
     map | filter | find | any | all | reduce | project) transcript__run_collection "${1%% *}" $__transcript__run_call__rest ;;
     *) transcript__run_verb "${1%% *}" "$__transcript__run_call__rest" ;;
   esac
@@ -177,6 +179,7 @@ transcript__run_writer() {
     bind) transcript__bind "$@" ;;
     with) transcript__with "$@" ;;
     apply) transcript__capture silt__apply "$DOCUMENT_FOR_CALL" "$@" ;;
+    get-first | string-first) transcript__capture "silt__${__transcript__run_writer__verb%-first}" ANSWER "$DOCUMENT_FOR_CALL" "$@" ;;
     to_strh | to_strt) transcript__translate "$__transcript__run_writer__verb" "$DOCUMENT_FOR_CALL" "$@" ;;
     *) transcript__capture "silt__$__transcript__run_writer__verb" ANSWER "$DOCUMENT_FOR_CALL" "$@" ;;
   esac
@@ -229,7 +232,7 @@ transcript__run_verb() {
     to_line | from_line) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
     line) transcript__line ;;
     get | string | has | pluck) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
-    string-or) transcript__capture silt__string ANSWER "$DOCUMENT_FOR_CALL" "$(transcript__argument_of "$2")" "$(transcript__unescape "${2%% *}")" ;;
+    string-or) transcript__capture silt__string ANSWER "$DOCUMENT_FOR_CALL" "$(transcript__argument_of "$2")" --default "$(transcript__unescape "${2%% *}")" ;;
     from_json | from_yaml | from_toml | from_strh) transcript__translate "$1" < "$(transcript__file_of "$2")" ;;
     from_strt) transcript__translate from_strt "$(transcript__register_of "${2#* }")" < "$(transcript__file_of "${2%% *}")" ;;
     unwrap) transcript__capture silt__unwrap ANSWER "$2" ;;

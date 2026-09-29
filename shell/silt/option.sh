@@ -25,7 +25,7 @@ silt__option() {
   __silt__option__out="$__silt__OUT"
 
   __silt__wrap_literal "$3"
-  silt__string __silt__ANSWER "$2" ".$__silt__LITERAL" "${4:-}" || return 1
+  silt__string __silt__ANSWER "$2" ".$__silt__LITERAL" --default "${4:-}" || return 1
 
   __silt__OUT="$__silt__option__out"
   __silt__answer

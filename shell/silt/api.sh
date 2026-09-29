@@ -20,9 +20,9 @@ subshell the library exists to avoid. A document past __silt__THRESHOLD
 lines belongs to the awk tier, which answers the same call the same way.
 
   silt__type      the kind of value a document is, or of the value at a path
-  silt__get       the value at a path, as a document of its own
+  silt__get       the value at a path, or at the first of several paths
   silt__scalar    the value text of a scalar document
-  silt__string    the text at a path, a str unquoted
+  silt__string    the text at a path, or at the first of several paths
   silt__has       whether a path holds a value
   silt__bind      fields of a document assigned to variables
   silt__unbind    the variables of silt__bind unset
@@ -46,8 +46,9 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__now       a time document for the current time
   silt__obj       a map from key and document pairs
   silt__arr       a list from documents
-  silt__push      documents appended to a list
-  silt__set       a document placed at a path
+  silt__push      documents appended to a list, or to the list at a path
+  silt__set       a document placed at a path, or several at their paths
+  silt__patch     as silt__set, leaving out every value that is empty
   silt__concat    two lists, one after the other
   silt__join      a list's scalars as one text
   silt__split     text cut on a separator, as a list of str
@@ -172,6 +173,7 @@ __silt__home || return 1
 . "$__silt__DIR/arr.sh"
 . "$__silt__DIR/push.sh"
 . "$__silt__DIR/set.sh"
+. "$__silt__DIR/paths.sh"
 . "$__silt__DIR/concat.sh"
 . "$__silt__DIR/join.sh"
 . "$__silt__DIR/split.sh"

@@ -7,29 +7,34 @@ MODULE
 : <<'PUB_FUN'
 Answers the text at a path the way jq -r would: a str unquoted, another
 scalar as its spelling, a null as "null", and the empty string for a path
-nothing holds or a collection. Given a default, answers that instead
-wherever the path holds nothing, a null or a collection.
+nothing holds or a collection.
 
-  silt__string runner "$doc" '.suites.unit.runner'          ->  runner=bats
-  silt__string runner "$doc" '.suites.unit.runner' bats     ->  runner=bats, the path missing too
+Given several paths, reads the first path that holds a value that is not a
+null. Given --default, answers that text wherever the paths hold nothing, a
+null or a collection.
+
+  silt__string runner "$doc" '.suites.unit.runner'                  ->  runner=bats
+  silt__string runner "$doc" '.runner' '.suite.runner'              ->  the first that holds a value
+  silt__string runner "$doc" '.suites.unit.runner' --default bats   ->  runner=bats, the path missing too
 
 args:
   $1  The name of the variable to answer in
   $2  The document
-  $3  The path
-  $4  The default, when given
+  $@  The path, or several paths
+  --default  The text to answer when no path holds a scalar
 PUB_FUN
 silt__string() {
   __silt__out "$1" || return 1
   __silt__string__out="$__silt__OUT"
+  __silt__string__doc="$2"
+  shift 2
 
-  __silt__string__value=''
-  silt__get __silt__string__value "$2" "$3" || return 1
+  __silt__paths__choose "$__silt__string__doc" "$@" || return 1
 
-  if [ "$#" -ge 4 ]; then
-    __silt__string_or "$__silt__string__value" "$4" || return 1
+  if [ "$__silt__paths__HAS_DEFAULT" = true ]; then
+    __silt__string_or "$__silt__paths__CHOSEN" "$__silt__paths__DEFAULT" || return 1
   else
-    __silt__string_text "$__silt__string__value" || return 1
+    __silt__string_text "$__silt__paths__CHOSEN" || return 1
   fi
 
   __silt__OUT="$__silt__string__out"

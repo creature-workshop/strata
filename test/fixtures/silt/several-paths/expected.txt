@@ -1,0 +1,170 @@
+## get-first .name .suite.runner
+0.:str="unit"
+## get-first .missing .suite.runner
+0.:str="bats"
+## get-first .nothing .missing .tests
+0.0:str="a.bats"
+## get-first .nothing .count
+0.:int=0
+## get-first .missing .nothing
+0.:null
+## get-first .nothing .missing
+
+## get-first .missing .nothing --default 0.:list
+0.:list
+## get-first --default 0.:str="d" .missing
+0.:str="d"
+## get-first .name --default 0.:str="d"
+0.:str="unit"
+## get-first --default 0.:str="d"
+0.:str="d"
+## get-first
+
+## get-first .missing --default
+!! 1 ERROR: silt: --default requires a value
+## string-first .missing .suite.runner
+bats
+## string-first .nothing .missing --default none
+none
+## string-first .missing .tests --default none
+none
+## string-first .missing .tests
+
+## string-first .nothing
+null
+## string-first .nothing .missing
+
+## string-first .count .name
+0
+## string-or none .missing
+none
+## as two set .name 0.:str="all" .fresh 0.:int=1
+0."name":str="all"
+0."nothing":null
+0."count":int=0
+0."tests":list
+1.0:str="a.bats"
+0."suite":map
+1."runner":str="bats"
+1."files":list
+2.0:str="x"
+0."fresh":int=1
+## to_json @two
+{"name":"all","nothing":null,"count":0,"tests":["a.bats"],"suite":{"runner":"bats","files":["x"]},"fresh":1}
+## as chained set .fresh 0.:map .fresh.inside 0.:bool=true
+0."name":str="unit"
+0."nothing":null
+0."count":int=0
+0."tests":list
+1.0:str="a.bats"
+0."suite":map
+1."runner":str="bats"
+1."files":list
+2.0:str="x"
+0."fresh":map
+1."inside":bool=true
+## to_json @chained
+{"name":"unit","nothing":null,"count":0,"tests":["a.bats"],"suite":{"runner":"bats","files":["x"]},"fresh":{"inside":true}}
+## set .name
+!! 1 ERROR: silt: a path has no value after it; give a path and a value in pairs
+## set .name 0.:int=1 .fresh
+!! 1 ERROR: silt: a path has no value after it; give a path and a value in pairs
+## set .name.deeper 0.:int=1 .fresh 0.:int=2
+!! 1 ERROR: silt: not a collection at "name"
+## as same set
+0."name":str="unit"
+0."nothing":null
+0."count":int=0
+0."tests":list
+1.0:str="a.bats"
+0."suite":map
+1."runner":str="bats"
+1."files":list
+2.0:str="x"
+## to_json @same
+{"name":"unit","nothing":null,"count":0,"tests":["a.bats"],"suite":{"runner":"bats","files":["x"]}}
+## as missing get .missing
+
+## as patched patch .name $missing .count 0.:int=3 .fresh $missing
+0."name":str="unit"
+0."nothing":null
+0."count":int=3
+0."tests":list
+1.0:str="a.bats"
+0."suite":map
+1."runner":str="bats"
+1."files":list
+2.0:str="x"
+## to_json @patched
+{"name":"unit","nothing":null,"count":3,"tests":["a.bats"],"suite":{"runner":"bats","files":["x"]}}
+## as untouched patch .name $missing
+0."name":str="unit"
+0."nothing":null
+0."count":int=0
+0."tests":list
+1.0:str="a.bats"
+0."suite":map
+1."runner":str="bats"
+1."files":list
+2.0:str="x"
+## to_json @untouched
+{"name":"unit","nothing":null,"count":0,"tests":["a.bats"],"suite":{"runner":"bats","files":["x"]}}
+## patch .name
+!! 1 ERROR: silt: a path has no value after it; give a path and a value in pairs
+## as none patch
+0."name":str="unit"
+0."nothing":null
+0."count":int=0
+0."tests":list
+1.0:str="a.bats"
+0."suite":map
+1."runner":str="bats"
+1."files":list
+2.0:str="x"
+## to_json @none
+{"name":"unit","nothing":null,"count":0,"tests":["a.bats"],"suite":{"runner":"bats","files":["x"]}}
+## as pushed push --at .tests 0.:str="b.bats" 0.:int=2
+0."name":str="unit"
+0."nothing":null
+0."count":int=0
+0."tests":list
+1.0:str="a.bats"
+1.1:str="b.bats"
+1.2:int=2
+0."suite":map
+1."runner":str="bats"
+1."files":list
+2.0:str="x"
+## to_json @pushed
+{"name":"unit","nothing":null,"count":0,"tests":["a.bats","b.bats",2],"suite":{"runner":"bats","files":["x"]}}
+## as deep push --at .suite.files 0.:null
+0."name":str="unit"
+0."nothing":null
+0."count":int=0
+0."tests":list
+1.0:str="a.bats"
+0."suite":map
+1."runner":str="bats"
+1."files":list
+2.0:str="x"
+2.1:null
+## to_json @deep
+{"name":"unit","nothing":null,"count":0,"tests":["a.bats"],"suite":{"runner":"bats","files":["x",null]}}
+## as unchanged push --at .tests
+0."name":str="unit"
+0."nothing":null
+0."count":int=0
+0."tests":list
+1.0:str="a.bats"
+0."suite":map
+1."runner":str="bats"
+1."files":list
+2.0:str="x"
+## to_json @unchanged
+{"name":"unit","nothing":null,"count":0,"tests":["a.bats"],"suite":{"runner":"bats","files":["x"]}}
+## push --at .name 0.:int=1
+!! 1 ERROR: silt: push takes a list, not a str
+## push --at .missing 0.:int=1
+!! 1 ERROR: silt: push found no list at '.missing'
+## push --at
+!! 1 ERROR: silt: --at requires a path

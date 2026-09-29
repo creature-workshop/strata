@@ -1,0 +1,9 @@
+0."name":str="unit"
+0."nothing":null
+0."count":int=0
+0."tests":list
+1.0:str="a.bats"
+0."suite":map
+1."runner":str="bats"
+1."files":list
+2.0:str="x"
