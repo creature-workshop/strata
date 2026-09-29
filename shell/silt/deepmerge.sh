@@ -14,17 +14,17 @@ pair the second map's value is used. A key that only the second holds is
 added after the first's members. With the default for lists, the answer is
 what jq gives for `$a * $b`.
 
-  under="$(cat <<'SILT'
+  defaults="$(cat <<'SILT'
   0."a":map
   1."x":int=1
   SILT
   )"
-  over="$(cat <<'SILT'
+  overrides="$(cat <<'SILT'
   0."a":map
   1."y":int=2
   SILT
   )"
-  silt__deepmerge doc "$under" "$over"
+  silt__deepmerge doc "$defaults" "$overrides"
 
   doc is:
     0."a":map
