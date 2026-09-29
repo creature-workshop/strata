@@ -1,9 +1,9 @@
 #!/bin/sh
 
-: <<'MODULE'
+: <<'FRAGMENT'
 silt__load: a JSON file read as a document and checked against a schema
 file.
-MODULE
+FRAGMENT
 
 : <<'PUB_FUN'
 Answers the document that a JSON file holds, after checking it against the

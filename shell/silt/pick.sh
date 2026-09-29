@@ -1,9 +1,9 @@
 #!/bin/sh
 
-: <<'MODULE'
+: <<'FRAGMENT'
 silt__pick and silt__without: a map with only some of its keys, or without
 some of them.
-MODULE
+FRAGMENT
 
 : <<'PUB_FUN'
 Answers the map with only the members under the keys given, in the map's

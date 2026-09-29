@@ -1,9 +1,9 @@
 #!/bin/sh
 
-: <<'MODULE'
+: <<'FRAGMENT'
 silt__dump: a document as text for a person to read, in the format that
 SILT_DUMP names.
-MODULE
+FRAGMENT
 
 : <<'PUB_FUN'
 Answers the document as text for a person to read, for a log or a debug
