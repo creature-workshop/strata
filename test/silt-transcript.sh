@@ -495,8 +495,8 @@ transcript__with() {
 # and its value, or that it is unset.
 transcript__note_bound() {
   for KEY in "$@"; do
-    __silt__underscored "$KEY"
-    eval "ANSWER=\"\$ANSWER\${ANSWER:+\$__silt__NL}BOUND_$__silt__UNDERSCORED=\${BOUND_$__silt__UNDERSCORED-unset}\""
+    __silt__bind__underscored "$KEY"
+    eval "ANSWER=\"\$ANSWER\${ANSWER:+\$__silt__NL}BOUND_$__silt__bind__UNDERSCORED=\${BOUND_$__silt__bind__UNDERSCORED-unset}\""
   done
 }
 

@@ -90,12 +90,12 @@ BOUND_name=unset
 after with:
 BOUND_id=the value before
 BOUND_name=unset
-!! 1 ERROR: silt: with takes its keys, then --, then a command
+!! 1 ERROR: silt: with requires its keys, then --, then a command
 ## with id --
 after with:
 BOUND_id=the value before
 BOUND_name=unset
-!! 1 ERROR: silt: with takes its keys, then --, then a command
+!! 1 ERROR: silt: with requires its keys, then --, then a command
 ## with id id -- true
 after with:
 BOUND_id=the value before

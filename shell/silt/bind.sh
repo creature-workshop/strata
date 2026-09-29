@@ -36,10 +36,10 @@ silt__bind() {
   __silt__bind__doc="${2:-}"
   shift "$(($# < 2 ? $# : 2))"
 
-  __silt__name_keys "$__silt__bind__prefix" "$@" || return 1
+  __silt__bind__name_keys "$__silt__bind__prefix" "$@" || return 1
 
   for __silt__bind__key in "$@"; do
-    __silt__bind_key "$__silt__bind__prefix" "$__silt__bind__doc" "$__silt__bind__key" || return 1
+    __silt__bind__key "$__silt__bind__prefix" "$__silt__bind__doc" "$__silt__bind__key" || return 1
   done
 }
 
@@ -57,8 +57,8 @@ silt__unbind() {
   __silt__unbind__prefix="${1:-}"
   shift "$(($# < 1 ? $# : 1))"
 
-  __silt__name_keys "$__silt__unbind__prefix" "$@" || return 1
-  __silt__release "$__silt__NAMES"
+  __silt__bind__name_keys "$__silt__unbind__prefix" "$@" || return 1
+  __silt__bind__release "$__silt__bind__NAMES"
 }
 
 : <<'PUB_FUN'
@@ -71,7 +71,7 @@ The command can call silt__with itself, with the same prefix and keys.
   silt__with __close__ "$issue" id state.type -- close_issue "$reason"
 
 registers:
-  __silt__WITHS  How many calls of silt__with are running, this one
+  __silt__bind__WITHS  How many calls of silt__with are running, this one
                  included
 
 args:
@@ -80,14 +80,14 @@ args:
   $@  The keys, then --, then the command and its arguments
 PUB_FUN
 silt__with() {
-  __silt__WITHS=$((${__silt__WITHS:-0} + 1))
-  eval "__silt__with__names_$__silt__WITHS=''"
+  __silt__bind__WITHS=$((${__silt__bind__WITHS:-0} + 1))
+  eval "__silt__with__names_$__silt__bind__WITHS=''"
 
-  __silt__run_with "$@"
+  __silt__bind__run_with "$@"
   set -- "$?"
 
-  eval "__silt__restore \"\$__silt__with__names_$__silt__WITHS\""
-  __silt__WITHS=$((__silt__WITHS - 1))
+  eval "__silt__bind__restore \"\$__silt__with__names_$__silt__bind__WITHS\""
+  __silt__bind__WITHS=$((__silt__bind__WITHS - 1))
   return "$1"
 }
 
@@ -99,19 +99,19 @@ args:
   $2  The document
   $@  The keys, then --, then the command and its arguments
 FUN
-__silt__run_with() {
-  __silt__run_with__prefix="${1:-}"
-  __silt__run_with__doc="${2:-}"
+__silt__bind__run_with() {
+  __silt__bind__run_with__prefix="${1:-}"
+  __silt__bind__run_with__doc="${2:-}"
   shift "$(($# < 2 ? $# : 2))"
 
-  __silt__count_keys "$@" || return 1
-  __silt__name_first_keys "$__silt__run_with__prefix" "$__silt__KEYS" "$@" || return 1
-  __silt__save "$__silt__NAMES"
-  eval "__silt__with__names_$__silt__WITHS=\$__silt__NAMES"
+  __silt__bind__count_keys "$@" || return 1
+  __silt__bind__name_first_keys "$__silt__bind__run_with__prefix" "$__silt__bind__KEYS" "$@" || return 1
+  __silt__bind__save "$__silt__bind__NAMES"
+  eval "__silt__with__names_$__silt__bind__WITHS=\$__silt__bind__NAMES"
 
-  while [ "$__silt__KEYS" -gt 0 ]; do
-    __silt__bind_key "$__silt__run_with__prefix" "$__silt__run_with__doc" "$1" || return 1
-    __silt__KEYS=$((__silt__KEYS - 1))
+  while [ "$__silt__bind__KEYS" -gt 0 ]; do
+    __silt__bind__key "$__silt__bind__run_with__prefix" "$__silt__bind__run_with__doc" "$1" || return 1
+    __silt__bind__KEYS=$((__silt__bind__KEYS - 1))
     shift
   done
   shift
@@ -120,68 +120,68 @@ __silt__run_with() {
 }
 
 : <<'FUN'
-Sets __silt__KEYS to the number of arguments in front of --. Refuses
+Sets __silt__bind__KEYS to the number of arguments in front of --. Refuses
 arguments that have no --, and a -- with no command after it.
 
 args:
   $@  The keys, then --, then the command and its arguments
 FUN
-__silt__count_keys() {
-  __silt__KEYS=0
+__silt__bind__count_keys() {
+  __silt__bind__KEYS=0
 
-  for __silt__count_keys__word in "$@"; do
-    if [ "$__silt__count_keys__word" = -- ]; then
+  for __silt__bind__count_keys__word in "$@"; do
+    if [ "$__silt__bind__count_keys__word" = -- ]; then
       break
     fi
-    __silt__KEYS=$((__silt__KEYS + 1))
+    __silt__bind__KEYS=$((__silt__bind__KEYS + 1))
   done
 
-  if [ "$__silt__KEYS" -ge "$(($# - 1))" ]; then
-    __silt__fail 'with takes its keys, then --, then a command'
+  if [ "$__silt__bind__KEYS" -ge "$(($# - 1))" ]; then
+    __silt__fail 'with requires its keys, then --, then a command'
     return 1
   fi
 }
 
 : <<'FUN'
-Sets __silt__NAMES to the variables that the first <count> keys give, as
-__silt__name_keys does for every key.
+Sets __silt__bind__NAMES to the variables that the first <count> keys give, as
+__silt__bind__name_keys does for every key.
 
 args:
   $1  The prefix
   $2  The number of keys
   $@  The keys, and what follows them
 FUN
-__silt__name_first_keys() {
-  __silt__name_first_keys__prefix="$1"
-  __silt__name_first_keys__count="$2"
+__silt__bind__name_first_keys() {
+  __silt__bind__name_first_keys__prefix="$1"
+  __silt__bind__name_first_keys__count="$2"
   shift 2
 
-  __silt__require_prefix "$__silt__name_first_keys__prefix" || return 1
-  __silt__NAMES=''
+  __silt__bind__require_prefix "$__silt__bind__name_first_keys__prefix" || return 1
+  __silt__bind__NAMES=''
 
-  while [ "$__silt__name_first_keys__count" -gt 0 ]; do
-    __silt__name_key "$__silt__name_first_keys__prefix" "$1" || return 1
-    __silt__name_first_keys__count=$((__silt__name_first_keys__count - 1))
+  while [ "$__silt__bind__name_first_keys__count" -gt 0 ]; do
+    __silt__bind__name_key "$__silt__bind__name_first_keys__prefix" "$1" || return 1
+    __silt__bind__name_first_keys__count=$((__silt__bind__name_first_keys__count - 1))
     shift
   done
 }
 
 : <<'FUN'
-Sets __silt__NAMES to the variables that the keys give, each followed by
+Sets __silt__bind__NAMES to the variables that the keys give, each followed by
 one space. Refuses a prefix or a key that cannot be part of a variable
 name, and two keys that give the same variable.
 
-  __silt__name_keys __close__ id state.type   ->  '__close__id __close__state_type '
+  __silt__bind__name_keys __close__ id state.type   ->  '__close__id __close__state_type '
 
 args:
   $1  The prefix
   $@  The keys
 FUN
-__silt__name_keys() {
-  __silt__name_keys__prefix="$1"
+__silt__bind__name_keys() {
+  __silt__bind__name_keys__prefix="$1"
   shift
 
-  __silt__name_first_keys "$__silt__name_keys__prefix" "$#" "$@"
+  __silt__bind__name_first_keys "$__silt__bind__name_keys__prefix" "$#" "$@"
 }
 
 : <<'FUN'
@@ -190,7 +190,7 @@ Refuses a prefix that cannot start a variable name.
 args:
   $1  The prefix
 FUN
-__silt__require_prefix() {
+__silt__bind__require_prefix() {
   case "$1" in
     # structs-lint: allow -- the spelling of a variable name, checked before an eval; SILT sits beneath structs
     '' | [0-9]* | *[!A-Za-z0-9_]*)
@@ -201,17 +201,17 @@ __silt__require_prefix() {
 }
 
 : <<'FUN'
-Sets __silt__NAME to the variable that a key gives, and adds it to
-__silt__NAMES. Refuses a key that cannot be part of a variable name, and a
+Sets __silt__bind__NAME to the variable that a key gives, and adds it to
+__silt__bind__NAMES. Refuses a key that cannot be part of a variable name, and a
 variable that an earlier key gave.
 
-  __silt__name_key __close__ state.type   ->  __close__state_type
+  __silt__bind__name_key __close__ state.type   ->  __close__state_type
 
 args:
   $1  The prefix
   $2  The key
 FUN
-__silt__name_key() {
+__silt__bind__name_key() {
   case "$2" in
     # structs-lint: allow -- the spelling of a variable name, checked before an eval; SILT sits beneath structs
     '' | .* | *. | *..* | *[!A-Za-z0-9_.]*)
@@ -220,37 +220,37 @@ __silt__name_key() {
       ;;
   esac
 
-  __silt__underscored "$2"
-  __silt__NAME="$1$__silt__UNDERSCORED"
+  __silt__bind__underscored "$2"
+  __silt__bind__NAME="$1$__silt__bind__UNDERSCORED"
 
-  case " $__silt__NAMES" in
-    *" $__silt__NAME "*)
-      __silt__fail "two keys give the variable $__silt__NAME"
+  case " $__silt__bind__NAMES" in
+    *" $__silt__bind__NAME "*)
+      __silt__fail "two keys give the variable $__silt__bind__NAME"
       return 1
       ;;
   esac
-  __silt__NAMES="$__silt__NAMES$__silt__NAME "
+  __silt__bind__NAMES="$__silt__bind__NAMES$__silt__bind__NAME "
 }
 
 : <<'FUN'
-Sets __silt__UNDERSCORED to the text with every dot replaced by an
+Sets __silt__bind__UNDERSCORED to the text with every dot replaced by an
 underscore.
 
-  __silt__underscored state.type   ->  state_type
+  __silt__bind__underscored state.type   ->  state_type
 
 args:
   $1  The text
 FUN
-__silt__underscored() {
-  __silt__UNDERSCORED=''
-  __silt__underscored__rest="$1"
+__silt__bind__underscored() {
+  __silt__bind__UNDERSCORED=''
+  __silt__bind__underscored__rest="$1"
 
-  while [ "$__silt__underscored__rest" != "${__silt__underscored__rest#*.}" ]; do
-    __silt__UNDERSCORED="$__silt__UNDERSCORED${__silt__underscored__rest%%.*}_"
-    __silt__underscored__rest="${__silt__underscored__rest#*.}"
+  while [ "$__silt__bind__underscored__rest" != "${__silt__bind__underscored__rest#*.}" ]; do
+    __silt__bind__UNDERSCORED="$__silt__bind__UNDERSCORED${__silt__bind__underscored__rest%%.*}_"
+    __silt__bind__underscored__rest="${__silt__bind__underscored__rest#*.}"
   done
 
-  __silt__UNDERSCORED="$__silt__UNDERSCORED$__silt__underscored__rest"
+  __silt__bind__UNDERSCORED="$__silt__bind__UNDERSCORED$__silt__bind__underscored__rest"
 }
 
 : <<'FUN'
@@ -261,15 +261,15 @@ args:
   $2  The document
   $3  The key
 FUN
-__silt__bind_key() {
-  __silt__underscored "$3"
-  __silt__bind_key__name="$1$__silt__UNDERSCORED"
+__silt__bind__key() {
+  __silt__bind__underscored "$3"
+  __silt__bind__key__name="$1$__silt__bind__UNDERSCORED"
 
-  __silt__bind_key__value=''
-  silt__get __silt__bind_key__value "$2" ".$3" || return 1
-  __silt__bound_text "$__silt__bind_key__value" || return 1
+  __silt__bind__key__value=''
+  silt__get __silt__bind__key__value "$2" ".$3" || return 1
+  __silt__bind__bound_text "$__silt__bind__key__value" || return 1
 
-  eval "$__silt__bind_key__name=\$__silt__ANSWER"
+  eval "$__silt__bind__key__name=\$__silt__ANSWER"
 }
 
 : <<'FUN'
@@ -280,7 +280,7 @@ text for any other value.
 args:
   $1  The value silt__get answered, a document or nothing
 FUN
-__silt__bound_text() {
+__silt__bind__bound_text() {
   case "$1" in
     # structs-lint: allow -- a first line with a key opens a collection; SILT sits beneath structs
     '' | 0.:null) __silt__ANSWER='' ;;
@@ -296,48 +296,48 @@ running: its value, and whether it is set at all.
 args:
   $1  The variables' names, each followed by one space
 FUN
-__silt__save() {
-  __silt__save__rest="$1"
+__silt__bind__save() {
+  __silt__bind__save__rest="$1"
 
-  while [ -n "$__silt__save__rest" ]; do
-    __silt__save__name="${__silt__save__rest%% *}"
-    __silt__save__rest="${__silt__save__rest#* }"
-    eval "__silt__saved_${__silt__WITHS}_$__silt__save__name=\${$__silt__save__name-}"
-    eval "__silt__was_set_${__silt__WITHS}_$__silt__save__name=\${$__silt__save__name+true}"
+  while [ -n "$__silt__bind__save__rest" ]; do
+    __silt__bind__save__name="${__silt__bind__save__rest%% *}"
+    __silt__bind__save__rest="${__silt__bind__save__rest#* }"
+    eval "__silt__bind__saved_${__silt__bind__WITHS}_$__silt__bind__save__name=\${$__silt__bind__save__name-}"
+    eval "__silt__bind__was_set_${__silt__bind__WITHS}_$__silt__bind__save__name=\${$__silt__bind__save__name+true}"
   done
 }
 
 : <<'FUN'
-Puts each variable back as __silt__save found it, for the call of
+Puts each variable back as __silt__bind__save found it, for the call of
 silt__with that is running.
 
 args:
   $1  The variables' names, each followed by one space
 FUN
-__silt__restore() {
-  __silt__restore__rest="$1"
+__silt__bind__restore() {
+  __silt__bind__restore__rest="$1"
 
-  while [ -n "$__silt__restore__rest" ]; do
-    __silt__restore__name="${__silt__restore__rest%% *}"
-    __silt__restore__rest="${__silt__restore__rest#* }"
-    __silt__restore_one "$__silt__restore__name"
+  while [ -n "$__silt__bind__restore__rest" ]; do
+    __silt__bind__restore__name="${__silt__bind__restore__rest%% *}"
+    __silt__bind__restore__rest="${__silt__bind__restore__rest#* }"
+    __silt__bind__restore_one "$__silt__bind__restore__name"
   done
 }
 
 : <<'FUN'
-Puts one variable back as __silt__save found it: its value when it was
+Puts one variable back as __silt__bind__save found it: its value when it was
 set, and unset when it was not.
 
 args:
   $1  The variable's name
 FUN
-__silt__restore_one() {
-  if eval "[ \"\$__silt__was_set_${__silt__WITHS}_$1\" = true ]"; then
-    eval "$1=\$__silt__saved_${__silt__WITHS}_$1"
+__silt__bind__restore_one() {
+  if eval "[ \"\$__silt__bind__was_set_${__silt__bind__WITHS}_$1\" = true ]"; then
+    eval "$1=\$__silt__bind__saved_${__silt__bind__WITHS}_$1"
   else
     unset "$1"
   fi
-  unset "__silt__saved_${__silt__WITHS}_$1" "__silt__was_set_${__silt__WITHS}_$1"
+  unset "__silt__bind__saved_${__silt__bind__WITHS}_$1" "__silt__bind__was_set_${__silt__bind__WITHS}_$1"
 }
 
 : <<'FUN'
@@ -346,11 +346,11 @@ Unsets each variable.
 args:
   $1  The variables' names, each followed by one space
 FUN
-__silt__release() {
-  __silt__release__rest="$1"
+__silt__bind__release() {
+  __silt__bind__release__rest="$1"
 
-  while [ -n "$__silt__release__rest" ]; do
-    unset "${__silt__release__rest%% *}"
-    __silt__release__rest="${__silt__release__rest#* }"
+  while [ -n "$__silt__bind__release__rest" ]; do
+    unset "${__silt__bind__release__rest%% *}"
+    __silt__bind__release__rest="${__silt__bind__release__rest#* }"
   done
 }
