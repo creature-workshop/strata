@@ -1,0 +1,47 @@
+as first from_json first/first.json
+as second from_json second/second.json
+
+# deepmerge
+as merged deepmerge @first $second
+to_json @merged
+as replaced deepmerge @first $second --lists replace
+equals @merged $replaced
+as joined deepmerge @first $second --lists concat
+to_json @joined
+as united deepmerge @first $second --lists union
+to_json @united
+as back deepmerge @second $first
+to_json @back
+as same deepmerge @first $first
+equals @first $same
+as none obj
+as onto deepmerge @none $first
+equals @first $onto
+as under deepmerge @first $none
+equals @first $under
+deepmerge @none $none
+
+# deepmerge: what it refuses
+deepmerge @first $second --lists sorted
+deepmerge @first $second --lists
+deepmerge @first $second --arrays union
+as list arr 0.:int=1
+deepmerge @first $list
+deepmerge @list $first
+deepmerge @first
+
+# flatten
+as tree from_json tree/tree.json
+as flat flatten @tree areas
+to_json @flat
+keys @flat
+as slashed flatten @tree areas /
+to_json @slashed
+as colons flatten @tree areas ::
+keys @colons
+as whole flatten @tree nothing
+equals @tree $whole
+flatten @none areas
+
+# flatten: what it refuses
+flatten @list areas

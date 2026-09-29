@@ -237,7 +237,8 @@ function any_collection_calls(i) {
 }
 
 # Prints the calls that apply to a map: its keys, its entries, and the root
-# merged with it when the root is a map too.
+# merged with it, one level deep and at every depth, when the root is a map
+# too.
 function map_calls(i) {
   print "as k" i " keys @s" i
   print "join @k" i " , => getpath(" JQ[i] ") | keys_unsorted | join(\",\")"
@@ -247,6 +248,10 @@ function map_calls(i) {
   if (root == "object") {
     print "as m" i " merge @d $s" i
     print "to_json @m" i " => . + getpath(" JQ[i] ") | tojson"
+    print "as dm" i " deepmerge @d $s" i
+    print "to_json @dm" i " => . * getpath(" JQ[i] ") | tojson"
+    print "as du" i " deepmerge @s" i " $d"
+    print "to_json @du" i " => getpath(" JQ[i] ") * . | tojson"
   }
 }
 

@@ -1,0 +1,1 @@
+A map that shares keys with the first at every depth. Under a shared key it holds a map where the first holds a map, a list where the first holds a list, and a map where the first holds a str or an int. Its list holds the same map twice, with the keys in a different order.
