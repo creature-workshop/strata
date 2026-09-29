@@ -23,7 +23,7 @@ for a value by default.
                    }'
 
 registers:
-  __silt__INDENT  The number of spaces for each level while the JSON is
+  __silt__dump__INDENT  The number of spaces for each level while the JSON is
                   written, and empty at any other time
 
 args:
@@ -32,7 +32,7 @@ args:
   $2          The document
 PUB_FUN
 silt__dump() {
-  __silt__write_as __silt__dump_json "$@"
+  __silt__write_as __silt__dump__json "$@"
 }
 
 : <<'FUN'
@@ -41,13 +41,13 @@ Sets __silt__ANSWER to the document as JSON on several lines.
 args:
   $1  The document
 FUN
-__silt__dump_json() {
-  __silt__INDENT=2
-  __silt__dump_json__status=0
-  __silt__hand_off "$1" translators/json/to || __silt__dump_json__status=$?
-  __silt__INDENT=''
+__silt__dump__json() {
+  __silt__dump__INDENT=2
+  __silt__dump__json__status=0
+  __silt__hand_off "$1" translators/json/to || __silt__dump__json__status=$?
+  __silt__dump__INDENT=''
 
-  return "$__silt__dump_json__status"
+  return "$__silt__dump__json__status"
 }
 
 : <<'PUB_FUN'
@@ -96,12 +96,12 @@ silt__from_codeblock() {
   __silt__out "$1" || return 1
   __silt__from_codeblock__out="$__silt__OUT"
 
-  __silt__trim "${2:-}"
-  __silt__from_codeblock__text="$__silt__TRIMMED"
+  __silt__dump__trim "${2:-}"
+  __silt__from_codeblock__text="$__silt__dump__TRIMMED"
   __silt__from_codeblock__doc=''
 
   if ! silt__read __silt__from_codeblock__doc "$__silt__from_codeblock__text"; then
-    __silt__read_fenced "$__silt__from_codeblock__text" || return 1
+    __silt__dump__read_fenced "$__silt__from_codeblock__text" || return 1
     __silt__from_codeblock__doc="$__silt__ANSWER"
   fi
 
@@ -110,18 +110,18 @@ silt__from_codeblock() {
 }
 
 : <<'FUN'
-Sets __silt__TRIMMED to the text without the spaces, tabs and newlines at
+Sets __silt__dump__TRIMMED to the text without the spaces, tabs and newlines at
 its start and at its end.
 
-  __silt__trim '  {"a":1}
+  __silt__dump__trim '  {"a":1}
   '   ->  '{"a":1}'
 
 args:
   $1  The text
 FUN
-__silt__trim() {
-  __silt__TRIMMED="${1#"${1%%[![:space:]]*}"}"
-  __silt__TRIMMED="${__silt__TRIMMED%"${__silt__TRIMMED##*[![:space:]]}"}"
+__silt__dump__trim() {
+  __silt__dump__TRIMMED="${1#"${1%%[![:space:]]*}"}"
+  __silt__dump__TRIMMED="${__silt__dump__TRIMMED%"${__silt__dump__TRIMMED##*[![:space:]]}"}"
 }
 
 : <<'FUN'
@@ -133,7 +133,7 @@ inside the fence that is not a document.
 args:
   $1  The text, with no space around it
 FUN
-__silt__read_fenced() {
+__silt__dump__read_fenced() {
   case "$1" in
     # structs-lint: allow -- the shape of a code fence, read by hand; SILT sits beneath structs
     "$__silt__FENCE"*"$__silt__NL"*"$__silt__FENCE") ;;
@@ -143,12 +143,12 @@ __silt__read_fenced() {
       ;;
   esac
 
-  __silt__read_fenced__first="${1%%"$__silt__NL"*}"
-  __silt__require_tag "${__silt__read_fenced__first#"$__silt__FENCE"}" || return 1
+  __silt__dump__read_fenced__first="${1%%"$__silt__NL"*}"
+  __silt__dump__require_tag "${__silt__dump__read_fenced__first#"$__silt__FENCE"}" || return 1
 
-  __silt__read_fenced__body="${1#*"$__silt__NL"}"
-  __silt__trim "${__silt__read_fenced__body%"$__silt__FENCE"}"
-  silt__read __silt__ANSWER "$__silt__TRIMMED" && return 0
+  __silt__dump__read_fenced__body="${1#*"$__silt__NL"}"
+  __silt__dump__trim "${__silt__dump__read_fenced__body%"$__silt__FENCE"}"
+  silt__read __silt__ANSWER "$__silt__dump__TRIMMED" && return 0
 
   __silt__fail 'the text inside the code fence is not a document'
 }
@@ -160,13 +160,13 @@ language tag: letters and digits, with spaces after them or none.
 args:
   $1  The text after the opening fence, to the end of its line
 FUN
-__silt__require_tag() {
-  __silt__trim "$1"
+__silt__dump__require_tag() {
+  __silt__dump__trim "$1"
 
-  case "$__silt__TRIMMED" in
+  case "$__silt__dump__TRIMMED" in
     # structs-lint: allow -- the spelling of a language tag, read by hand; SILT sits beneath structs
     *[!A-Za-z0-9]*)
-      __silt__fail "a code fence opens with a language tag or nothing, not '$__silt__TRIMMED'"
+      __silt__fail "a code fence opens with a language tag or nothing, not '$__silt__dump__TRIMMED'"
       return 1
       ;;
   esac

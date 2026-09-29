@@ -26,7 +26,7 @@ silt__pick() {
   __silt__pick__map="$2"
   shift 2
 
-  silt__filter "$__silt__pick__out" "$__silt__pick__map" __silt__key_is_among true "$@"
+  silt__filter "$__silt__pick__out" "$__silt__pick__map" __silt__pick__key_is_among true "$@"
 }
 
 : <<'PUB_FUN'
@@ -48,15 +48,15 @@ silt__without() {
   __silt__without__map="$2"
   shift 2
 
-  silt__filter "$__silt__without__out" "$__silt__without__map" __silt__key_is_among false "$@"
+  silt__filter "$__silt__without__out" "$__silt__without__map" __silt__pick__key_is_among false "$@"
 }
 
 : <<'FUN'
 Answers one word when a member's key is one of the keys given, and the
 opposite word when it is not. It is a predicate for silt__filter.
 
-  __silt__key_is_among out title "$value" true title body   ->  out=true
-  __silt__key_is_among out token "$value" true title body   ->  out=false
+  __silt__pick__key_is_among out title "$value" true title body   ->  out=true
+  __silt__pick__key_is_among out token "$value" true title body   ->  out=false
 
 args:
   $1  The name of the variable to answer in
@@ -65,20 +65,20 @@ args:
   $4  The word to answer when the key is one of the keys: true or false
   $@  The keys
 FUN
-__silt__key_is_among() {
-  __silt__key_is_among__out="$1"
-  __silt__key_is_among__key="$2"
-  __silt__key_is_among__found="$4"
+__silt__pick__key_is_among() {
+  __silt__pick__key_is_among__out="$1"
+  __silt__pick__key_is_among__key="$2"
+  __silt__pick__key_is_among__found="$4"
   shift 4
 
-  silt__not __silt__key_is_among__missing "0.:bool=$__silt__key_is_among__found" || return 1
-  __silt__ANSWER="${__silt__key_is_among__missing#0.:bool=}"
+  silt__not __silt__pick__key_is_among__missing "0.:bool=$__silt__pick__key_is_among__found" || return 1
+  __silt__ANSWER="${__silt__pick__key_is_among__missing#0.:bool=}"
 
-  for __silt__key_is_among__one in "$@"; do
-    if [ "$__silt__key_is_among__one" = "$__silt__key_is_among__key" ]; then
-      __silt__ANSWER="$__silt__key_is_among__found"
+  for __silt__pick__key_is_among__one in "$@"; do
+    if [ "$__silt__pick__key_is_among__one" = "$__silt__pick__key_is_among__key" ]; then
+      __silt__ANSWER="$__silt__pick__key_is_among__found"
     fi
   done
 
-  __silt__answer_in "$__silt__key_is_among__out"
+  __silt__answer_in "$__silt__pick__key_is_among__out"
 }

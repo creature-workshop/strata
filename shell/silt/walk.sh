@@ -217,7 +217,7 @@ __silt__tier() {
     SILT_SPILL="${__silt__SPILL-}" \
     SILT_DOCUMENTS="${__silt__DOCUMENTS-}" \
     SILT_BASE="${__silt__BASE-}" \
-    SILT_INDENT="${__silt__INDENT-}" \
+    SILT_INDENT="${__silt__dump__INDENT-}" \
     awk -f "$__silt__DIR/awk/lines.awk" "$@"
 }
 

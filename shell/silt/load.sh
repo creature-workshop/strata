@@ -25,7 +25,7 @@ silt__load() {
   __silt__out "$1" || return 1
   __silt__load__out="$__silt__OUT"
 
-  __silt__load_checked "${2:-}" "${3:-}" || return 1
+  __silt__load__checked "${2:-}" "${3:-}" || return 1
   __silt__answer_in "$__silt__load__out"
 }
 
@@ -37,20 +37,20 @@ args:
   $1  The JSON file
   $2  The JSON Schema file
 FUN
-__silt__load_checked() {
-  __silt__load_checked__schema=''
-  __silt__load_file __silt__load_checked__schema "$2" || return 1
-  __silt__load_checked__doc=''
-  __silt__load_file __silt__load_checked__doc "$1" || return 1
+__silt__load__checked() {
+  __silt__load__checked__schema=''
+  __silt__load__file __silt__load__checked__schema "$2" || return 1
+  __silt__load__checked__doc=''
+  __silt__load__file __silt__load__checked__doc "$1" || return 1
 
-  __silt__load_checked__errors=''
-  silt__validate __silt__load_checked__errors "$__silt__load_checked__doc" "$__silt__load_checked__schema" || return 1
-  if [ "$__silt__load_checked__errors" != 0.:list ]; then
-    __silt__report_invalid "$1" "$__silt__load_checked__errors"
+  __silt__load__checked__errors=''
+  silt__validate __silt__load__checked__errors "$__silt__load__checked__doc" "$__silt__load__checked__schema" || return 1
+  if [ "$__silt__load__checked__errors" != 0.:list ]; then
+    __silt__load__report_invalid "$1" "$__silt__load__checked__errors"
     return 1
   fi
 
-  __silt__ANSWER="$__silt__load_checked__doc"
+  __silt__ANSWER="$__silt__load__checked__doc"
 }
 
 : <<'FUN'
@@ -61,7 +61,7 @@ args:
   $1  The name of the variable to answer in
   $2  The file
 FUN
-__silt__load_file() {
+__silt__load__file() {
   if [ ! -f "$2" ]; then
     __silt__fail "load found no file at '$2'"
     return 1
@@ -79,9 +79,9 @@ args:
   $1  The file
   $2  The validation errors, a list of str
 FUN
-__silt__report_invalid() {
+__silt__load__report_invalid() {
   error "silt: '$1' does not match its schema"
-  silt__each "$2" __silt__report_error
+  silt__each "$2" __silt__load__report_error
 }
 
 : <<'FUN'
@@ -91,8 +91,8 @@ args:
   $1  The index of the error, unread here
   $2  The error, a str document
 FUN
-__silt__report_error() {
-  __silt__report_error__text=''
-  silt__string __silt__report_error__text "$2" . || return 1
-  error "silt:   $__silt__report_error__text"
+__silt__load__report_error() {
+  __silt__load__report_error__text=''
+  silt__string __silt__load__report_error__text "$2" . || return 1
+  error "silt:   $__silt__load__report_error__text"
 }
