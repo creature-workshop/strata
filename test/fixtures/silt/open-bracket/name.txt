@@ -1,0 +1,1 @@
+open bracket: a path with a [ and no ] after it is refused

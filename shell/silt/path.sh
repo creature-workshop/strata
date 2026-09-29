@@ -54,21 +54,46 @@ __silt__quoted_segment() {
 
 : <<'FUN'
 Reads a bracketed quoted key, ["a.b"], off the front of __silt__PATH into
-__silt__SEGMENT, and leaves the path after the closing bracket.
+__silt__SEGMENT, and leaves the path after the closing bracket. Refuses a
+key with no closing bracket after it.
 FUN
 __silt__bracketed_segment() {
+  __silt__bracketed_segment__path="$__silt__PATH"
   __silt__quoted_segment "${__silt__PATH#\[}" || return 1
-  __silt__PATH="${__silt__PATH#\]}"
+
+  case "$__silt__PATH" in
+    # structs-lint: allow -- the next character of a path, read by hand; SILT sits beneath structs
+    \]*) __silt__PATH="${__silt__PATH#\]}" ;;
+    *) __silt__refuse_open_bracket "$__silt__bracketed_segment__path" || return 1 ;;
+  esac
 }
 
 : <<'FUN'
 Reads a bracketed index, [2], off the front of __silt__PATH into
-__silt__SEGMENT as bare digits, and leaves the path after the closing bracket.
+__silt__SEGMENT as bare digits, and leaves the path after the closing
+bracket. Refuses an index with no closing bracket after it.
 FUN
 __silt__index_segment() {
+  case "$__silt__PATH" in
+    # structs-lint: allow -- whether a path closes its bracket, read by hand; SILT sits beneath structs
+    *\]*) ;;
+    *) __silt__refuse_open_bracket "$__silt__PATH" || return 1 ;;
+  esac
+
   __silt__SEGMENT="${__silt__PATH%%\]*}"
   __silt__SEGMENT="${__silt__SEGMENT#\[}"
   __silt__PATH="${__silt__PATH#*\]}"
+}
+
+: <<'FUN'
+Reports that a path has an opening bracket with no closing bracket after
+it, and returns 1.
+
+args:
+  $1  The path from the opening bracket
+FUN
+__silt__refuse_open_bracket() {
+  __silt__fail "the path has a [ with no ] after it: '$1'"
 }
 
 : <<'FUN'

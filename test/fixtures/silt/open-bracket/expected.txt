@@ -1,0 +1,36 @@
+## get .name[
+!! 1 ERROR: silt: the path has a [ with no ] after it: '['
+## get .tests[0
+!! 1 ERROR: silt: the path has a [ with no ] after it: '[0'
+## get [
+!! 1 ERROR: silt: the path has a [ with no ] after it: '['
+## get .["name"
+!! 1 ERROR: silt: the path has a [ with no ] after it: '["name"'
+## get .["name
+!! 1 ERROR: silt: a quoted literal never closes: "name
+## get .tests[1]["name"
+!! 1 ERROR: silt: the path has a [ with no ] after it: '["name"'
+## string .tests[
+!! 1 ERROR: silt: the path has a [ with no ] after it: '['
+## has .tests[0
+!! 1 ERROR: silt: the path has a [ with no ] after it: '[0'
+## type .tests[
+!! 1 ERROR: silt: the path has a [ with no ] after it: '['
+## pluck .tests[
+!! 1 ERROR: silt: the path has a [ with no ] after it: '['
+## set .tests[0 0.:int=1
+!! 1 ERROR: silt: the path has a [ with no ] after it: '[0'
+## as tests get .tests
+0.0:str="a.bats"
+0.1:map
+1."name":str="b"
+## pluck @tests .name[
+!! 1 ERROR: silt: the path has a [ with no ] after it: '['
+## get .tests[0]
+0.:str="a.bats"
+## get .["name"]
+0.:str="unit"
+## get .tests[1]["name"]
+0.:str="b"
+## has .tests[0]
+true

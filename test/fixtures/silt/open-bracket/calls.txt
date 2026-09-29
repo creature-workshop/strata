@@ -1,0 +1,19 @@
+get .name[
+get .tests[0
+get [
+get .["name"
+get .["name
+get .tests[1]["name"
+string .tests[
+has .tests[0
+type .tests[
+pluck .tests[
+set .tests[0 0.:int=1
+as tests get .tests
+pluck @tests .name[
+
+# the same paths, closed
+get .tests[0]
+get .["name"]
+get .tests[1]["name"]
+has .tests[0]
