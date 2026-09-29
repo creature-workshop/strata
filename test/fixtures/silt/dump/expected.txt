@@ -23,6 +23,33 @@ ERROR: silt: load could not read 'broken/broken.json' as JSON
 ## load release/release.json missing/missing.schema.json
 !! 1 ERROR: silt: load found no file at 'missing/missing.schema.json'
 ## dump @release
+name: "1.2.0"
+token: secret
+draft: false
+ratio: 1.5
+notes: null
+assets:
+  - file: a.tgz
+    sizes: []
+  - readme
+meta: {}
+tags: []
+## dump-silt @release
+0."name":str="1.2.0"
+0."token":str="secret"
+0."draft":bool=false
+0."ratio":float=1.5
+0."notes":null
+0."assets":list
+1.0:map
+2."file":str="a.tgz"
+2."sizes":list
+1.1:str="readme"
+0."meta":map
+0."tags":list
+## dump-toml @release
+!! 1 ERROR: silt: SILT_DUMP accepts yaml, json or silt, not 'toml'
+## dump-json @release
 {
   "name": "1.2.0",
   "token": "secret",
@@ -39,7 +66,7 @@ ERROR: silt: load could not read 'broken/broken.json' as JSON
   "meta": {},
   "tags": []
 }
-## dump --sort @release
+## dump-json --sort @release
 {
   "assets": [
     {
@@ -58,22 +85,22 @@ ERROR: silt: load could not read 'broken/broken.json' as JSON
 }
 ## as none obj
 0.:map
-## dump @none
+## dump-json @none
 {}
 ## as empty arr
 0.:list
-## dump @empty
+## dump-json @empty
 []
 ## as text str a "quoted" word
 0.:str="a \"quoted\" word"
-## dump @text
+## dump-json @text
 "a \"quoted\" word"
 ## as assets get @release .assets
 0.0:map
 1."file":str="a.tgz"
 1."sizes":list
 0.1:str="readme"
-## dump @assets
+## dump-json @assets
 [
   {
     "file": "a.tgz",
@@ -93,7 +120,7 @@ ERROR: silt: load could not read 'broken/broken.json' as JSON
 1.1:str="readme"
 0."meta":map
 0."tags":list
-## dump @safe
+## dump-json @safe
 {
   "name": "1.2.0",
   "draft": false,
@@ -112,7 +139,7 @@ ERROR: silt: load could not read 'broken/broken.json' as JSON
 ## as two pick @release name draft missing
 0."name":str="1.2.0"
 0."draft":bool=false
-## dump @two
+## dump-json @two
 {
   "name": "1.2.0",
   "draft": false

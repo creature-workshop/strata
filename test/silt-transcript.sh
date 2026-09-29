@@ -16,7 +16,7 @@
 # take a command, and succeeds-reading and fails-reading take one word for
 # the command to read on stdin and then the command.
 # scalar, len, keys, canon, unique, is_true, is_false, is_zero, references,
-# to_json, to_yaml, to_toml, dump, first, last, sum, values and entries take the
+# to_json, to_yaml, to_toml, dump, dump-<format>, which sets SILT_DUMP, first, last, sum, values and entries take the
 # document; pop and shift take it and answer the element and the rest, and
 # pop-rest and shift-rest answer the rest alone, and pop-element and
 # shift-element call the verb without a variable for the rest;
@@ -222,6 +222,7 @@ transcript__run_verb() {
     succeeds | fails) transcript__run_command "$1" "$2" ;;
     succeeds-reading | fails-reading) transcript__run_command_reading "${1%-reading}" "${2%% *}" "$(transcript__argument_of "$2")" ;;
     to_json | to_yaml | to_toml | dump) transcript__translate "$1" "$DOCUMENT_FOR_CALL" ;;
+    dump-*) transcript__dump_as "${1#dump-}" "$DOCUMENT_FOR_CALL" ;;
     load) transcript__load "${2%% *}" "${2#* }" ;;
     first | last | sum | values | entries) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" ;;
     take | take_last) transcript__capture "silt__$1" ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
@@ -293,6 +294,20 @@ transcript__translate() {
   else
     transcript__capture "silt__$__transcript__translate__verb" ANSWER "$@"
   fi
+}
+
+# Runs dump with SILT_DUMP set to a format, and unsets it afterwards, so
+# that the next call has the default.
+transcript__dump_as() {
+  SILT_DUMP="$1"
+  export SILT_DUMP
+  shift
+
+  __transcript__dump_as__status=0
+  transcript__translate dump "$@" || __transcript__dump_as__status=$?
+  unset SILT_DUMP
+
+  return "$__transcript__dump_as__status"
 }
 
 # Runs pop or shift, and answers both values: the element under "element:"

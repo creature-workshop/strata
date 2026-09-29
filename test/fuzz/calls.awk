@@ -228,7 +228,7 @@ function any_collection_calls(i) {
   print "as s" i " get @d " SILT[i]
   print "to_json @s" i " => getpath(" JQ[i] ") | tojson"
   print "len @s" i " => getpath(" JQ[i] ") | length"
-  print "dump @s" i " => getpath(" JQ[i] ")"
+  print "dump-json @s" i " => getpath(" JQ[i] ")"
   print "empty @s" i " => getpath(" JQ[i] ") | length == 0"
   print "defined @s" i " => true"
   each_calls("@s" i, "getpath(" JQ[i] ")", JQ[i])

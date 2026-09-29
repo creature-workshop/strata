@@ -7,21 +7,24 @@ load release/release.json missing/missing.schema.json
 
 # dump
 dump @release
-dump --sort @release
+dump-silt @release
+dump-toml @release
+dump-json @release
+dump-json --sort @release
 as none obj
-dump @none
+dump-json @none
 as empty arr
-dump @empty
+dump-json @empty
 as text str a "quoted" word
-dump @text
+dump-json @text
 as assets get @release .assets
-dump @assets
+dump-json @assets
 
 # pick and without
 as safe without @release token
-dump @safe
+dump-json @safe
 as two pick @release name draft missing
-dump @two
+dump-json @two
 as all without @release
 equals @release $all
 pick @release
