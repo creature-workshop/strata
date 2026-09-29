@@ -1,12 +1,12 @@
 #!/bin/sh
 
-: <<'MODULE'
+: <<'FRAGMENT'
 silt__flatten: a tree of named nodes as one map, each node under the path
 to it.
 
 The verb keeps a list of the nodes that are still to be written, and works
 through it one node at a time. No function calls itself.
-MODULE
+FRAGMENT
 
 : <<'PUB_FUN'
 Answers one map for a tree of named nodes. The tree is a map from a name

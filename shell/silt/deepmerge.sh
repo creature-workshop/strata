@@ -1,11 +1,11 @@
 #!/bin/sh
 
-: <<'MODULE'
+: <<'FRAGMENT'
 silt__deepmerge: one map laid over another, at every depth.
 
 The verb keeps a list of the maps that are still to be merged, and works
 through it one map at a time. No function calls itself.
-MODULE
+FRAGMENT
 
 : <<'PUB_FUN'
 Answers the first map with the second laid over it, at every depth. For a
