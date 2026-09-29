@@ -171,11 +171,11 @@ __silt__get_first() {
   __silt__get_first__doc="${2:-}"
   shift 2
 
-  __silt__choose "$__silt__get_first__doc" "$@" || return 1
+  __silt__paths__choose "$__silt__get_first__doc" "$@" || return 1
 
-  __silt__ANSWER="$__silt__CHOSEN"
-  if [ "$__silt__IS_CHOSEN" = false ] && [ "$__silt__HAS_DEFAULT" = true ]; then
-    __silt__ANSWER="$__silt__DEFAULT"
+  __silt__ANSWER="$__silt__paths__CHOSEN"
+  if [ "$__silt__paths__IS_CHOSEN" = false ] && [ "$__silt__paths__HAS_DEFAULT" = true ]; then
+    __silt__ANSWER="$__silt__paths__DEFAULT"
   fi
   __silt__answer_in "$__silt__get_first__out"
 }

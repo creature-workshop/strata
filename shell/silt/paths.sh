@@ -1,83 +1,83 @@
 #!/bin/sh
 
 : <<'MODULE'
-Several paths in one call: the first path that holds a value, for silt__get
-and silt__string, and pairs of a path and a value, for silt__set and
-silt__patch.
+Helpers for a call that takes several paths. One helper finds the first
+path that has a value. The other puts each value of a list of path and
+value pairs at its path.
 MODULE
 
 : <<'FUN'
 Reads a list of paths, with --default and its value anywhere among them,
 and finds the first path that holds a value that is not a null.
 
-  __silt__choose "$doc" .a .b --default x   ->  __silt__CHOSEN is the value at .a,
-                                                 or else the value at .b
+  __silt__paths__choose "$doc" .a .b --default x
+    ->  __silt__paths__CHOSEN is the value at .a, or else the value at .b
 
 registers:
-  __silt__CHOSEN       The value at the first path that holds one. When no
-                       path does, what the last path holds: a null, or the
-                       empty string.
-  __silt__IS_CHOSEN    Whether a path held a value that is not a null
-  __silt__DEFAULT      The value after --default
-  __silt__HAS_DEFAULT  Whether the call has --default
+  __silt__paths__CHOSEN       The value at the first path that holds one.
+                              When no path does, what the last path holds:
+                              a null, or the empty string.
+  __silt__paths__IS_CHOSEN    Whether a path held a value that is not a null
+  __silt__paths__DEFAULT      The value after --default
+  __silt__paths__HAS_DEFAULT  Whether the call has --default
 
 args:
   $1  The document
   $@  The paths, and --default with its value
 FUN
-__silt__choose() {
-  __silt__choose__doc="$1"
+__silt__paths__choose() {
+  __silt__paths__choose__doc="$1"
   shift
 
-  __silt__CHOSEN=''
-  __silt__IS_CHOSEN=false
-  __silt__DEFAULT=''
-  __silt__HAS_DEFAULT=false
+  __silt__paths__CHOSEN=''
+  __silt__paths__IS_CHOSEN=false
+  __silt__paths__DEFAULT=''
+  __silt__paths__HAS_DEFAULT=false
 
   while [ "$#" -gt 0 ]; do
     case "$1" in
-      --default) __silt__keep_default "$@" || return 1 ;;
-      *) __silt__try_path "$__silt__choose__doc" "$1" || return 1 ;;
+      --default) __silt__paths__keep_default "$@" || return 1 ;;
+      *) __silt__paths__try_path "$__silt__paths__choose__doc" "$1" || return 1 ;;
     esac
-    shift "$__silt__TAKEN"
+    shift "$__silt__paths__TAKEN"
   done
 }
 
 : <<'FUN'
-Keeps the value after --default, and sets __silt__TAKEN to 2, the number of
+Keeps the value after --default, and sets __silt__paths__TAKEN to 2, the number of
 arguments read. Refuses --default with no value after it.
 
 args:
   $1  --default
   $2  The value
 FUN
-__silt__keep_default() {
+__silt__paths__keep_default() {
   if [ "$#" -lt 2 ]; then
     __silt__fail '--default takes a value'
     return 1
   fi
 
-  __silt__DEFAULT="$2"
-  __silt__HAS_DEFAULT=true
-  __silt__TAKEN=2
+  __silt__paths__DEFAULT="$2"
+  __silt__paths__HAS_DEFAULT=true
+  __silt__paths__TAKEN=2
 }
 
 : <<'FUN'
 Reads the value at one path, unless an earlier path already held a value,
-and sets __silt__TAKEN to 1, the number of arguments read.
+and sets __silt__paths__TAKEN to 1, the number of arguments read.
 
 args:
   $1  The document
   $2  The path
 FUN
-__silt__try_path() {
-  __silt__TAKEN=1
-  if [ "$__silt__IS_CHOSEN" = true ]; then
+__silt__paths__try_path() {
+  __silt__paths__TAKEN=1
+  if [ "$__silt__paths__IS_CHOSEN" = true ]; then
     return 0
   fi
 
-  silt__get __silt__CHOSEN "$1" "$2" || return 1
-  silt__defined __silt__IS_CHOSEN "$__silt__CHOSEN"
+  silt__get __silt__paths__CHOSEN "$1" "$2" || return 1
+  silt__defined __silt__paths__IS_CHOSEN "$__silt__paths__CHOSEN"
 }
 
 : <<'FUN'
@@ -91,11 +91,11 @@ args:
   $3  The document
   $@  A path and a value, pair by pair
 FUN
-__silt__set_pairs() {
+__silt__paths__set_pairs() {
   __silt__out "${2:-}" || return 1
-  __silt__set_pairs__skip="$1"
-  __silt__set_pairs__out="$__silt__OUT"
-  __silt__PAIRED="${3:-}"
+  __silt__paths__set_pairs__skip="$1"
+  __silt__paths__set_pairs__out="$__silt__OUT"
+  __silt__paths__PAIRED="${3:-}"
   shift 3
 
   if [ "$(($# % 2))" -ne 0 ]; then
@@ -104,44 +104,27 @@ __silt__set_pairs() {
   fi
 
   while [ "$#" -gt 0 ]; do
-    __silt__set_pair "$__silt__set_pairs__skip" "$1" "$2" || return 1
+    __silt__paths__set_pair "$__silt__paths__set_pairs__skip" "$1" "$2" || return 1
     shift 2
   done
 
-  __silt__ANSWER="$__silt__PAIRED"
-  __silt__answer_in "$__silt__set_pairs__out"
+  __silt__ANSWER="$__silt__paths__PAIRED"
+  __silt__answer_in "$__silt__paths__set_pairs__out"
 }
 
 : <<'FUN'
-Puts one value at its path in __silt__PAIRED, the document that
-__silt__set_pairs is building.
+Puts one value at its path in __silt__paths__PAIRED, the document that
+__silt__paths__set_pairs is building.
 
 args:
   $1  true to leave out a value that is the empty string
   $2  The path
   $3  The value, a document
 FUN
-__silt__set_pair() {
+__silt__paths__set_pair() {
   if [ "$1" = true ] && [ -z "$3" ]; then
     return 0
   fi
 
-  silt__set __silt__PAIRED "$__silt__PAIRED" "$2" "$3"
-}
-
-: <<'PUB_FUN'
-Puts each value that is given at its path, as silt__set does, and leaves
-out every pair whose value is the empty string. A caller can pass all the
-fields it might change, and only the ones that have a value are written.
-
-  silt__patch doc '0."a":int=1' .a '' .b '0.:int=2'   ->  doc='0."a":int=1
-                                                               0."b":int=2'
-
-args:
-  $1  The name of the variable to answer in
-  $2  The document
-  $@  A path and a value, pair by pair
-PUB_FUN
-silt__patch() {
-  __silt__set_pairs true "$@"
+  silt__set __silt__paths__PAIRED "$__silt__paths__PAIRED" "$2" "$3"
 }

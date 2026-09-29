@@ -174,6 +174,7 @@ __silt__home || return 1
 . "$__silt__DIR/push.sh"
 . "$__silt__DIR/set.sh"
 . "$__silt__DIR/paths.sh"
+. "$__silt__DIR/patch.sh"
 . "$__silt__DIR/concat.sh"
 . "$__silt__DIR/join.sh"
 . "$__silt__DIR/split.sh"

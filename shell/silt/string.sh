@@ -29,12 +29,12 @@ silt__string() {
   __silt__string__doc="$2"
   shift 2
 
-  __silt__choose "$__silt__string__doc" "$@" || return 1
+  __silt__paths__choose "$__silt__string__doc" "$@" || return 1
 
-  if [ "$__silt__HAS_DEFAULT" = true ]; then
-    __silt__string_or "$__silt__CHOSEN" "$__silt__DEFAULT" || return 1
+  if [ "$__silt__paths__HAS_DEFAULT" = true ]; then
+    __silt__string_or "$__silt__paths__CHOSEN" "$__silt__paths__DEFAULT" || return 1
   else
-    __silt__string_text "$__silt__CHOSEN" || return 1
+    __silt__string_text "$__silt__paths__CHOSEN" || return 1
   fi
 
   __silt__OUT="$__silt__string__out"

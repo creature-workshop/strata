@@ -43,7 +43,7 @@ args:
 PUB_FUN
 silt__set() {
   if [ "$#" -ne 4 ]; then
-    __silt__set_pairs false "$@"
+    __silt__paths__set_pairs false "$@"
     return
   fi
 
