@@ -23,13 +23,13 @@ registers:
   __silt__flatten__FLAT       The map as built so far
   __silt__flatten__TREE       The tree
   __silt__flatten__CHILD_KEY  The child key
-  __silt__SEPARATOR  The separator
+  __silt__SEPARATOR           The separator
   __silt__flatten__PENDING    The nodes still to be written, one on each line: the
-                     key of the answer as a JSON literal, a tab, and the
-                     path of the node in the tree
+                              key of the answer as a JSON literal, a tab, and the
+                              path of the node in the tree
   __silt__flatten__CHILDREN   The nodes under the node being written, in the same
-                     form
-  __silt__NODE       The node being written, without its child key
+                              form
+  __silt__NODE                The node being written, without its child key
 
 args:
   $1  The name of the variable to answer in

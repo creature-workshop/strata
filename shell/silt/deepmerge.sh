@@ -14,11 +14,22 @@ pair the second map's value is used. A key that only the second holds is
 added after the first's members. With the default for lists, the answer is
 what jq gives for `$a * $b`.
 
-  silt__deepmerge doc '0."a":map
-  1."x":int=1' '0."a":map
-  1."y":int=2'   ->  doc='0."a":map
+  under="$(cat <<'SILT'
+  0."a":map
   1."x":int=1
-  1."y":int=2'
+  SILT
+  )"
+  over="$(cat <<'SILT'
+  0."a":map
+  1."y":int=2
+  SILT
+  )"
+  silt__deepmerge doc "$under" "$over"
+
+  doc is:
+    0."a":map
+    1."x":int=1
+    1."y":int=2
 
 --lists says what happens to two lists under the same key:
 
@@ -31,7 +42,7 @@ registers:
   __silt__deepmerge__MERGED   The map as merged so far
   __silt__deepmerge__OVER     The second map
   __silt__deepmerge__PENDING  The paths of the maps still to be merged, one on each
-                   line
+                              line
   __silt__deepmerge__LISTS    What happens to two lists: replace, concat or union
 
 args:
