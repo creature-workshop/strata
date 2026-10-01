@@ -194,7 +194,7 @@ check_validated() {
 
 # The answer lines of block number <index> of a transcript.
 answer_of() {
-  awk -v wanted="$1" -f "$FUZZ/answer.awk" "$2"
+  awk -v wanted="$1" -f "$REPO/shell/.golden/shell/golden/answer.awk" "$2"
 }
 
 # The run's outcome: every seed that failed, or a clean line.

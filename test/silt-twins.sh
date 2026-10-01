@@ -76,7 +76,7 @@ compare_pair() {
 # The answer lines of block number <index> of the transcript: what follows
 # its "## " header up to the next.
 answer_of() {
-  awk -v wanted="$1" -f "$REPO/test/fuzz/answer.awk" "$WORK/transcript"
+  awk -v wanted="$1" -f "$REPO/shell/.golden/shell/golden/answer.awk" "$WORK/transcript"
 }
 
 main "$@"

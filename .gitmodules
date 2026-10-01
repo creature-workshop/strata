@@ -4,3 +4,6 @@
 [submodule "shell/.logs"]
 	path = shell/.logs
 	url = ../shell-logs.git
+[submodule "shell/.golden"]
+	path = shell/.golden
+	url = ../libraries/shell-goldens.git

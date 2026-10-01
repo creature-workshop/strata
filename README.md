@@ -10,4 +10,6 @@ per line, as a language an interpreter reads and a format data is stored in.
   POSIX shell without starting a process, and translated to and from JSON,
   YAML and TOML in awk. It reports through `shell/.logs`, the shell-logs
   submodule, its one dependency at run time; `shell/.ops` vendors shellops
-  for its tests, and `test/silt-fuzz.sh` fuzzes it against jq and yq.
+  for its tests, `shell/.golden` vendors shell-goldens, which its golden
+  tests under `test/fixtures/silt/` run through, and `test/silt-fuzz.sh`
+  fuzzes it against jq and yq.
