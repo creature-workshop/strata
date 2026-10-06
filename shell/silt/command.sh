@@ -62,7 +62,7 @@ __silt__run_command() {
     __silt__ANSWER="$3"
   fi
 
-  __silt__answer_in "$1"
+  __silt__answer__in "$1"
 }
 
 : <<'FUN'

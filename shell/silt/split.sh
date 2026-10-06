@@ -28,9 +28,9 @@ silt__split() {
   __silt__INDEX=0
 
   if [ "${#__silt__split__separator}" -eq 1 ]; then
-    __silt__split_on_character "${2-}" "$__silt__split__separator" || return 1
+    __silt__split__on_character "${2-}" "$__silt__split__separator" || return 1
   else
-    __silt__split_on_text "${2-}" "$__silt__split__separator" || return 1
+    __silt__split__on_text "${2-}" "$__silt__split__separator" || return 1
   fi
 
   __silt__answer_list
@@ -46,18 +46,18 @@ args:
   $1  The text
   $2  The separator, one character
 FUN
-__silt__split_on_character() {
-  __silt__split_on_character__ifs_was_set="${IFS+true}"
-  __silt__split_on_character__ifs="${IFS-}"
+__silt__split__on_character() {
+  __silt__split__on_character__ifs_was_set="${IFS+true}"
+  __silt__split__on_character__ifs="${IFS-}"
   IFS="$2"
   set -f
   # shellcheck disable=SC2086
   set -- $1
   set +f
-  __silt__give_back_ifs "$__silt__split_on_character__ifs_was_set" "$__silt__split_on_character__ifs"
+  __silt__give_back_ifs "$__silt__split__on_character__ifs_was_set" "$__silt__split__on_character__ifs"
 
-  for __silt__split_on_character__part do
-    __silt__append_part "$__silt__split_on_character__part" || return 1
+  for __silt__split__on_character__part do
+    __silt__append_part "$__silt__split__on_character__part" || return 1
   done
 }
 
@@ -69,19 +69,19 @@ args:
   $1  The text
   $2  The separator
 FUN
-__silt__split_on_text() {
-  __silt__split_on_text__rest="$1"
+__silt__split__on_text() {
+  __silt__split__on_text__rest="$1"
 
   while :; do
-    case "$__silt__split_on_text__rest" in
+    case "$__silt__split__on_text__rest" in
       *"$2"*) ;;
       *) break ;;
     esac
-    __silt__append_part "${__silt__split_on_text__rest%%"$2"*}" || return 1
-    __silt__split_on_text__rest="${__silt__split_on_text__rest#*"$2"}"
+    __silt__append_part "${__silt__split__on_text__rest%%"$2"*}" || return 1
+    __silt__split__on_text__rest="${__silt__split__on_text__rest#*"$2"}"
   done
 
-  __silt__append_part "$__silt__split_on_text__rest" || return 1
+  __silt__append_part "$__silt__split__on_text__rest" || return 1
 }
 
 : <<'FUN'

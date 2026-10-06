@@ -1,8 +1,6 @@
 decisions:
   folder: adrs
   form: one-page
-added_only:
-  - file-segment
 disabled:
   - boolean-tests
   - println

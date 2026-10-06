@@ -38,7 +38,7 @@ silt__entries() {
   __silt__ANSWER=''
   __silt__INDEX=0
   __silt__AWK='entries'
-  __silt__walk "$2" __silt__entries_line || return 1
+  __silt__walk "$2" __silt__entries__line || return 1
 
   __silt__answer_list
   __silt__OUT="$__silt__entries__out"
@@ -53,7 +53,7 @@ map's one line is passed over.
 args:
   $1  The line
 FUN
-__silt__entries_line() {
+__silt__entries__line() {
   case "$1" in
     0.:*) ;;
     0.*) __silt__emit_entry "$1" ;;

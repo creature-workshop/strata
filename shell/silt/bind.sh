@@ -286,7 +286,7 @@ __silt__bind__bound_text() {
     # structs-lint: allow -- a first line with a key opens a collection; SILT sits beneath structs
     '' | 0.:null) __silt__ANSWER='' ;;
     0.:map | 0.:list | 0.[!:]*) __silt__ANSWER="$1" ;;
-    *) __silt__string_of_scalar "$1" || return 1 ;;
+    *) __silt__string__of_scalar "$1" || return 1 ;;
   esac
 }
 

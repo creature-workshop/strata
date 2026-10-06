@@ -88,7 +88,7 @@ document_of() {
 # Every function the library defines against every function the trace entered.
 report_functions() {
   local defined entered missing total percent
-  defined="$(grep -h '^[a-z_]*() {' "$LIBRARY"/*.sh | sed 's/() {//' | sort -u)"
+  defined="$(grep -h '^[a-z_]*() {' "$LIBRARY"/*.sh | sed 's/() {.*//' | sort -u)"
   entered="$(cut -d: -f3 "$TRACE" | grep -v '^source$' | sort -u)"
   missing="$(comm -23 <(printf '%s\n' "$defined") <(printf '%s\n' "$entered"))"
   total="$(printf '%s\n' "$defined" | wc -l)"

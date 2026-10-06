@@ -45,14 +45,14 @@ args:
   $3  The key
   $4  The text to compare with
 PUB_FUN
-silt__option_is() {
+silt__option_is() {  # file-segment-check: allow -- a public verb's name is the API's; renaming it is STRATA-217's call, not the sweep's
   __silt__out "$1" || return 1
   __silt__option_is__out="$__silt__OUT"
 
   __silt__wrap_literal "$3"
   __silt__option_is__held=''
   silt__get __silt__option_is__held "$2" ".$__silt__LITERAL" || return 1
-  __silt__option_matches "$__silt__option_is__held" "${4:-}" || return 1
+  __silt__option__matches "$__silt__option_is__held" "${4:-}" || return 1
 
   __silt__OUT="$__silt__option_is__out"
   __silt__answer
@@ -66,14 +66,14 @@ args:
   $1  The value silt__get answered, a document or nothing
   $2  The text to compare with
 FUN
-__silt__option_matches() {
-  __silt__option_matches__defined=''
-  silt__defined __silt__option_matches__defined "$1" || return 1
-  if [ "$__silt__option_matches__defined" = false ]; then
+__silt__option__matches() {
+  __silt__option__matches__defined=''
+  silt__defined __silt__option__matches__defined "$1" || return 1
+  if [ "$__silt__option__matches__defined" = false ]; then
     __silt__ANSWER=false
     return 0
   fi
 
-  __silt__string_text "$1" || return 1
+  __silt__string__text "$1" || return 1
   __silt__is_spelled "$__silt__ANSWER" "$2"
 }

@@ -28,7 +28,7 @@ silt__obj() {
   fi
 
   while [ "$#" -ge 2 ]; do
-    __silt__obj_member "$1" "$2" || return 1
+    __silt__obj__member "$1" "$2" || return 1
     shift 2
   done
 
@@ -49,7 +49,7 @@ args:
   $1  The key, as text
   $2  The document
 FUN
-__silt__obj_member() {
+__silt__obj__member() {
   __silt__wrap_literal "$1"
   __silt__nest "$__silt__LITERAL" "$2" 0
 }

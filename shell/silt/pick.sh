@@ -80,5 +80,5 @@ __silt__pick__key_is_among() {
     fi
   done
 
-  __silt__answer_in "$__silt__pick__key_is_among__out"
+  __silt__answer__in "$__silt__pick__key_is_among__out"
 }

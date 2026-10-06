@@ -28,7 +28,7 @@ silt__join() {
   __silt__ANSWER=''
   __silt__FIRST=true
   __silt__AWK='join'
-  __silt__walk "$2" __silt__join_line || return 1
+  __silt__walk "$2" __silt__join__line || return 1
 
   __silt__OUT="$__silt__join__out"
   __silt__answer
@@ -42,7 +42,7 @@ has no text, so it is refused before its deeper lines are reached.
 args:
   $1  The line
 FUN
-__silt__join_line() {
+__silt__join__line() {
   case "$1" in
     0.:*) return 0 ;;
   esac
@@ -53,12 +53,12 @@ __silt__join_line() {
     return 1
   fi
 
-  __silt__join_line__built="$__silt__ANSWER"
-  __silt__string_of_scalar "0.:${1#*:}" || return 1
+  __silt__join__line__built="$__silt__ANSWER"
+  __silt__string__of_scalar "0.:${1#*:}" || return 1
 
   if [ "$__silt__FIRST" = true ]; then
     __silt__FIRST=false
   else
-    __silt__ANSWER="$__silt__join_line__built$__silt__SEPARATOR$__silt__ANSWER"
+    __silt__ANSWER="$__silt__join__line__built$__silt__SEPARATOR$__silt__ANSWER"
   fi
 }

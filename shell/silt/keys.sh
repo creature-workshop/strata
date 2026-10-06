@@ -27,7 +27,7 @@ silt__keys() {
   __silt__ANSWER=''
   __silt__INDEX=0
   __silt__AWK='keys'
-  __silt__walk "$2" __silt__keys_line || return 1
+  __silt__walk "$2" __silt__keys__line || return 1
 
   __silt__answer_list
   __silt__OUT="$__silt__keys__out"
@@ -41,7 +41,7 @@ line is passed over, and the empty collection's one line ends the walk.
 args:
   $1  The line
 FUN
-__silt__keys_line() {
+__silt__keys__line() {
   case "$1" in
     0.:*) __silt__STOP=true ;;
     0.*) __silt__emit_key "$1" ;;

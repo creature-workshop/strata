@@ -26,7 +26,7 @@ silt__load() {
   __silt__load__out="$__silt__OUT"
 
   __silt__load__checked "${2:-}" "${3:-}" || return 1
-  __silt__answer_in "$__silt__load__out"
+  __silt__answer__in "$__silt__load__out"
 }
 
 : <<'FUN'

@@ -32,7 +32,7 @@ args:
 PUB_FUN
 silt__push() {
   if [ "${3:-}" = --at ]; then
-    __silt__push_at "$@"
+    __silt__push__at "$@"
     return
   fi
 
@@ -62,25 +62,25 @@ args:
   $4  The path of the list
   $@  The documents to append
 FUN
-__silt__push_at() {
+__silt__push__at() {
   __silt__out "$1" || return 1
-  __silt__push_at__out="$__silt__OUT"
-  __silt__push_at__doc="$2"
-  __silt__push_at__path="${4:-}"
+  __silt__push__at__out="$__silt__OUT"
+  __silt__push__at__doc="$2"
+  __silt__push__at__path="${4:-}"
   shift "$(($# < 4 ? $# : 4))"
 
-  if [ -z "$__silt__push_at__path" ]; then
+  if [ -z "$__silt__push__at__path" ]; then
     __silt__fail '--at requires a path'
     return 1
   fi
 
-  __silt__push_at__list=''
-  silt__get __silt__push_at__list "$__silt__push_at__doc" "$__silt__push_at__path" || return 1
-  if [ -z "$__silt__push_at__list" ]; then
-    __silt__fail "push found no list at '$__silt__push_at__path'"
+  __silt__push__at__list=''
+  silt__get __silt__push__at__list "$__silt__push__at__doc" "$__silt__push__at__path" || return 1
+  if [ -z "$__silt__push__at__list" ]; then
+    __silt__fail "push found no list at '$__silt__push__at__path'"
     return 1
   fi
 
-  silt__push __silt__push_at__list "$__silt__push_at__list" "$@" || return 1
-  silt__set "$__silt__push_at__out" "$__silt__push_at__doc" "$__silt__push_at__path" "$__silt__push_at__list"
+  silt__push __silt__push__at__list "$__silt__push__at__list" "$@" || return 1
+  silt__set "$__silt__push__at__out" "$__silt__push__at__doc" "$__silt__push__at__path" "$__silt__push__at__list"
 }

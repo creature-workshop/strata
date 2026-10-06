@@ -50,11 +50,11 @@ __silt__walk() {
   if [ "$#" -gt "$((__silt__THRESHOLD + 2))" ] && [ -n "$__silt__WALK_PROGRAM" ]; then
     __silt__hand_off "$__silt__WALK_DOCUMENT" "$__silt__WALK_PROGRAM"
   else
-    __silt__walk_in_shell "$@"
+    __silt__walk__in_shell "$@"
   fi
   __silt__WALK_STATUS=$?
 
-  __silt__walk_done "$#" "$@"
+  __silt__walk__done "$#" "$@"
   return "$__silt__WALK_STATUS"
 }
 
@@ -120,13 +120,13 @@ whatever the walks the callback ran meanwhile reported.
 args:
   $@  The lines, then the outer walk's callback and its stop flag
 FUN
-__silt__walk_in_shell() {
-  __silt__walk_lines "$@"
-  __silt__walk_in_shell__status=$?
+__silt__walk__in_shell() {
+  __silt__walk__lines "$@"
+  __silt__walk__in_shell__status=$?
 
   __silt__HANDED=false
   __silt__HANDED_OUT=''
-  return "$__silt__walk_in_shell__status"
+  return "$__silt__walk__in_shell__status"
 }
 
 : <<'FUN'
@@ -137,7 +137,7 @@ callback sets __silt__STOP, or it fails, whose status is returned.
 args:
   $@  The lines, then the outer walk's callback and its stop flag
 FUN
-__silt__walk_lines() {
+__silt__walk__lines() {
   while [ "$#" -gt 2 ]; do
     "$__silt__LINE_CALLBACK" "$1" || return $?
     shift
@@ -158,11 +158,11 @@ args:
   $@  The rest of the walk's positional parameters, the outer callback and
       its stop flag last
 FUN
-__silt__walk_done() {
-  __silt__walk_done__count="$1"
+__silt__walk__done() {
+  __silt__walk__done__count="$1"
   shift
-  eval "__silt__STOP=\${$__silt__walk_done__count}"
-  eval "__silt__LINE_CALLBACK=\${$((__silt__walk_done__count - 1))}"
+  eval "__silt__STOP=\${$__silt__walk__done__count}"
+  eval "__silt__LINE_CALLBACK=\${$((__silt__walk__done__count - 1))}"
 }
 
 : <<'FUN'
