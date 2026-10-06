@@ -25,15 +25,15 @@
 # run.
 
 include:
-  - component: $CI_SERVER_FQDN/ksoft/creatures/forge@0.20.0-dev.15
-  - component: $CI_SERVER_FQDN/ksoft/creatures/linear@0.20.0-dev.15
-  - component: $CI_SERVER_FQDN/ksoft/creatures/agents@0.20.0-dev.15
-  - component: $CI_SERVER_FQDN/ksoft/creatures/shell--ops-lint@0.20.0-dev.15
-  - component: $CI_SERVER_FQDN/ksoft/creatures/shell--lint@0.20.0-dev.15
-  - component: $CI_SERVER_FQDN/ksoft/creatures/shell--test@0.20.0-dev.15
+  - component: $CI_SERVER_FQDN/ksoft/creatures/forge@0.20.0-dev.17
+  - component: $CI_SERVER_FQDN/ksoft/creatures/linear@0.20.0-dev.17
+  - component: $CI_SERVER_FQDN/ksoft/creatures/agents@0.20.0-dev.17
+  - component: $CI_SERVER_FQDN/ksoft/creatures/shell--ops-lint@0.20.0-dev.17
+  - component: $CI_SERVER_FQDN/ksoft/creatures/shell--lint@0.20.0-dev.17
+  - component: $CI_SERVER_FQDN/ksoft/creatures/shell--test@0.20.0-dev.17
     inputs:
       tests: test/*.bats
-  - component: $CI_SERVER_FQDN/ksoft/creatures/docusaurus@0.20.0-dev.15
+  - component: $CI_SERVER_FQDN/ksoft/creatures/docusaurus@0.20.0-dev.17
 
 variables:
   DOCS_TRUNK: "true"
