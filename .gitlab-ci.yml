@@ -1,11 +1,9 @@
 # strata CI via the creatures catalog.
 #
-# The repository holds decisions and the SILT shell library, and carries no
-# version yet, so it
-# takes the governance members of `forge` and not its release members:
-# code-review hygiene on a merge request, and the label sync so the forge's
-# labels track the manifest. The label sync self-gates to release tags in the
-# catalog; here it runs on the default branch, since no tag is cut yet.
+# The repository holds decisions and the SILT shell library. It takes the
+# `forge` package whole: code-review hygiene and the planned version
+# on a merge request, the release commit and the tag on a push to main, the
+# release on the tag, and the label sync.
 # `linear` keeps the merge request and the Linear issues it names in step;
 # `agents` puts the owning hat's label on the merge request from those issues,
 # which hygiene requires.
@@ -27,8 +25,7 @@
 # run.
 
 include:
-  - component: $CI_SERVER_FQDN/ksoft/creatures/forge--code-review-hygiene@0.20.0-dev.15
-  - component: $CI_SERVER_FQDN/ksoft/creatures/forge--update-labels@0.20.0-dev.15
+  - component: $CI_SERVER_FQDN/ksoft/creatures/forge@0.20.0-dev.15
   - component: $CI_SERVER_FQDN/ksoft/creatures/linear@0.20.0-dev.15
   - component: $CI_SERVER_FQDN/ksoft/creatures/agents@0.20.0-dev.15
   - component: $CI_SERVER_FQDN/ksoft/creatures/shell--ops-lint@0.20.0-dev.15
@@ -44,20 +41,10 @@ variables:
 workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_TAG
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_PIPELINE_SOURCE == "web"
-
-stages:
-  - governance
-  - linting
-  - validation
-  - publishing
-  - cleanup
-
-ksoft/govern/update-labels:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 silt-fuzz:
   extends: .shellops

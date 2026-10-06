@@ -1,4 +1,8 @@
 {
+  "release": {
+    "latest": "0.0.0",
+    "stable": "0.0.0"
+  },
   "dependencies": {
     "tools": {
       "cargo-binstall": {
