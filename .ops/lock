@@ -1,6 +1,6 @@
 {
   "release": {
-    "latest": "0.0.0",
+    "latest": "0.1.0-dev.1",
     "stable": "0.0.0"
   },
   "dependencies": {
@@ -200,7 +200,7 @@
     },
     "git": {
       "shell-docs": {
-        "commit": "87a52aa69de4f129c36bcf553bbb5e6c0e0ab141",
+        "commit": "9330e90d28964a3974ccec8c24e0b8feed2f3cec",
         "scope": "dev-time",
         "repository": "https://gitlab.creature-workshop.com/ksoft/libraries/shell-docs.git"
       },
