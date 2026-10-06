@@ -35,9 +35,6 @@ include:
       tests: test/*.bats
   - component: $CI_SERVER_FQDN/ksoft/creatures/docusaurus@0.20.0-dev.17
 
-variables:
-  DOCS_TRUNK: "true"
-
 workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
