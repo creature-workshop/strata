@@ -37,7 +37,7 @@ silt__read() {
   __silt__read__out="$__silt__OUT"
 
   __silt__ANSWER=''
-  __silt__read_text "$2" || return 1
+  __silt__read__text "$2" || return 1
 
   __silt__OUT="$__silt__read__out"
   __silt__answer
@@ -51,15 +51,15 @@ text is none of them.
 args:
   $1  The text
 FUN
-__silt__read_text() {
+__silt__read__text() {
   __silt__is_document "$1"
   if [ "$__silt__IS_DOCUMENT" = true ]; then
     __silt__lines_of "$1"
     return 0
   fi
 
-  __silt__read_scalar "$1" && return 0
-  __silt__read_json "$1"
+  __silt__read__scalar "$1" && return 0
+  __silt__read__json "$1"
 }
 
 : <<'FUN'
@@ -113,7 +113,7 @@ character. Fails for any other text, which may still be JSON.
 args:
   $1  The text
 FUN
-__silt__read_scalar() {
+__silt__read__scalar() {
   case "$1" in
     true | false) __silt__ANSWER="0.:bool=$1" ;;
     null) __silt__ANSWER='0.:null' ;;
@@ -121,9 +121,9 @@ __silt__read_scalar() {
     '{}') __silt__ANSWER='0.:map' ;;
     # structs-lint: allow -- the JSON text of an empty list, which this verb reads; SILT sits beneath structs
     '[]') __silt__ANSWER='0.:list' ;;
-    "$__silt__QUOTE"*) __silt__read_plain_string "$1" ;;
+    "$__silt__QUOTE"*) __silt__read__plain_string "$1" ;;
     # structs-lint: allow -- the first character of a JSON whole number; SILT sits beneath structs
-    0 | [1-9]* | -[1-9]*) __silt__read_whole_number "$1" ;;
+    0 | [1-9]* | -[1-9]*) __silt__read__whole_number "$1" ;;
     *) return 1 ;;
   esac
 }
@@ -135,7 +135,7 @@ optional minus sign. Fails for any other text.
 args:
   $1  The text, which opens on a digit or a minus sign
 FUN
-__silt__read_whole_number() {
+__silt__read__whole_number() {
   case "${1#-}" in
     # structs-lint: allow -- the digits of a whole number, checked before it becomes an int; SILT sits beneath structs
     *[!0-9]*) return 1 ;;
@@ -151,15 +151,15 @@ a SILT literal as written. Fails for any other text.
 args:
   $1  The text, which opens on a quote
 FUN
-__silt__read_plain_string() {
+__silt__read__plain_string() {
   case "$1" in
     "$__silt__QUOTE") return 1 ;;
     *"$__silt__QUOTE") ;;
     *) return 1 ;;
   esac
 
-  __silt__read_plain_string__inside="${1#"$__silt__QUOTE"}"
-  case "${__silt__read_plain_string__inside%"$__silt__QUOTE"}" in
+  __silt__read__plain_string__inside="${1#"$__silt__QUOTE"}"
+  case "${__silt__read__plain_string__inside%"$__silt__QUOTE"}" in
     *[\"\\]* | *[[:cntrl:]]*) return 1 ;;
   esac
   __silt__ANSWER="0.:str=$1"
@@ -173,17 +173,17 @@ that cannot open a JSON value fails without starting a process.
 args:
   $1  The text
 FUN
-__silt__read_json() {
+__silt__read__json() {
   case "$1" in
     # structs-lint: allow -- the characters a JSON value can start with; SILT sits beneath structs
     '{'* | '['* | "$__silt__QUOTE"* | -* | [0-9]*) ;;
     *) return 1 ;;
   esac
 
-  silt__from_json __silt__read_json__doc 2>/dev/null <<EOF || return 1
+  silt__from_json __silt__read__json__doc 2>/dev/null <<EOF || return 1
 $1
 EOF
-  __silt__ANSWER="$__silt__read_json__doc"
+  __silt__ANSWER="$__silt__read__json__doc"
 }
 
 : <<'PUB_FUN'

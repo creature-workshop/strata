@@ -25,10 +25,10 @@ args:
 PUB_FUN
 silt__filter() {
   __silt__out "$1" || return 1
-  __silt__filter_members "$@" || return $?
+  __silt__filter__members "$@" || return $?
 
   __silt__ANSWER="$__silt__COLLECTED"
-  __silt__answer_in "$1"
+  __silt__answer__in "$1"
 }
 
 : <<'FUN'
@@ -41,12 +41,12 @@ args:
   $3  The predicate
   $@  The extras
 FUN
-__silt__filter_members() {
-  __silt__filter_members__doc="$2"
+__silt__filter__members() {
+  __silt__filter__members__doc="$2"
   shift 2
 
-  __silt__start_collecting "$__silt__filter_members__doc" || return 1
-  silt__each "$__silt__filter_members__doc" __silt__filter_member "$@"
+  __silt__start_collecting "$__silt__filter__members__doc" || return 1
+  silt__each "$__silt__filter__members__doc" __silt__filter__member "$@"
 }
 
 : <<'FUN'
@@ -59,7 +59,7 @@ args:
   $3  The predicate
   $@  The extras
 FUN
-__silt__filter_member() {
+__silt__filter__member() {
   __silt__verdict "$@" || return $?
 
   if [ "$__silt__VERDICT" = true ]; then

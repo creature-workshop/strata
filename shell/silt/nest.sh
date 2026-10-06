@@ -34,7 +34,7 @@ __silt__nest() {
 
   __silt__NEST_DEPTH="$3"
   __silt__AWK='nest'
-  __silt__walk "$2" __silt__nest_line
+  __silt__walk "$2" __silt__nest__line
 }
 
 : <<'FUN'
@@ -44,6 +44,6 @@ member it now sits under, whose depth is in __silt__NEST_DEPTH.
 args:
   $1  The line
 FUN
-__silt__nest_line() {
+__silt__nest__line() {
   __silt__emit "$((${1%%.*} + __silt__NEST_DEPTH + 1)).${1#*.}"
 }

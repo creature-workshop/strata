@@ -34,7 +34,7 @@ args:
 FUN
 __silt__keep_member() {
   __silt__ANSWER="$__silt__COLLECTED"
-  __silt__gather_member "$1" "$__silt__KEPT" "$2" || return 1
+  __silt__gather__member "$1" "$__silt__KEPT" "$2" || return 1
   __silt__COLLECTED="$__silt__ANSWER"
   __silt__KEPT=$((__silt__KEPT + 1))
 }
@@ -44,7 +44,7 @@ Appends a member to the collection in __silt__ANSWER at depth 0: under the
 key, quoted, when the collection is a map, and under the index when it is a
 list. The empty collection's keyless line gives way to the first member.
 
-  __silt__gather_member reads 0 '0.:int=1'   ->  0."reads":int=1 under a map
+  __silt__gather__member reads 0 '0.:int=1'   ->  0."reads":int=1 under a map
                                                   0.0:int=1        under a list
 
 args:
@@ -52,10 +52,10 @@ args:
   $2  The index, bare digits
   $3  The member's value, a document
 FUN
-__silt__gather_member() {
+__silt__gather__member() {
   case "$__silt__ANSWER" in
-    0.:map | 0."$__silt__QUOTE"*) __silt__gather_named "$1" "$3" ;;
-    *) __silt__gather_indexed "$2" "$3" ;;
+    0.:map | 0."$__silt__QUOTE"*) __silt__gather__named "$1" "$3" ;;
+    *) __silt__gather__indexed "$2" "$3" ;;
   esac
 }
 
@@ -66,7 +66,7 @@ args:
   $1  The key, as text
   $2  The member's value, a document
 FUN
-__silt__gather_named() {
+__silt__gather__named() {
   __silt__wrap_literal "$1"
   __silt__drop_placeholder
   __silt__nest "$__silt__LITERAL" "$2" 0
@@ -79,7 +79,7 @@ args:
   $1  The index, bare digits
   $2  The member's value, a document
 FUN
-__silt__gather_indexed() {
+__silt__gather__indexed() {
   __silt__drop_placeholder
   __silt__nest "$1" "$2" 0
 }

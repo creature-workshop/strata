@@ -33,7 +33,7 @@ silt__project() {
 
   __silt__COLLECTED='0.:list'
   __silt__KEPT=0
-  silt__each "$__silt__project__doc" __silt__project_member "$@" || return $?
+  silt__each "$__silt__project__doc" __silt__project__member "$@" || return $?
 
   __silt__ANSWER="$__silt__COLLECTED"
   __silt__OUT="$__silt__project__out"
@@ -49,13 +49,13 @@ args:
   $2  The value, a document
   $@  The keys to project
 FUN
-__silt__project_member() {
-  __silt__project_member__value="$2"
+__silt__project__member() {
+  __silt__project__member__value="$2"
   shift 2
 
   __silt__PROJECTED='0.:map'
-  for __silt__project_member__key do
-    __silt__project_field "$__silt__project_member__value" "$__silt__project_member__key" || return 1
+  for __silt__project__member__key do
+    __silt__project__field "$__silt__project__member__value" "$__silt__project__member__key" || return 1
   done
 
   __silt__keep_member '' "$__silt__PROJECTED"
@@ -69,12 +69,12 @@ args:
   $1  The member's value, a document
   $2  The key, as text
 FUN
-__silt__project_field() {
+__silt__project__field() {
   __silt__wrap_literal "$2"
   __silt__PLUCKED=''
   silt__get __silt__PLUCKED "$1" ".$__silt__LITERAL" || return 1
 
   __silt__ANSWER="$__silt__PROJECTED"
-  __silt__gather_member "$2" '' "${__silt__PLUCKED:-0.:null}" || return 1
+  __silt__gather__member "$2" '' "${__silt__PLUCKED:-0.:null}" || return 1
   __silt__PROJECTED="$__silt__ANSWER"
 }

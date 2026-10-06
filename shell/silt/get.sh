@@ -34,7 +34,7 @@ args:
 PUB_FUN
 silt__get() {
   if [ "$#" -ne 3 ]; then
-    __silt__get_first "$@"
+    __silt__get__first "$@"
     return
   fi
 
@@ -165,17 +165,17 @@ args:
   $2  The document
   $@  The paths, and --default with a document
 FUN
-__silt__get_first() {
+__silt__get__first() {
   __silt__out "${1:-}" || return 1
-  __silt__get_first__out="$__silt__OUT"
-  __silt__get_first__doc="${2:-}"
+  __silt__get__first__out="$__silt__OUT"
+  __silt__get__first__doc="${2:-}"
   shift 2
 
-  __silt__paths__choose "$__silt__get_first__doc" "$@" || return 1
+  __silt__paths__choose "$__silt__get__first__doc" "$@" || return 1
 
   __silt__ANSWER="$__silt__paths__CHOSEN"
   if [ "$__silt__paths__IS_CHOSEN" = false ] && [ "$__silt__paths__HAS_DEFAULT" = true ]; then
     __silt__ANSWER="$__silt__paths__DEFAULT"
   fi
-  __silt__answer_in "$__silt__get_first__out"
+  __silt__answer__in "$__silt__get__first__out"
 }

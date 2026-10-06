@@ -205,7 +205,7 @@
         "repository": "https://gitlab.creature-workshop.com/ksoft/libraries/shell-docs.git"
       },
       "shell-lint": {
-        "commit": "8e2da1271124c1fc3cb9b018860a9c980918a007",
+        "commit": "8482df4d2541a2360fbd7d88057055344074320b",
         "scope": "dev-time",
         "repository": "https://gitlab.creature-workshop.com/ksoft/libraries/shell-lint.git"
       },

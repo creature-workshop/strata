@@ -37,14 +37,14 @@ args:
   $1          The name of the variable to answer in
 PUB_FUN
 silt__from_json() {
-  __silt__read_as __silt__translate_from_json "$@"
+  __silt__read_as __silt__translate__from_json "$@"
 }
 
 : <<'FUN'
 Sets __silt__ANSWER to the JSON document on stdin as a SILT document.
 FUN
-__silt__translate_from_json() {
-  __silt__translate_stdin 'translators/write translators/json/from'
+__silt__translate__from_json() {
+  __silt__translate__stdin 'translators/write translators/json/from'
 }
 
 : <<'PUB_FUN'
@@ -63,7 +63,7 @@ args:
   $2          The document
 PUB_FUN
 silt__to_json() {
-  __silt__write_as __silt__translate_to_json "$@"
+  __silt__write_as __silt__translate__to_json "$@"
 }
 
 : <<'FUN'
@@ -72,7 +72,7 @@ Sets __silt__ANSWER to the document as JSON.
 args:
   $1  The document
 FUN
-__silt__translate_to_json() {
+__silt__translate__to_json() {
   __silt__hand_off "$1" translators/json/to
 }
 
@@ -94,14 +94,14 @@ args:
   $1          The name of the variable to answer in
 PUB_FUN
 silt__from_yaml() {
-  __silt__read_as __silt__translate_from_yaml "$@"
+  __silt__read_as __silt__translate__from_yaml "$@"
 }
 
 : <<'FUN'
 Sets __silt__ANSWER to the YAML document on stdin as a SILT document.
 FUN
-__silt__translate_from_yaml() {
-  __silt__translate_stdin 'translators/write translators/numbers translators/yaml/lines translators/yaml/scalars translators/yaml/values translators/yaml/flow translators/yaml/blocks translators/yaml/tree translators/yaml/from'
+__silt__translate__from_yaml() {
+  __silt__translate__stdin 'translators/write translators/numbers translators/yaml/lines translators/yaml/scalars translators/yaml/values translators/yaml/flow translators/yaml/blocks translators/yaml/tree translators/yaml/from'
 }
 
 : <<'PUB_FUN'
@@ -120,7 +120,7 @@ args:
   $2          The document
 PUB_FUN
 silt__to_yaml() {
-  __silt__write_as __silt__translate_to_yaml "$@"
+  __silt__write_as __silt__translate__to_yaml "$@"
 }
 
 : <<'FUN'
@@ -129,7 +129,7 @@ Sets __silt__ANSWER to the document as YAML.
 args:
   $1  The document
 FUN
-__silt__translate_to_yaml() {
+__silt__translate__to_yaml() {
   __silt__hand_off "$1" 'translators/numbers translators/yaml/lines translators/yaml/scalars translators/yaml/to'
 }
 
@@ -155,14 +155,14 @@ args:
   $1          The name of the variable to answer in
 PUB_FUN
 silt__from_toml() {
-  __silt__read_as __silt__translate_from_toml "$@"
+  __silt__read_as __silt__translate__from_toml "$@"
 }
 
 : <<'FUN'
 Sets __silt__ANSWER to the TOML document on stdin as a SILT document.
 FUN
-__silt__translate_from_toml() {
-  __silt__translate_stdin 'translators/write translators/numbers translators/toml/text translators/toml/strings translators/toml/tree translators/toml/times translators/toml/scalars translators/toml/values translators/toml/from'
+__silt__translate__from_toml() {
+  __silt__translate__stdin 'translators/write translators/numbers translators/toml/text translators/toml/strings translators/toml/tree translators/toml/times translators/toml/scalars translators/toml/values translators/toml/from'
 }
 
 : <<'PUB_FUN'
@@ -186,7 +186,7 @@ args:
   $2          The document
 PUB_FUN
 silt__to_toml() {
-  __silt__write_as __silt__translate_to_toml "$@"
+  __silt__write_as __silt__translate__to_toml "$@"
 }
 
 : <<'FUN'
@@ -195,7 +195,7 @@ Sets __silt__ANSWER to the document as TOML.
 args:
   $1  The document
 FUN
-__silt__translate_to_toml() {
+__silt__translate__to_toml() {
   __silt__hand_off "$1" 'translators/toml/spell translators/toml/to'
 }
 
@@ -212,14 +212,14 @@ args:
   $1          The name of the variable to answer in
 PUB_FUN
 silt__from_strh() {
-  __silt__read_as __silt__translate_from_strh "$@"
+  __silt__read_as __silt__translate__from_strh "$@"
 }
 
 : <<'FUN'
 Sets __silt__ANSWER to the .strh document on stdin as a SILT document.
 FUN
-__silt__translate_from_strh() {
-  __silt__translate_stdin 'translators/strh/from'
+__silt__translate__from_strh() {
+  __silt__translate__stdin 'translators/strh/from'
 }
 
 : <<'PUB_FUN'
@@ -241,7 +241,7 @@ args:
   $2          The corpus's keys, a list of str in code order
 PUB_FUN
 silt__from_strt() {
-  __silt__read_as __silt__translate_from_strt "$@"
+  __silt__read_as __silt__translate__from_strt "$@"
 }
 
 : <<'FUN'
@@ -250,15 +250,15 @@ Sets __silt__ANSWER to the .strt document on stdin as a SILT document.
 args:
   $1  The corpus's keys, a list of str in code order
 FUN
-__silt__translate_from_strt() {
+__silt__translate__from_strt() {
   __silt__require_list "${1:-}" from_strt || return 1
 
   __silt__ANSWER=''
   __silt__spill "$1"
-  __silt__translate_from_strt__status=0
-  __silt__translate_stdin 'translators/strt/index translators/strt/from' || __silt__translate_from_strt__status=$?
+  __silt__translate__from_strt__status=0
+  __silt__translate__stdin 'translators/strt/index translators/strt/from' || __silt__translate__from_strt__status=$?
   __silt__unspill
-  return "$__silt__translate_from_strt__status"
+  return "$__silt__translate__from_strt__status"
 }
 
 : <<'PUB_FUN'
@@ -280,7 +280,7 @@ args:
   $3          The corpus's keys, a list of str in code order
 PUB_FUN
 silt__to_strt() {
-  __silt__write_as __silt__translate_to_strt "$@"
+  __silt__write_as __silt__translate__to_strt "$@"
 }
 
 : <<'FUN'
@@ -290,15 +290,15 @@ args:
   $1  The document
   $2  The corpus's keys, a list of str in code order
 FUN
-__silt__translate_to_strt() {
+__silt__translate__to_strt() {
   __silt__require_list "${2:-}" to_strt || return 1
 
   __silt__ANSWER=''
   __silt__spill "$2"
-  __silt__translate_to_strt__status=0
-  __silt__hand_off "$1" 'translators/strt/index translators/strt/to' || __silt__translate_to_strt__status=$?
+  __silt__translate__to_strt__status=0
+  __silt__hand_off "$1" 'translators/strt/index translators/strt/to' || __silt__translate__to_strt__status=$?
   __silt__unspill
-  return "$__silt__translate_to_strt__status"
+  return "$__silt__translate__to_strt__status"
 }
 
 : <<'PUB_FUN'
@@ -321,7 +321,7 @@ args:
   $5          The document's number in the corpus, 0 for the header
 PUB_FUN
 silt__to_strh() {
-  __silt__write_as __silt__translate_to_strh "$@"
+  __silt__write_as __silt__translate__to_strh "$@"
 }
 
 : <<'FUN'
@@ -333,19 +333,19 @@ args:
   $3  The line-seed, 1 to 2147483562
   $4  The document's number in the corpus, 0 for the header
 FUN
-__silt__translate_to_strh() {
+__silt__translate__to_strh() {
   __silt__require_in_range doc-seed "${2:-}" 1 2147483398 || return 1
   __silt__require_in_range line-seed "${3:-}" 1 2147483562 || return 1
   __silt__require_in_range number "${4:-}" 0 2147483397 || return 1
 
-  __silt__translate_to_strh__seeds=''
-  silt__arr __silt__translate_to_strh__seeds "0.:int=$2" "0.:int=$3" "0.:int=$4" || return 1
+  __silt__translate__to_strh__seeds=''
+  silt__arr __silt__translate__to_strh__seeds "0.:int=$2" "0.:int=$3" "0.:int=$4" || return 1
   __silt__ANSWER=''
-  __silt__spill "$__silt__translate_to_strh__seeds"
-  __silt__translate_to_strh__status=0
-  __silt__hand_off "$1" translators/strh/to || __silt__translate_to_strh__status=$?
+  __silt__spill "$__silt__translate__to_strh__seeds"
+  __silt__translate__to_strh__status=0
+  __silt__hand_off "$1" translators/strh/to || __silt__translate__to_strh__status=$?
   __silt__unspill
-  return "$__silt__translate_to_strh__status"
+  return "$__silt__translate__to_strh__status"
 }
 
 : <<'FUN'
@@ -380,7 +380,7 @@ args:
   $1  The programs' names under shell/silt/awk, without .awk, separated by
       spaces
 FUN
-__silt__translate_stdin() {
+__silt__translate__stdin() {
   __silt__HANDED=true
   __silt__HANDED_OUT="$(__silt__tier "$1")" || return $?
   __silt__absorb_handed
@@ -392,7 +392,7 @@ variable. With -s or --sort in front of the variable's name, the members of
 every map are in canonical order. Without it, they are in the order the
 reader gave them.
 
-  __silt__read_as __silt__translate_from_json --sort doc
+  __silt__read_as __silt__translate__from_json --sort doc
 
 args:
   $1          The function that reads stdin into __silt__ANSWER. It receives
@@ -428,7 +428,7 @@ variable. With -s or --sort in front of the variable's name, the writer
 receives the document in canonical order. Without it, the writer receives
 the document as given.
 
-  __silt__write_as __silt__translate_to_json --sort text "$doc"
+  __silt__write_as __silt__translate__to_json --sort text "$doc"
 
 args:
   $1          The function that writes a document into __silt__ANSWER. It

@@ -65,10 +65,10 @@ __silt__run_each() {
   __silt__MEMBER=''
   __silt__OPEN=false
   __silt__AWK='each'
-  __silt__walk "$__silt__run_each__doc" __silt__each_line || return $?
+  __silt__walk "$__silt__run_each__doc" __silt__each__line || return $?
 
   if [ "$__silt__HANDED" = true ]; then
-    __silt__walk "$__silt__HANDED_OUT" __silt__each_block_line || return $?
+    __silt__walk "$__silt__HANDED_OUT" __silt__each__block_line || return $?
     return
   fi
 
@@ -100,7 +100,7 @@ status when it stops the walk.
 args:
   $1  The line
 FUN
-__silt__each_block_line() {
+__silt__each__block_line() {
   if [ "$1" = "$__silt__RS" ]; then
     __silt__deliver_member
     return
@@ -163,7 +163,7 @@ the walk.
 args:
   $1  The line
 FUN
-__silt__each_line() {
+__silt__each__line() {
   case "$1" in
     0.*) __silt__next_member "$1" ;;
     *) __silt__extend_member "$1" ;;

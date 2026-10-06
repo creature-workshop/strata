@@ -31,8 +31,8 @@ silt__sum() {
   __silt__FRACTION=false
   __silt__ANSWER=''
   __silt__AWK='sum'
-  __silt__walk "$2" __silt__sum_line || return 1
-  __silt__sum_answer "$2" || return 1
+  __silt__walk "$2" __silt__sum__line || return 1
+  __silt__sum__answer "$2" || return 1
 
   __silt__OUT="$__silt__sum__out"
   __silt__answer
@@ -46,7 +46,7 @@ other walk left the whole-number total, which becomes an int document.
 args:
   $1  The list
 FUN
-__silt__sum_answer() {
+__silt__sum__answer() {
   if [ "$__silt__HANDED" = true ]; then
     return 0
   fi
@@ -65,7 +65,7 @@ empty list's one line is passed over.
 args:
   $1  The line
 FUN
-__silt__sum_line() {
+__silt__sum__line() {
   case "$1" in
     0.:*) ;;
     0.*) __silt__add_element "$1" ;;

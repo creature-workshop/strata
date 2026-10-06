@@ -19,10 +19,10 @@ args:
 PUB_FUN
 silt__any() {
   __silt__out "$1" || return 1
-  __silt__any_members "$@" || return $?
+  __silt__any__members "$@" || return $?
 
   __silt__ANSWER="$__silt__ANY"
-  __silt__answer_in "$1"
+  __silt__answer__in "$1"
 }
 
 : <<'FUN'
@@ -35,12 +35,12 @@ args:
   $3  The predicate
   $@  The extras
 FUN
-__silt__any_members() {
-  __silt__any_members__doc="$2"
+__silt__any__members() {
+  __silt__any__members__doc="$2"
   shift 2
 
   __silt__ANY=false
-  silt__each "$__silt__any_members__doc" __silt__any_member "$@"
+  silt__each "$__silt__any__members__doc" __silt__any__member "$@"
 }
 
 : <<'FUN'
@@ -53,7 +53,7 @@ args:
   $3  The predicate
   $@  The extras
 FUN
-__silt__any_member() {
+__silt__any__member() {
   __silt__verdict "$@" || return $?
   __silt__ANY="$__silt__VERDICT"
 

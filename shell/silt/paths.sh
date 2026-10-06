@@ -109,7 +109,7 @@ __silt__paths__set_pairs() {
   done
 
   __silt__ANSWER="$__silt__paths__PAIRED"
-  __silt__answer_in "$__silt__paths__set_pairs__out"
+  __silt__answer__in "$__silt__paths__set_pairs__out"
 }
 
 : <<'FUN'

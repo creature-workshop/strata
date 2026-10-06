@@ -65,7 +65,7 @@ already, for a verb whose callbacks answered through __silt__OUT meanwhile.
 args:
   $1  The name of the variable to answer in
 FUN
-__silt__answer_in() {
+__silt__answer__in() {
   __silt__OUT="$1"
   __silt__answer
 }

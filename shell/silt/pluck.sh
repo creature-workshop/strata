@@ -26,7 +26,7 @@ silt__pluck() {
 
   __silt__COLLECTED='0.:list'
   __silt__KEPT=0
-  silt__each "$2" __silt__pluck_member "$3" || return $?
+  silt__each "$2" __silt__pluck__member "$3" || return $?
 
   __silt__ANSWER="$__silt__COLLECTED"
   __silt__OUT="$__silt__pluck__out"
@@ -42,7 +42,7 @@ args:
   $2  The value, a document
   $3  The path
 FUN
-__silt__pluck_member() {
+__silt__pluck__member() {
   __silt__PLUCKED=''
   silt__get __silt__PLUCKED "$2" "$3" || return 1
 

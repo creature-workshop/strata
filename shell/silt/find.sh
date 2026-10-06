@@ -20,10 +20,10 @@ args:
 PUB_FUN
 silt__find() {
   __silt__out "$1" || return 1
-  __silt__find_members "$@" || return $?
+  __silt__find__members "$@" || return $?
 
   __silt__ANSWER="$__silt__HIT"
-  __silt__answer_in "$1"
+  __silt__answer__in "$1"
 }
 
 : <<'FUN'
@@ -36,12 +36,12 @@ args:
   $3  The predicate
   $@  The extras
 FUN
-__silt__find_members() {
-  __silt__find_members__doc="$2"
+__silt__find__members() {
+  __silt__find__members__doc="$2"
   shift 2
 
   __silt__HIT=''
-  silt__each "$__silt__find_members__doc" __silt__find_member "$@"
+  silt__each "$__silt__find__members__doc" __silt__find__member "$@"
 }
 
 : <<'FUN'
@@ -54,7 +54,7 @@ args:
   $3  The predicate
   $@  The extras
 FUN
-__silt__find_member() {
+__silt__find__member() {
   __silt__verdict "$@" || return $?
 
   if [ "$__silt__VERDICT" = true ]; then

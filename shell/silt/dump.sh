@@ -54,7 +54,7 @@ args:
 FUN
 __silt__dump__write() {
   case "${SILT_DUMP:-yaml}" in
-    yaml) __silt__translate_to_yaml "$1" ;;
+    yaml) __silt__translate__to_yaml "$1" ;;
     json) __silt__dump__json "$1" ;;
     silt) __silt__dump__silt "$1" ;;
     *) __silt__dump__refuse_format ;;

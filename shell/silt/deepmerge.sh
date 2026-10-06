@@ -67,7 +67,7 @@ silt__deepmerge() {
   done
 
   __silt__ANSWER="$__silt__deepmerge__MERGED"
-  __silt__answer_in "$__silt__deepmerge__out"
+  __silt__answer__in "$__silt__deepmerge__out"
 }
 
 : <<'FUN'

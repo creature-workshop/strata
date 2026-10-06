@@ -55,7 +55,7 @@ silt__flatten() {
   done
 
   __silt__ANSWER="$__silt__flatten__FLAT"
-  __silt__answer_in "$__silt__flatten__out"
+  __silt__answer__in "$__silt__flatten__out"
 }
 
 : <<'FUN'

@@ -24,10 +24,10 @@ args:
 PUB_FUN
 silt__map() {
   __silt__out "$1" || return 1
-  __silt__map_members "$@" || return $?
+  __silt__map__members "$@" || return $?
 
   __silt__ANSWER="$__silt__COLLECTED"
-  __silt__answer_in "$1"
+  __silt__answer__in "$1"
 }
 
 : <<'FUN'
@@ -39,12 +39,12 @@ args:
   $3  The callback
   $@  The extras
 FUN
-__silt__map_members() {
-  __silt__map_members__doc="$2"
+__silt__map__members() {
+  __silt__map__members__doc="$2"
   shift 2
 
-  __silt__start_collecting "$__silt__map_members__doc" || return 1
-  silt__each "$__silt__map_members__doc" __silt__map_member "$@"
+  __silt__start_collecting "$__silt__map__members__doc" || return 1
+  silt__each "$__silt__map__members__doc" __silt__map__member "$@"
 }
 
 : <<'FUN'
@@ -57,7 +57,7 @@ args:
   $3  The callback
   $@  The extras
 FUN
-__silt__map_member() {
+__silt__map__member() {
   __silt__MAPPED=''
   __silt__ask __silt__MAPPED "$@" || return $?
 
@@ -67,6 +67,6 @@ __silt__map_member() {
   fi
 
   __silt__ANSWER="$__silt__COLLECTED"
-  __silt__gather_member "$1" "$1" "$__silt__MAPPED" || return 1
+  __silt__gather__member "$1" "$1" "$__silt__MAPPED" || return 1
   __silt__COLLECTED="$__silt__ANSWER"
 }

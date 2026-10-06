@@ -102,7 +102,7 @@ the colon in __silt__REST.
 args:
   $1  The line's text after its depth
 FUN
-__silt__parse_key() {
+__silt__parse__key() {
   case "$1" in
     "$__silt__QUOTE"*) __silt__quoted_key "$1" ;;
     *) __silt__bare_key "$1" ;;
@@ -147,7 +147,7 @@ collection or a null carries nothing.
 args:
   $1  The line's text after its key
 FUN
-__silt__parse_node() {
+__silt__parse__node() {
   case "$1" in
     *=*) __silt__leaf "$1" ;;
     *) __silt__node "$1" ;;
@@ -169,8 +169,8 @@ FUN
 __silt__parse() {
   __silt__DEPTH="${1%%.*}"
   __silt__require_depth "$1" || return 1
-  __silt__parse_key "${1#*.}" || return 1
-  __silt__parse_node "$__silt__REST"
+  __silt__parse__key "${1#*.}" || return 1
+  __silt__parse__node "$__silt__REST"
   __silt__require_spelled_out "$1"
 }
 

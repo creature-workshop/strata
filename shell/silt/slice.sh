@@ -40,7 +40,7 @@ silt__slice() {
   __silt__KEEPING=false
   __silt__ANSWER=''
   __silt__AWK='slice'
-  __silt__walk "$2" __silt__slice_line || return 1
+  __silt__walk "$2" __silt__slice__line || return 1
 
   __silt__answer_list
   __silt__OUT="$__silt__slice__out"
@@ -73,10 +73,10 @@ kept when that element is.
 args:
   $1  The line
 FUN
-__silt__slice_line() {
+__silt__slice__line() {
   case "$1" in
     0.:*) ;;
-    0.*) __silt__slice_element "$1" ;;
+    0.*) __silt__slice__element "$1" ;;
     *) __silt__emit_kept "$1" ;;
   esac
 }
@@ -88,18 +88,18 @@ index is within the range, and ends the walk once the range is passed.
 args:
   $1  The element's depth-0 line
 FUN
-__silt__slice_element() {
-  __silt__slice_element__rest="${1#0.}"
-  __silt__slice_element__index="${__silt__slice_element__rest%%:*}"
+__silt__slice__element() {
+  __silt__slice__element__rest="${1#0.}"
+  __silt__slice__element__index="${__silt__slice__element__rest%%:*}"
 
   __silt__KEEPING=false
-  if [ "$__silt__slice_element__index" -ge "$__silt__TO" ]; then
+  if [ "$__silt__slice__element__index" -ge "$__silt__TO" ]; then
     __silt__STOP=true
     return 0
   fi
-  if [ "$__silt__slice_element__index" -ge "$__silt__FROM" ]; then
+  if [ "$__silt__slice__element__index" -ge "$__silt__FROM" ]; then
     __silt__KEEPING=true
-    __silt__emit "0.$((__silt__slice_element__index - __silt__FROM)):${__silt__slice_element__rest#*:}"
+    __silt__emit "0.$((__silt__slice__element__index - __silt__FROM)):${__silt__slice__element__rest#*:}"
   fi
 }
 

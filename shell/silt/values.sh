@@ -30,7 +30,7 @@ silt__values() {
   __silt__ANSWER=''
   __silt__INDEX=0
   __silt__AWK='values'
-  __silt__walk "$2" __silt__values_line || return 1
+  __silt__walk "$2" __silt__values__line || return 1
 
   __silt__answer_list
   __silt__OUT="$__silt__values__out"
@@ -45,7 +45,7 @@ is passed over.
 args:
   $1  The line
 FUN
-__silt__values_line() {
+__silt__values__line() {
   case "$1" in
     0.:*) ;;
     0.*) __silt__emit_value "$1" ;;
