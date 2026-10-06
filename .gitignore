@@ -1,1 +1,7 @@
 test/fuzz/node_modules/
+# What shellops derives and nothing tracks: the trees and tools `ops install`
+# fetches under the cache, the compiled trees beside them, and the reference
+# the render writes. .ops/lock and .ops/config are tracked.
+/.ops/cache/
+/.ops/__compiled__*
+/.ops/docs/

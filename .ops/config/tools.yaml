@@ -1,0 +1,47 @@
+system:
+  git:
+    version: latest
+  ca-certificates:
+    version: latest
+  curl:
+    version: latest
+  unzip:
+    version: latest
+  dash:
+    version: latest
+  mawk:
+    version: latest
+  jq:
+    version: 1.7.1
+script:
+  fnm:
+    version: 1.39.0
+    needs:
+      - curl
+      - ca-certificates
+      - unzip
+  node:
+    version: 24.20.0
+    needs:
+      - fnm
+npm:
+  likec4:
+    version: 1.59.3
+    bin: bin/likec4.mjs
+go-install:
+  yq:
+    version: 4.53.6
+    pkg: github.com/mikefarah/yq/v4
+git:
+  shell-scan:
+    version: bdc0e2a182cd8afd1909a2168e02ceaa1955ec68
+    repository: https://gitlab.creature-workshop.com/ksoft/libraries/shell-scan.git
+  shell-tree:
+    version: 9697ee1174e4ad2fe522d7ecc3f4e298bf602320
+    repository: https://gitlab.creature-workshop.com/ksoft/libraries/shell-tree.git
+  shell-docs:
+    version: 9330e90d28964a3974ccec8c24e0b8feed2f3cec
+    repository: https://gitlab.creature-workshop.com/ksoft/libraries/shell-docs.git
+  shell-lint:
+    version: 8e2da1271124c1fc3cb9b018860a9c980918a007
+    repository: https://gitlab.creature-workshop.com/ksoft/libraries/shell-lint.git

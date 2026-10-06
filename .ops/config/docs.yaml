@@ -1,0 +1,3 @@
+library: shell/silt
+system: docusaurus
+pages: .ops/docs
