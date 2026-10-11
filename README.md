@@ -26,3 +26,9 @@ per line, as a language an interpreter reads and a format data is stored in.
   taken at a commit each, shell-scan, shell-tree, shell-docs and shell-lint.
   `ops install` derives `.ops/lock` from it, which is tracked. A pin moves
   in a merge request of its own.
+
+## Licence
+
+strata is licensed under either the [MIT licence](LICENSE-MIT) or the
+[Apache License, Version 2.0](LICENSE-APACHE), at your option. Anyone may
+implement the format, under any terms.
