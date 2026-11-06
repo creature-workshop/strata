@@ -1,8 +1,4 @@
 {
-  "release": {
-    "latest": "0.1.0-dev.5",
-    "stable": "0.0.0"
-  },
   "dependencies": {
     "tools": {
       "cargo-binstall": {
@@ -51,6 +47,43 @@
           "version": "0.22.1",
           "needs": [
             "cargo-binstall"
+          ]
+        }
+      },
+      "git": {
+        "shell-docs": {
+          "repository": "https://gitlab.creature-workshop.com/ksoft/libraries/shell-docs.git",
+          "version": "9330e90d28964a3974ccec8c24e0b8feed2f3cec",
+          "needs": [
+            "git"
+          ]
+        },
+        "shell-goldens": {
+          "repository": "https://gitlab.creature-workshop.com/ksoft/libraries/shell-goldens.git",
+          "version": "0bed61d8fa953740366e1418591d355e05f6e87a",
+          "needs": [
+            "git"
+          ]
+        },
+        "shell-lint": {
+          "repository": "https://gitlab.creature-workshop.com/ksoft/libraries/shell-lint.git",
+          "version": "8482df4d2541a2360fbd7d88057055344074320b",
+          "needs": [
+            "git"
+          ]
+        },
+        "shell-scan": {
+          "repository": "https://gitlab.creature-workshop.com/ksoft/libraries/shell-scan.git",
+          "version": "bdc0e2a182cd8afd1909a2168e02ceaa1955ec68",
+          "needs": [
+            "git"
+          ]
+        },
+        "shell-tree": {
+          "repository": "https://gitlab.creature-workshop.com/ksoft/libraries/shell-tree.git",
+          "version": "9697ee1174e4ad2fe522d7ecc3f4e298bf602320",
+          "needs": [
+            "git"
           ]
         }
       },
@@ -198,28 +231,11 @@
         }
       }
     },
-    "git": {
-      "shell-docs": {
-        "commit": "9330e90d28964a3974ccec8c24e0b8feed2f3cec",
-        "scope": "dev-time",
-        "repository": "https://gitlab.creature-workshop.com/ksoft/libraries/shell-docs.git"
-      },
-      "shell-lint": {
-        "commit": "8482df4d2541a2360fbd7d88057055344074320b",
-        "scope": "dev-time",
-        "repository": "https://gitlab.creature-workshop.com/ksoft/libraries/shell-lint.git"
-      },
-      "shell-scan": {
-        "commit": "bdc0e2a182cd8afd1909a2168e02ceaa1955ec68",
-        "scope": "dev-time",
-        "repository": "https://gitlab.creature-workshop.com/ksoft/libraries/shell-scan.git"
-      },
-      "shell-tree": {
-        "commit": "9697ee1174e4ad2fe522d7ecc3f4e298bf602320",
-        "scope": "dev-time",
-        "repository": "https://gitlab.creature-workshop.com/ksoft/libraries/shell-tree.git"
-      }
-    }
+    "imports": {}
   },
-  "features": {}
+  "features": {},
+  "release": {
+    "latest": "0.1.0-dev.6",
+    "stable": "0.0.0"
+  }
 }
