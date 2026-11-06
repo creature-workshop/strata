@@ -9,8 +9,7 @@ Answers the first map with the second laid over it, one level deep: a key
 both hold takes the second map's value, in the first map's place, and a key
 only the second holds is added after the first's members, in the second's
 order. A value that is itself a map is replaced whole, not merged. This
-runs in awk whatever the maps' size, the second map reaching it through the
-spill file.
+runs in awk whatever the maps' size.
 
   silt__merge doc '0."a":int=1
   0."b":int=2' '0."b":int=3
@@ -29,7 +28,7 @@ silt__merge() {
 
   __silt__require_map "$2" merge || return 1
   __silt__require_map "$3" merge || return 1
-  __silt__against_spilled "$2" "$3" 'order elements merge' || return 1
+  __silt__hand_off_with "$2" "$3" 'order elements merge' || return 1
 
   __silt__OUT="$__silt__merge__out"
   __silt__answer

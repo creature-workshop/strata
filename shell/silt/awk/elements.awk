@@ -1,11 +1,12 @@
 # The members of a document read whole, for the set operations and merge:
 # the lines each spans, its key, and the canonical text of its value, by
 # which two members are alike the way silt__equals says. The document on
-# stdin is document 1 and the one in SILT_SPILL document 2, their members
-# numbered on from each other. It holds functions alone; a program's main
-# hands it each line of stdin with keep(), reads the spill with
-# keep_spill(), and asks for members from END. Loaded after lines.awk and
-# order.awk.
+# stdin is document 1 and the one sent ahead of it document 2, their
+# members numbered on from each other. It holds functions alone; a
+# program's BEGIN calls elements_begin(), and read_ahead() when its verb
+# sent a second document, its main hands it each line of stdin with
+# keep(), and its END keeps the second with keep_second() and asks for
+# members. Loaded after lines.awk and order.awk.
 #
 #   INPUT[1..INPUTS]   every line kept
 #   MEMBERS            how many members both documents hold
@@ -32,17 +33,17 @@ function keep(line) {
   }
 }
 
-# Reads the second document from the spill file, its lines kept after the
-# first's, whose last member ends where the first document does.
-function keep_spill(__line) {
+# Keeps the second document's lines after the first's, whose last member
+# ends where the first document does. read_ahead, called from BEGIN, reads
+# them ahead of the first, so the second's members number on from the
+# first's.
+function keep_second(__i) {
   close_members()
   DOC = 2
 
-  while ((getline __line < ENVIRON["SILT_SPILL"]) > 0) {
-    keep(__line)
+  for (__i = 1; __i <= AHEADS; __i++) {
+    keep(AHEAD[__i])
   }
-
-  close(ENVIRON["SILT_SPILL"])
 }
 
 # Closes the last member of the document being read, which ends where its
@@ -104,7 +105,9 @@ function print_member(i, __at) {
   }
 }
 
-# Readies the tables and the order, and starts on document 1.
+# Readies the tables and the order, and starts on document 1. A program
+# whose verb sent a second document ahead reads it with read_ahead() from
+# BEGIN as well; one that reads a document alone, like unique, must not.
 function elements_begin() {
   order_begin()
   INPUTS = 0

@@ -1,9 +1,9 @@
 # The elements of the list on stdin whose value is in no element of the
-# list in SILT_SPILL, in their order and renumbered: silt__difference. Two
-# elements are the same when their canonical texts are, the way
+# list sent ahead of it, in their order and renumbered: silt__difference.
+# Two elements are the same when their canonical texts are, the way
 # silt__equals says. Loaded after lines.awk, order.awk and elements.awk.
 #
-#   0.0:int=1        spill  0.0:int=2   ->  0.0:int=1
+#   0.0:int=1        second  0.0:int=2   ->  0.0:int=1
 #   0.1:int=2
 
 # Holds the canonical text of every element of document 2 in HELD.
@@ -40,10 +40,11 @@ function main() {
 
 BEGIN {
   elements_begin()
+  read_ahead()
 }
 
 END {
-  keep_spill()
+  keep_second()
   close_members()
   hold_second()
   print_difference()

@@ -1,7 +1,8 @@
 # Loads the documents used in validation into trees. Document 1 is the
-# value, read from stdin. Document 2 is the schema, read from the file named
-# by SILT_SPILL. Documents 3 and above are the other schema documents that
-# the schema refers to, read from the files that SILT_DOCUMENTS lists.
+# value, read from stdin. Document 2 is the schema, and documents 3 and
+# above are the other schema documents that the schema refers to, under the
+# keys SILT_DOCUMENTS lists; the shell sends them ahead of the value on
+# stdin, in that order.
 #
 # Each document is sorted into canonical order before the tree is built, so
 # the members of a map are always visited in key order, whatever order they
@@ -110,43 +111,59 @@ function build_tree(doc, __k) {
   LINES = 0
 }
 
-# Reads a document from a file and stores its lines with order.awk.
-function read_lines(file, __line) {
-  while ((getline __line < file) > 0) {
-    take(__line)
-  }
-
-  close(file)
-}
-
-# Reads the schema from the file named by SILT_SPILL and stores its lines
-# with order.awk.
-function read_schema_lines() {
-  read_lines(ENVIRON["SILT_SPILL"])
-}
-
-# Builds the tree of every other schema document. SILT_DOCUMENTS lists
-# them, one line for a document's key and the next line for its file. The
-# documents are numbered from 3, after the value and the schema.
+# Holds the schema and the other schema documents, sent ahead of the value
+# on stdin in that order, as HELD[doc, i] with HELD_LINES[doc] lines each,
+# from BEGIN. The schema is document 2; the others are numbered on from 3,
+# under the keys SILT_DOCUMENTS lists, one on each line in the same order.
+# build_schema_trees builds their trees from END, after the value's.
 #
 #   KEY_OF_DOC[doc]   the key of a document; empty for the schema itself
 #   DOC_BY_KEY[key]   the number of the document with that key
 #   DOCS              the number of the last document
-function build_other_documents(__line, __count, __i) {
+function hold_schema_documents(__key, __count, __i) {
   DOCS = 2
   KEY_OF_DOC[2] = ""
+  hold_ahead(2)
+
   if (ENVIRON["SILT_DOCUMENTS"] == "") {
     return
   }
 
-  __count = split(ENVIRON["SILT_DOCUMENTS"], __line, "\n")
-  for (__i = 1; __i < __count; __i = __i + 2) {
+  __count = split(ENVIRON["SILT_DOCUMENTS"], __key, "\n")
+  for (__i = 1; __i < __count; __i++) {
     DOCS++
-    KEY_OF_DOC[DOCS] = __line[__i]
-    DOC_BY_KEY[__line[__i]] = DOCS
-    read_lines(__line[__i + 1])
-    build_tree(DOCS)
+    KEY_OF_DOC[DOCS] = __key[__i]
+    DOC_BY_KEY[__key[__i]] = DOCS
+    hold_ahead(DOCS)
   }
+}
+
+# Reads the next document sent ahead and holds its lines under doc.
+function hold_ahead(doc, __i) {
+  read_ahead()
+  HELD_LINES[doc] = AHEADS
+
+  for (__i = 1; __i <= AHEADS; __i++) {
+    HELD[doc, __i] = AHEAD[__i]
+  }
+}
+
+# Builds the trees of the schema and the other schema documents from the
+# lines held for each, in order, each taken through order.awk as the
+# value's lines were.
+function build_schema_trees(__doc) {
+  for (__doc = 2; __doc <= DOCS; __doc++) {
+    build_held(__doc)
+  }
+}
+
+# Builds the tree of one held document.
+function build_held(doc, __i) {
+  for (__i = 1; __i <= HELD_LINES[doc]; __i++) {
+    take(HELD[doc, __i])
+  }
+
+  build_tree(doc)
 }
 
 # Returns 1 if the map or list has a child with the given key or index.

@@ -1,12 +1,12 @@
-# The map on stdin with the map in SILT_SPILL laid over it, one level deep:
-# silt__merge. A key both hold takes the second map's value, in the first
-# map's place; a key only the second holds is added after the first's
+# The map on stdin with the map sent ahead of it laid over it, one level
+# deep: silt__merge. A key both hold takes the second map's value, in the
+# first map's place; a key only the second holds is added after the first's
 # members, in the second's order. Two keys are the same when their decoded
 # texts are. Loaded after lines.awk, order.awk and elements.awk.
 #
-#   0."a":int=1      spill  0."b":int=3   ->  0."a":int=1
-#   0."b":int=2             0."c":int=4       0."b":int=3
-#                                             0."c":int=4
+#   0."a":int=1      second  0."b":int=3   ->  0."a":int=1
+#   0."b":int=2              0."c":int=4       0."b":int=3
+#                                              0."c":int=4
 
 # Notes which member of document 2 holds each key, by its decoded text.
 function index_second(__i) {
@@ -67,10 +67,11 @@ function main() {
 
 BEGIN {
   elements_begin()
+  read_ahead()
 }
 
 END {
-  keep_spill()
+  keep_second()
   close_members()
   print_merge()
 }

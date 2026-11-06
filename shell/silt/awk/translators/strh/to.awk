@@ -3,25 +3,22 @@
 # draws it (ADR.9@strata): the document half from the doc-seed and the
 # document's number, the line half from the line-seed and the line's place,
 # each eight lowercase hex characters. The doc-seed, the line-seed and the
-# number ride the spill file as a list of three ints. Every product is split
+# number are sent ahead of it as a list of three ints. Every product is split
 # so none passes 2^48, exact in awk. Refused, naming the line: a line that is
 # not SILT, and an empty document. Loaded after lines.awk.
 #
 #   0."runner":str="bats"  as document 1 under the seeds 1299709 and 104729
 #     ->  67e924b179c7e1f3 0."runner":str="bats"
 
-# Reads the doc-seed, the line-seed and the number from the spill file into
-# SEED[0], SEED[1] and SEED[2].
-function load_seeds(__line, __n) {
-  __n = 0
+# Reads the doc-seed, the line-seed and the number, sent ahead of the
+# document as a list of three ints, into SEED[0], SEED[1] and SEED[2].
+function load_seeds(__n) {
+  read_ahead()
 
-  while ((getline __line < ENVIRON["SILT_SPILL"]) > 0) {
-    parse(__line)
-    SEED[__n] = VALUE + 0
-    __n++
+  for (__n = 1; __n <= AHEADS; __n++) {
+    parse(AHEAD[__n])
+    SEED[__n - 1] = VALUE + 0
   }
-
-  close(ENVIRON["SILT_SPILL"])
 }
 
 # a times b modulo m, exact under 2^53: b is split at sixteen bits, so no

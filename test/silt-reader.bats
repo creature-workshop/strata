@@ -3,7 +3,8 @@
 # The properties of the SILT library (shell/silt/) that neither a golden
 # transcript (test/silt-goldens.bats) nor a jq twin (test/silt-twins.bats)
 # can carry: the answer variable's check, the process and timing cases, which
-# run test/silt-exercise.sh under strace and under the clock, the coverage
+# run test/silt-exercise.sh under strace and under the clock, the subshell
+# case, which runs test/silt-workers.sh under dash and bash, the coverage
 # gate, test/silt-coverage.sh, which reads bash's trace of the goldens, the
 # shape check, test/silt-shape.sh, the check that SILT works without
 # shellops, test/silt-without-shellops.sh, and the check that it works for a
@@ -56,6 +57,12 @@ awk_starts() {
   awk '/execve\("[^"]*awk"/ && !seen[$1]++' "$BATS_TEST_TMPDIR/$1.trace" | wc -l
 }
 
+# How many processes of one mode of test/silt-exercise.sh became the program
+# named, from the same trace, one per process.
+program_starts() {
+  awk -v program="$2" '$0 ~ ("execve\\(\"[^\"]*/" program "\"") && !seen[$1]++' "$BATS_TEST_TMPDIR/$1.trace" | wc -l
+}
+
 @test "no process: on the shell tier the verbs over 4,000 lines start nothing beyond the import" {
   command -v strace >/dev/null || skip "strace is not installed"
   wide_map 4000 > "$BATS_TEST_TMPDIR/wide.silt"
@@ -69,6 +76,31 @@ awk_starts() {
   unset SILT_THRESHOLD
   process_starts verbs >/dev/null
   assert_equal "$(awk_starts verbs)" 6
+}
+
+@test "no process: on the shell tier set and patch over 4,000 lines write no file and start nothing beyond the import" {
+  command -v strace >/dev/null || skip "strace is not installed"
+  wide_map 4000 > "$BATS_TEST_TMPDIR/wide.silt"
+  export SILT_THRESHOLD=1000000
+  assert_equal "$(process_starts writers)" "$(process_starts import)"
+}
+
+@test "hand-off: past the threshold set and patch send the value ahead on awk's stdin, one awk per pair and no rm" {
+  command -v strace >/dev/null || skip "strace is not installed"
+  wide_map 4000 > "$BATS_TEST_TMPDIR/wide.silt"
+  unset SILT_THRESHOLD
+  process_starts writers >/dev/null
+  assert_equal "$(awk_starts writers)" 4
+  assert_equal "$(program_starts writers rm)" 0
+}
+
+@test "subshells: two subshells of one process merging and setting at once never read each other's document, under dash and bash" {
+  for shell in dash bash; do
+    run "$shell" "$REPO/test/silt-workers.sh" "$REPO/shell/silt/api.sh" 300
+    assert_success
+    assert_line 'A 0'
+    assert_line 'B 0'
+  done
 }
 
 @test "linear: get, len and each over 4,000 lines stay under three seconds, where the quadratic idioms take nine, under dash, bash and sh" {

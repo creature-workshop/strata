@@ -1,5 +1,5 @@
-# The document with the value in SILT_SPILL placed at the path in
-# SILT_SEGMENTS: silt__set past the threshold. The run is in one of three
+# The document on stdin with the value sent ahead of it placed at the path
+# in SILT_SEGMENTS: silt__set past the threshold. The run is in one of three
 # states: placing, while the path is followed and the value goes in;
 # dropping, while the replaced member's old lines are skipped; and copying,
 # once the value is in and the lines left pass through. A member missing at
@@ -7,15 +7,15 @@
 # as maps, or lists where the next segment is an index. A refusal ends the
 # run with the shell's message and status 1.
 
-# Reads the value document from the spill file into VALUE_LINE[1..VALUES].
-function read_value(__line) {
-  VALUES = 0
+# Reads the value document, sent ahead of the document on stdin, into
+# VALUE_LINE[1..VALUES].
+function read_value(__i) {
+  read_ahead()
+  VALUES = AHEADS
 
-  while ((getline __line < ENVIRON["SILT_SPILL"]) > 0) {
-    VALUE_LINE[++VALUES] = __line
+  for (__i = 1; __i <= AHEADS; __i++) {
+    VALUE_LINE[__i] = AHEAD[__i]
   }
-
-  close(ENVIRON["SILT_SPILL"])
 }
 
 # Placing: a shallower line closes the parent, so the value goes in before
