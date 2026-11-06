@@ -170,10 +170,12 @@ Runs awk programs of the tier over the document on stdin, the line library
 loaded ahead of them, and appends what they printed to __silt__ANSWER,
 where the walk's callback would have put it, keeping a copy in
 __silt__HANDED_OUT with __silt__HANDED true. Keys, paths and numbers reach
-the programs through SILT_* in the environment, a second document through
-the spill file SILT_SPILL names; the document itself rides stdin, so no
-value ever meets the argument cap. The programs' status is the walk's, and
-a refusal reaches stderr the way the shell's does.
+the programs through SILT_* in the environment; the document goes on
+stdin, and a document the verb sent ahead with __silt__send_ahead goes on
+the same stdin in front of it, so no value ever meets the argument cap or
+a file.
+The programs' status is the walk's, and a refusal reaches stderr the way
+the shell's does.
 
 args:
   $1  The document
@@ -182,8 +184,21 @@ args:
 FUN
 __silt__hand_off() {
   __silt__HANDED=true
-  __silt__HANDED_OUT="$(printf '%s\n' "$1" | __silt__tier "$2")" || return $?
+  __silt__HANDED_OUT="$(__silt__feed "$1" | __silt__tier "$2")" || return $?
   __silt__absorb_handed
+}
+
+: <<'FUN'
+Prints what the awk tier reads on stdin: every document sent ahead, each
+followed by the line that ends it, then the document itself. The builtin
+printf prints them, so no document meets an argument.
+
+args:
+  $1  The document
+FUN
+__silt__feed() {
+  printf '%s' "${__silt__AHEAD-}"
+  printf '%s\n' "$1"
 }
 
 : <<'FUN'
@@ -214,7 +229,7 @@ __silt__tier() {
     SILT_FROM="${__silt__FROM-}" \
     SILT_TO="${__silt__TO-}" \
     SILT_KIND="${__silt__PARENT_KIND-}" \
-    SILT_SPILL="${__silt__SPILL-}" \
+    SILT_INDEX_FILE="${__silt__INDEX_FILE-}" \
     SILT_DOCUMENTS="${__silt__DOCUMENTS-}" \
     SILT_BASE="${__silt__BASE-}" \
     SILT_INDENT="${__silt__dump__INDENT-}" \
@@ -237,24 +252,46 @@ __silt__absorb_handed() {
 }
 
 : <<'FUN'
-Writes a second document to a file of this process's own under TMPDIR, for
-an awk program to read beside its stdin, and names it in __silt__SPILL. The
-builtin printf writes it, so the document meets no argument.
+Sends a document ahead of the next hand-off's document, on the same stdin.
+The awk tier reads it first, up to the line that holds the record separator
+alone. No line of a document is that line, because a str writes the byte
+as \u001e. A verb may send several documents, which awk reads in the order
+sent, and the verb forgets them with __silt__clear_ahead once its hand-off
+is over, whether the walk stayed in the shell, handed off or refused.
+Nothing is written to a file, so two subshells of one process never read
+each other's document.
 
 args:
   $1  The document
 FUN
-__silt__spill() {
-  __silt__SPILL="${TMPDIR:-/tmp}/silt.$$.spill"
-  printf '%s\n' "$1" > "$__silt__SPILL"
+__silt__send_ahead() {
+  __silt__AHEAD="${__silt__AHEAD-}$1$__silt__NL$__silt__RS$__silt__NL"
 }
 
 : <<'FUN'
-Removes the spill file, if one was written.
+Forgets what was sent ahead, so the next hand-off sends nothing in front of
+its document.
 FUN
-__silt__unspill() {
-  if [ -n "$__silt__SPILL" ]; then
-    rm -f "$__silt__SPILL"
-    __silt__SPILL=''
-  fi
+__silt__clear_ahead() {
+  __silt__AHEAD=''
+}
+
+: <<'FUN'
+Runs awk programs over one document on stdin with a second sent ahead of
+it, and takes what they print as the answer. The second is forgotten
+whether or not the programs refuse.
+
+args:
+  $1  The document for stdin
+  $2  The document sent ahead of it
+  $3  The programs' names under shell/silt/awk, separated by spaces
+FUN
+__silt__hand_off_with() {
+  __silt__hand_off_with__status=0
+  __silt__ANSWER=''
+  __silt__send_ahead "$2"
+  __silt__hand_off "$1" "$3" || __silt__hand_off_with__status=$?
+  __silt__clear_ahead
+
+  return "$__silt__hand_off_with__status"
 }

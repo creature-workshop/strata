@@ -97,6 +97,33 @@ function is_keyless(line) {
   return substr(line, 1, 3) == "0.:"
 }
 
+# Reads the next document the shell sent ahead of the first on stdin, its
+# lines up to the line holding the record separator alone, into
+# AHEAD[1..AHEADS], and sets NR and FNR back to 0, so the rules count the
+# first document's records from one. A program calls it from BEGIN, once
+# for each document its verb sent, in the order sent. Refuses stdin that
+# ends before the separator.
+function read_ahead(__line) {
+  AHEADS = 0
+
+  while ((getline __line) > 0) {
+    if (ends_ahead(__line)) {
+      NR = 0
+      FNR = 0
+      return
+    }
+    AHEAD[++AHEADS] = __line
+  }
+
+  refuse("a document sent ahead never ends")
+}
+
+# Whether the line ends a document sent ahead: the record separator alone,
+# which no line of a document holds.
+function ends_ahead(line) {
+  return line == "\036"
+}
+
 # Loads the path segments the shell hands over in SILT_SEGMENTS, one per
 # line, into SEGMENT[1..SEGMENTS].
 function load_segments() {

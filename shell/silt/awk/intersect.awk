@@ -1,10 +1,10 @@
-# The elements of the list on stdin whose value some element of the list in
-# SILT_SPILL also holds, in their order and renumbered, an element the
-# first list holds twice kept twice: silt__intersect. Two elements are the
-# same when their canonical texts are, the way silt__equals says. Loaded
-# after lines.awk, order.awk and elements.awk.
+# The elements of the list on stdin whose value some element of the list
+# sent ahead of it also holds, in their order and renumbered, an element
+# the first list holds twice kept twice: silt__intersect. Two elements are
+# the same when their canonical texts are, the way silt__equals says.
+# Loaded after lines.awk, order.awk and elements.awk.
 #
-#   0.0:int=1        spill  0.0:int=2   ->  0.0:int=2
+#   0.0:int=1        second  0.0:int=2   ->  0.0:int=2
 #   0.1:int=2
 
 # Holds the canonical text of every element of document 2 in HELD.
@@ -41,10 +41,11 @@ function main() {
 
 BEGIN {
   elements_begin()
+  read_ahead()
 }
 
 END {
-  keep_spill()
+  keep_second()
   close_members()
   hold_second()
   print_intersection()

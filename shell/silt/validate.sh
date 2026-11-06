@@ -36,10 +36,12 @@ silt__validate() {
   __silt__validate__schema="$3"
   shift 3
 
-  __silt__write_documents "$@" || return 1
-  __silt__against_spilled "$__silt__validate__doc" "$__silt__validate__schema" "$__silt__VALIDATE_PROGRAMS"
+  __silt__send_ahead "$__silt__validate__schema"
+  __silt__send_documents "$@" || return 1
+  __silt__ANSWER=''
+  __silt__hand_off "$__silt__validate__doc" "$__silt__VALIDATE_PROGRAMS"
   __silt__validate__status=$?
-  __silt__remove_documents
+  __silt__clear_documents
 
   if [ "$__silt__validate__status" -ne 0 ]; then
     return "$__silt__validate__status"
@@ -82,63 +84,47 @@ silt__references() {
 }
 
 : <<'FUN'
-Writes each of the other schema documents to its own file, and lists
-the keys and the files in __silt__DOCUMENTS: one line for a key, and the
-next line for its file. awk reads the documents from the files, so that no
-document is passed as an argument. Fails if a key has no document after it.
+Sends each of the other schema documents ahead of the value, after the
+schema, and lists their keys in __silt__DOCUMENTS, one on each line, in the
+order sent. Fails if a key has no document after it.
 
 args:
   $@  For each document: its key, and then the document
 FUN
-__silt__write_documents() {
+__silt__send_documents() {
   __silt__DOCUMENTS=''
-  __silt__DOCUMENT_FILES=''
-  __silt__write_documents__count=0
 
   while [ "$#" -gt 0 ]; do
     if [ "$#" -lt 2 ]; then
-      __silt__remove_documents
+      __silt__clear_documents
       __silt__fail "the schema document '$1' has a key and no document"
       return 1
     fi
 
-    __silt__write_documents__count=$((__silt__write_documents__count + 1))
-    __silt__write_document "$1" "$2" "${TMPDIR:-/tmp}/silt.$$.document.$__silt__write_documents__count"
+    __silt__send_document "$1" "$2"
     shift 2
   done
 }
 
 : <<'FUN'
-Writes one schema document to a file, and adds its key and the file to
-__silt__DOCUMENTS and the file to __silt__DOCUMENT_FILES.
+Sends one schema document ahead, and adds its key to __silt__DOCUMENTS.
 
 args:
   $1  The key
   $2  The document
-  $3  The file
 FUN
-__silt__write_document() {
-  printf '%s\n' "$2" > "$3"
-
-  __silt__DOCUMENTS="$__silt__DOCUMENTS$1$__silt__NL$3$__silt__NL"
-  __silt__DOCUMENT_FILES="$__silt__DOCUMENT_FILES$3$__silt__NL"
+__silt__send_document() {
+  __silt__send_ahead "$2"
+  __silt__DOCUMENTS="$__silt__DOCUMENTS$1$__silt__NL"
 }
 
 : <<'FUN'
-Removes the files that __silt__write_documents wrote.
+Forgets the schema and the other schema documents sent ahead, and their
+keys.
 FUN
-__silt__remove_documents() {
-  __silt__split_lines
-  # shellcheck disable=SC2086  # split into one file on each line on purpose
-  set -- ${__silt__DOCUMENT_FILES-}
-  __silt__split_over
-
-  if [ "$#" -gt 0 ]; then
-    rm -f "$@"
-  fi
-
+__silt__clear_documents() {
+  __silt__clear_ahead
   __silt__DOCUMENTS=''
-  __silt__DOCUMENT_FILES=''
 }
 
 : <<'CONST'

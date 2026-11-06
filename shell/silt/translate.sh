@@ -254,11 +254,37 @@ __silt__translate__from_strt() {
   __silt__require_list "${1:-}" from_strt || return 1
 
   __silt__ANSWER=''
-  __silt__spill "$1"
+  __silt__keep_index "$1" || return 1
   __silt__translate__from_strt__status=0
   __silt__translate__stdin 'translators/strt/index translators/strt/from' || __silt__translate__from_strt__status=$?
-  __silt__unspill
+  __silt__drop_index
   return "$__silt__translate__from_strt__status"
+}
+
+: <<'FUN'
+Writes the corpus's index to a file of this call's own, and names the file
+in __silt__INDEX_FILE. The .strt reader loads the index from the file,
+because the document is on the caller's stdin, so there is no stdin to send
+the index ahead on. mktemp names the file, so no other call or process
+writes the same file. mktemp is not in POSIX.1-2017, but the coreutils, the
+BSDs, macOS and BusyBox all have it.
+
+args:
+  $1  The corpus's keys, a list of str in code order
+FUN
+__silt__keep_index() {
+  __silt__INDEX_FILE="$(mktemp "${TMPDIR:-/tmp}/silt.XXXXXX")" || return 1
+  printf '%s\n' "$1" > "$__silt__INDEX_FILE"
+}
+
+: <<'FUN'
+Removes the index file, if one was written.
+FUN
+__silt__drop_index() {
+  if [ -n "${__silt__INDEX_FILE-}" ]; then
+    rm -f "$__silt__INDEX_FILE"
+    __silt__INDEX_FILE=''
+  fi
 }
 
 : <<'PUB_FUN'
@@ -292,13 +318,7 @@ args:
 FUN
 __silt__translate__to_strt() {
   __silt__require_list "${2:-}" to_strt || return 1
-
-  __silt__ANSWER=''
-  __silt__spill "$2"
-  __silt__translate__to_strt__status=0
-  __silt__hand_off "$1" 'translators/strt/index translators/strt/to' || __silt__translate__to_strt__status=$?
-  __silt__unspill
-  return "$__silt__translate__to_strt__status"
+  __silt__hand_off_with "$1" "$2" 'translators/strt/index translators/strt/to'
 }
 
 : <<'PUB_FUN'
@@ -340,12 +360,7 @@ __silt__translate__to_strh() {
 
   __silt__translate__to_strh__seeds=''
   silt__arr __silt__translate__to_strh__seeds "0.:int=$2" "0.:int=$3" "0.:int=$4" || return 1
-  __silt__ANSWER=''
-  __silt__spill "$__silt__translate__to_strh__seeds"
-  __silt__translate__to_strh__status=0
-  __silt__hand_off "$1" translators/strh/to || __silt__translate__to_strh__status=$?
-  __silt__unspill
-  return "$__silt__translate__to_strh__status"
+  __silt__hand_off_with "$1" "$__silt__translate__to_strh__seeds" translators/strh/to
 }
 
 : <<'FUN'

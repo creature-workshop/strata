@@ -3,10 +3,11 @@
 # test/silt-reader.bats, under whatever shell runs it. Its functions carry the
 # exercise__ prefix because it sources the library into its own shell.
 #
-# Usage: <shell> test/silt-exercise.sh <api.sh> <document> import|verbs|timed
+# Usage: <shell> test/silt-exercise.sh <api.sh> <document> import|verbs|writers|timed
 #
 #   import  sources the library and reads the document, exercise__nothing more
 #   verbs   runs type, get, string, has, len, keys and each over it
+#   writers runs set with one pair, set with two pairs and patch over it
 #   timed   runs get, len and each, then prints the get's answer, the len and
 #           the milliseconds the three took, one per line
 
@@ -19,6 +20,7 @@ main() {
   case "$3" in
     import) ;;
     verbs) exercise__run_verbs ;;
+    writers) exercise__run_writers ;;
     timed) exercise__run_timed ;;
     *)
       printf 'silt-exercise: %s is not a mode\n' "$3" >&2
@@ -30,7 +32,7 @@ main() {
 # The library, the document and the mode are all required.
 exercise__require_usage() {
   if [ "$#" -ne 3 ]; then
-    printf 'usage: silt-exercise.sh <api.sh> <document> import|verbs|timed\n' >&2
+    printf 'usage: silt-exercise.sh <api.sh> <document> import|verbs|writers|timed\n' >&2
     exit 2
   fi
 }
@@ -55,6 +57,14 @@ exercise__run_verbs() {
   silt__len n "$DOC"
   silt__keys k "$DOC"
   silt__each "$DOC" exercise__nothing extra
+}
+
+# The writers that walk the document once per pair: set with one pair, set
+# with two, and patch with one, each placing a value under a key it holds.
+exercise__run_writers() {
+  silt__set w "$DOC" .key7 '0.:str="seven"'
+  silt__set w "$DOC" .key8 '0.:str="eight"' .key9 '0.:str="nine"'
+  silt__patch w "$DOC" .key10 '0.:str="ten"'
 }
 
 # get, len and each over the document, timed with date, which is outside the

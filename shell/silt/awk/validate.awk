@@ -1,8 +1,8 @@
-# Validates the document on stdin against the JSON Schema in the file named
-# by SILT_SPILL, and prints the validation errors as a list of strings. Prints
-# an empty list if the document is valid. This is the awk program behind
-# silt__validate. The schema can refer to other schema documents, which are
-# in the files that SILT_DOCUMENTS lists.
+# Validates the document on stdin against the JSON Schema sent ahead of it,
+# and prints the validation errors as a list of strings. Prints an empty
+# list if the document is valid. This is the awk program behind
+# silt__validate. The schema can refer to other schema documents, sent
+# ahead after it under the keys SILT_DOCUMENTS lists.
 #
 # Each error starts with the path to the invalid value, beginning at "$".
 # Duplicate errors are printed once. When an error shows a map, the map's
@@ -81,6 +81,7 @@ BEGIN {
   order_begin()
   NODES = 0
   ERRORS = 0
+  hold_schema_documents()
 }
 
 END {
@@ -89,9 +90,7 @@ END {
   }
 
   build_tree(1)
-  read_schema_lines()
-  build_tree(2)
-  build_other_documents()
+  build_schema_trees()
   DOC = 2
   validate(ROOT[2], ROOT[1], "$", "")
   print_errors()

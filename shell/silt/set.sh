@@ -85,6 +85,8 @@ silt__patch() {
 : <<'FUN'
 Places the value in a collection at the path already begun: walks the
 document once, and adds the value at the end when the walk did not place it.
+Past the threshold the value goes to awk ahead of the document; under it
+nothing leaves the shell.
 
 args:
   $1  The document, a map or a list
@@ -93,11 +95,15 @@ __silt__place_in() {
   __silt__require_collection "$1" || return 1
   __silt__start_placing
   __silt__all_segments || return 1
-  __silt__spill "$__silt__NEW"
+  __silt__send_ahead "$__silt__NEW"
 
   __silt__AWK='set'
-  __silt__walk "$1" __silt__place_line || return 1
-  __silt__unspill
+  __silt__walk "$1" __silt__place_line
+  __silt__place_in__status=$?
+  __silt__clear_ahead
+  if [ "$__silt__place_in__status" -ne 0 ]; then
+    return 1
+  fi
 
   if [ "$__silt__DONE" = false ] && [ "$__silt__HANDED" = false ]; then
     __silt__place_new || return 1
