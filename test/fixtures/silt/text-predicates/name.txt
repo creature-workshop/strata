@@ -1,0 +1,1 @@
+text predicates: silt__text_is, silt__text_is_not and silt__text_starts_with, over records and over strs

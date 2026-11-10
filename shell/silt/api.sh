@@ -37,6 +37,9 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__find      the first member's value a predicate takes
   silt__any       whether a predicate takes any member
   silt__all       whether a predicate takes every member
+  silt__text_is   a predicate: whether the text at a path is the text given
+  silt__text_is_not a predicate: whether the text at a path differs from the text given
+  silt__text_starts_with a predicate: whether the text at a path starts with a prefix
   silt__pluck     the value at a path in each member, as a list
   silt__project   the members named of each member, as a list of maps
   silt__unwrap    a JSON string literal to text
@@ -211,6 +214,9 @@ __silt__home || return 1
 . "$__silt__DIR/find.sh"
 . "$__silt__DIR/any.sh"
 . "$__silt__DIR/all.sh"
+. "$__silt__DIR/text_is.sh"
+. "$__silt__DIR/text_is_not.sh"
+. "$__silt__DIR/text_starts_with.sh"
 . "$__silt__DIR/pluck.sh"
 . "$__silt__DIR/project.sh"
 . "$__silt__DIR/truth.sh"

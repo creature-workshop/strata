@@ -1,0 +1,32 @@
+as records get .records
+as labels get .labels
+
+# text_is: a str, a bool, an int and a null by their text
+filter @records silt__text_is .status passed
+filter @records silt__text_is .archived false
+filter @records silt__text_is .tries 2
+filter @records silt__text_is .owner null
+find @records silt__text_is .name lint
+any @records silt__text_is .status skipped
+all @records silt__text_is .archived false
+
+# text_is: a path that holds nothing or a list has the empty text
+filter @records silt__text_is .status
+filter @records silt__text_is .reads
+
+# text_is: the member itself
+filter @labels silt__text_is . type/fix
+filter @labels silt__text_is .
+
+# text_is_not
+filter @records silt__text_is_not .status passed
+filter @labels silt__text_is_not .
+all @labels silt__text_is_not . area/
+any @labels silt__text_is_not . area/
+
+# text_starts_with
+filter @labels silt__text_starts_with . area/
+filter @labels silt__text_starts_with .
+filter @records silt__text_starts_with .name te
+any @records silt__text_starts_with .status x
+find @labels silt__text_starts_with . type

@@ -39,7 +39,8 @@
 # its callback, each-until the key at which the callback returns 3,
 # each-string a path its callback reads, and each-nested nothing: its
 # callback runs each again on every member that is a map or a list. map, filter, find, any and all take
-# the name of one of the callbacks below, without its prefix, and the extras
+# the name of one of the callbacks below, without its prefix, or one of the
+# library's predicates by its full name, silt__text_is among them, and the extras
 # after it, and reduce takes the same, with --from and a document among the
 # extras; apply takes the list and the words of a command; project takes its keys. A call written "as <name> <call>" keeps
 # its answer in a register, "@<name>" in place of the document makes a call
@@ -162,13 +163,23 @@ transcript__run_collection() {
   esac
 }
 
-# Runs a verb over each with one of this script's callbacks and the extras given.
+# Runs a verb over each with the callback a call names and the extras given.
 transcript__run_with_callback() {
   __transcript__run_with_callback__verb="$1"
-  __transcript__run_with_callback__callback="transcript__$2"
+  transcript__name_callback "$2"
   shift 2
 
-  golden__capture "silt__$__transcript__run_with_callback__verb" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" "$__transcript__run_with_callback__callback" "$@"
+  golden__capture "silt__$__transcript__run_with_callback__verb" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" "$CALLBACK" "$@"
+}
+
+# Sets CALLBACK to the function a call names: one of the library's
+# predicates by its full name, or one of this script's callbacks by its name
+# without the prefix.
+transcript__name_callback() {
+  case "$1" in
+    silt__*) CALLBACK="$1" ;;
+    *) CALLBACK="transcript__$1" ;;
+  esac
 }
 
 # Dispatches a reader verb, with the document where the verb takes one.
