@@ -55,3 +55,7 @@ as i intersect @dup2 $reads
 to_json @i => .tests["test/a.bats"].reads | tojson
 as m merge @built $grown
 to_json @m => {runner: "bats", count: 3} + {runner: "bats", count: 3, tests: {reads: ["lib/a.sh", "test/a.bats"]}} | tojson
+as unrounded without ratio
+as listed entries @unrounded
+as rebuilt from_entries @listed
+to_json @rebuilt => del(.ratio) | to_entries | from_entries | tojson

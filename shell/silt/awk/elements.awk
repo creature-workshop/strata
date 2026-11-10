@@ -98,6 +98,17 @@ function print_element(i, position, __at) {
   }
 }
 
+# Prints the value of member i as a document of its own: a scalar or an
+# empty collection as one keyless line, and a collection that holds
+# members as those members at depth 0.
+function print_value(i, __at, __from) {
+  __from = (LAST[i] > FIRST[i]) ? FIRST[i] + 1 : FIRST[i]
+
+  for (__at = __from; __at <= LAST[i]; __at++) {
+    print value_line(i, __at)
+  }
+}
+
 # Prints member i as it was read, its key as its line writes it.
 function print_member(i, __at) {
   for (__at = FIRST[i]; __at <= LAST[i]; __at++) {

@@ -19,8 +19,9 @@
 # take a command, and succeeds-reading and fails-reading take one word for
 # the command to read on stdin and then the command.
 # scalar, len, keys, canon, unique, is_true, is_false, is_zero, references,
-# to_json, to_yaml, to_toml, dump, dump-<format>, which sets SILT_DUMP, first, last, sum, values and entries take the
-# document; pop and shift take it and answer the element and the rest, and
+# to_json, to_yaml, to_toml, dump, dump-<format>, which sets SILT_DUMP, first, last, sum, values, entries and
+# from_entries take the document; sort_by, group_by, min and max take it and
+# then paths, or none; pop and shift take it and answer the element and the rest, and
 # pop-rest and shift-rest answer the rest alone, and pop-element and
 # shift-element call the verb without a variable for the rest;
 # take and take_last take it and a count; slice takes it and two indices; line takes it and answers
@@ -111,7 +112,7 @@ transcript__run_call() {
 
   # shellcheck disable=SC2086  # a writer's words are split on purpose
   case "${1%% *}" in
-    obj | arr | bind | with | apply | push | set | patch | get-first | string-first | concat | join | split | equals | pick | without | merge | deepmerge | flatten | difference | intersect | validate | to_strh | to_strt) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
+    obj | arr | bind | with | apply | push | set | patch | get-first | string-first | concat | join | split | equals | pick | without | merge | deepmerge | flatten | difference | intersect | validate | to_strh | to_strt | sort_by | group_by | min | max) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
     map | filter | find | any | all | reduce | project) transcript__run_collection "${1%% *}" $__transcript__run_call__rest ;;
     *) transcript__run_verb "${1%% *}" "$__transcript__run_call__rest" ;;
   esac
@@ -199,7 +200,7 @@ transcript__run_verb() {
     to_json | to_yaml | to_toml | dump) transcript__translate "$1" "$DOCUMENT_FOR_CALL" ;;
     dump-*) transcript__dump_as "${1#dump-}" "$DOCUMENT_FOR_CALL" ;;
     load) transcript__load "${2%% *}" "${2#* }" ;;
-    first | last | sum | values | entries) golden__capture "silt__$1" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" ;;
+    first | last | sum | values | entries | from_entries) golden__capture "silt__$1" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" ;;
     take | take_last) golden__capture "silt__$1" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
     pop | shift) transcript__take_end "$1" ;;
     pop-element | shift-element) golden__capture "silt__${1%-element}" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" ;;

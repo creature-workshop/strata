@@ -1,0 +1,1 @@
+from_entries: silt__from_entries, a map from a list of its keys and values
