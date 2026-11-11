@@ -1,0 +1,118 @@
+## as records get .records
+0.0:map
+1."name":str="build"
+1."status":str="passed"
+1."archived":bool=false
+1."tries":int=1
+0.1:map
+1."name":str="test"
+1."status":str="failed"
+1."archived":bool=true
+1."tries":int=2
+1."owner":null
+0.2:map
+1."name":str="lint"
+1."reads":list
+2.0:str="lib/a.sh"
+## as labels get .labels
+0.0:str="area/lib"
+0.1:str="type/fix"
+0.2:str=""
+0.3:str="area/"
+## filter @records silt__text_is .status passed
+0.0:map
+1."name":str="build"
+1."status":str="passed"
+1."archived":bool=false
+1."tries":int=1
+## filter @records silt__text_is .archived false
+0.0:map
+1."name":str="build"
+1."status":str="passed"
+1."archived":bool=false
+1."tries":int=1
+## filter @records silt__text_is .tries 2
+0.0:map
+1."name":str="test"
+1."status":str="failed"
+1."archived":bool=true
+1."tries":int=2
+1."owner":null
+## filter @records silt__text_is .owner null
+0.0:map
+1."name":str="test"
+1."status":str="failed"
+1."archived":bool=true
+1."tries":int=2
+1."owner":null
+## find @records silt__text_is .name lint
+0."name":str="lint"
+0."reads":list
+1.0:str="lib/a.sh"
+## any @records silt__text_is .status skipped
+false
+## all @records silt__text_is .archived false
+false
+## filter @records silt__text_is .status
+0.0:map
+1."name":str="lint"
+1."reads":list
+2.0:str="lib/a.sh"
+## filter @records silt__text_is .reads
+0.0:map
+1."name":str="build"
+1."status":str="passed"
+1."archived":bool=false
+1."tries":int=1
+0.1:map
+1."name":str="test"
+1."status":str="failed"
+1."archived":bool=true
+1."tries":int=2
+1."owner":null
+0.2:map
+1."name":str="lint"
+1."reads":list
+2.0:str="lib/a.sh"
+## filter @labels silt__text_is . type/fix
+0.0:str="type/fix"
+## filter @labels silt__text_is .
+0.0:str=""
+## filter @records silt__text_is_not .status passed
+0.0:map
+1."name":str="test"
+1."status":str="failed"
+1."archived":bool=true
+1."tries":int=2
+1."owner":null
+0.1:map
+1."name":str="lint"
+1."reads":list
+2.0:str="lib/a.sh"
+## filter @labels silt__text_is_not .
+0.0:str="area/lib"
+0.1:str="type/fix"
+0.2:str="area/"
+## all @labels silt__text_is_not . area/
+false
+## any @labels silt__text_is_not . area/
+true
+## filter @labels silt__text_starts_with . area/
+0.0:str="area/lib"
+0.1:str="area/"
+## filter @labels silt__text_starts_with .
+0.0:str="area/lib"
+0.1:str="type/fix"
+0.2:str=""
+0.3:str="area/"
+## filter @records silt__text_starts_with .name te
+0.0:map
+1."name":str="test"
+1."status":str="failed"
+1."archived":bool=true
+1."tries":int=2
+1."owner":null
+## any @records silt__text_starts_with .status x
+false
+## find @labels silt__text_starts_with . type
+0.:str="type/fix"

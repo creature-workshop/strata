@@ -1,0 +1,47 @@
+as queue get .queue
+sort_by @queue .iid
+sort_by @queue .ready_at .iid
+sort_by @queue .state
+sort_by @queue .run.reads[0]
+sort_by @queue .run
+group_by @queue .state
+group_by @queue .ready_at
+group_by @queue .ready_at .state
+min @queue .iid
+max @queue .iid
+min @queue .ready_at
+max @queue .ready_at
+max @queue .state .ready_at
+as mixed get .mixed
+sort_by @mixed
+sort_by @mixed .
+group_by @mixed
+min @mixed
+max @mixed
+as numbers get .numbers
+sort_by @numbers
+min @numbers
+max @numbers
+group_by @numbers
+as labels get .labels
+sort_by @labels
+group_by @labels
+min @labels
+max @labels
+as nested get .nested
+sort_by @nested
+min @nested
+group_by @nested
+as none get .none
+sort_by @none
+group_by @none
+min @none
+max @none
+min @none .iid
+sort_by
+min
+sort_by @queue .run[
+as long get .long
+min @long
+max @long
+sort_by @long

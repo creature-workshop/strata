@@ -16,3 +16,23 @@ string-or none .[7].name => .[7].name // "none"
 string-or none .[0].name => .[0].name // "none"
 is_true => . == true
 len => length
+as by_name sort_by .name
+to_json @by_name => sort_by(.name) | tojson
+as by_status sort_by .status .name
+to_json @by_status => sort_by(.status, .name) | tojson
+as by_first_read sort_by .reads[0]
+to_json @by_first_read => sort_by(.reads[0]) | tojson
+as grouped group_by .status
+to_json @grouped => group_by(.status) | tojson
+as least min .name
+to_json @least => min_by(.name) | tojson
+as greatest max .status
+to_json @greatest => max_by(.status) | tojson
+as names_sorted sort_by @names
+join @names_sorted , => map(.name) | sort | join(",")
+as name_least min @names
+string @name_least . => map(.name) | min
+as name_greatest max @names
+string @name_greatest . => map(.name) | max
+as name_groups group_by @names
+to_json @name_groups => map(.name) | group_by(.) | tojson

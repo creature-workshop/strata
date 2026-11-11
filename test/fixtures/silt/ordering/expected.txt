@@ -1,0 +1,329 @@
+## as queue get .queue
+0.0:map
+1."iid":int=7
+1."ready_at":int=20
+1."state":str="open"
+0.1:map
+1."iid":int=3
+1."ready_at":int=20
+1."state":str="merged"
+0.2:map
+1."iid":int=9
+1."state":str="open"
+0.3:map
+1."iid":int=1
+1."ready_at":int=5
+1."state":str="merged"
+1."run":map
+2."reads":list
+3.0:str="a"
+## sort_by @queue .iid
+0.0:map
+1."iid":int=1
+1."ready_at":int=5
+1."state":str="merged"
+1."run":map
+2."reads":list
+3.0:str="a"
+0.1:map
+1."iid":int=3
+1."ready_at":int=20
+1."state":str="merged"
+0.2:map
+1."iid":int=7
+1."ready_at":int=20
+1."state":str="open"
+0.3:map
+1."iid":int=9
+1."state":str="open"
+## sort_by @queue .ready_at .iid
+0.0:map
+1."iid":int=9
+1."state":str="open"
+0.1:map
+1."iid":int=1
+1."ready_at":int=5
+1."state":str="merged"
+1."run":map
+2."reads":list
+3.0:str="a"
+0.2:map
+1."iid":int=3
+1."ready_at":int=20
+1."state":str="merged"
+0.3:map
+1."iid":int=7
+1."ready_at":int=20
+1."state":str="open"
+## sort_by @queue .state
+0.0:map
+1."iid":int=3
+1."ready_at":int=20
+1."state":str="merged"
+0.1:map
+1."iid":int=1
+1."ready_at":int=5
+1."state":str="merged"
+1."run":map
+2."reads":list
+3.0:str="a"
+0.2:map
+1."iid":int=7
+1."ready_at":int=20
+1."state":str="open"
+0.3:map
+1."iid":int=9
+1."state":str="open"
+## sort_by @queue .run.reads[0]
+0.0:map
+1."iid":int=7
+1."ready_at":int=20
+1."state":str="open"
+0.1:map
+1."iid":int=3
+1."ready_at":int=20
+1."state":str="merged"
+0.2:map
+1."iid":int=9
+1."state":str="open"
+0.3:map
+1."iid":int=1
+1."ready_at":int=5
+1."state":str="merged"
+1."run":map
+2."reads":list
+3.0:str="a"
+## sort_by @queue .run
+!! 1 ERROR: silt: sort_by orders by scalars, not by a map, in the element at index 3
+## group_by @queue .state
+0.0:list
+1.0:map
+2."iid":int=3
+2."ready_at":int=20
+2."state":str="merged"
+1.1:map
+2."iid":int=1
+2."ready_at":int=5
+2."state":str="merged"
+2."run":map
+3."reads":list
+4.0:str="a"
+0.1:list
+1.0:map
+2."iid":int=7
+2."ready_at":int=20
+2."state":str="open"
+1.1:map
+2."iid":int=9
+2."state":str="open"
+## group_by @queue .ready_at
+0.0:list
+1.0:map
+2."iid":int=9
+2."state":str="open"
+0.1:list
+1.0:map
+2."iid":int=1
+2."ready_at":int=5
+2."state":str="merged"
+2."run":map
+3."reads":list
+4.0:str="a"
+0.2:list
+1.0:map
+2."iid":int=7
+2."ready_at":int=20
+2."state":str="open"
+1.1:map
+2."iid":int=3
+2."ready_at":int=20
+2."state":str="merged"
+## group_by @queue .ready_at .state
+0.0:list
+1.0:map
+2."iid":int=9
+2."state":str="open"
+0.1:list
+1.0:map
+2."iid":int=1
+2."ready_at":int=5
+2."state":str="merged"
+2."run":map
+3."reads":list
+4.0:str="a"
+0.2:list
+1.0:map
+2."iid":int=3
+2."ready_at":int=20
+2."state":str="merged"
+0.3:list
+1.0:map
+2."iid":int=7
+2."ready_at":int=20
+2."state":str="open"
+## min @queue .iid
+0."iid":int=1
+0."ready_at":int=5
+0."state":str="merged"
+0."run":map
+1."reads":list
+2.0:str="a"
+## max @queue .iid
+0."iid":int=9
+0."state":str="open"
+## min @queue .ready_at
+0."iid":int=9
+0."state":str="open"
+## max @queue .ready_at
+0."iid":int=3
+0."ready_at":int=20
+0."state":str="merged"
+## max @queue .state .ready_at
+0."iid":int=7
+0."ready_at":int=20
+0."state":str="open"
+## as mixed get .mixed
+0.0:str="b"
+0.1:int=10
+0.2:null
+0.3:bool=true
+0.4:float=2.5
+0.5:str="B"
+0.6:bool=false
+0.7:int=-3
+0.8:str="10"
+0.9:time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+## sort_by @mixed
+0.0:null
+0.1:bool=false
+0.2:bool=true
+0.3:int=-3
+0.4:float=2.5
+0.5:int=10
+0.6:str="10"
+0.7:time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+0.8:str="B"
+0.9:str="b"
+## sort_by @mixed .
+0.0:null
+0.1:bool=false
+0.2:bool=true
+0.3:int=-3
+0.4:float=2.5
+0.5:int=10
+0.6:str="10"
+0.7:time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+0.8:str="B"
+0.9:str="b"
+## group_by @mixed
+0.0:list
+1.0:null
+0.1:list
+1.0:bool=false
+0.2:list
+1.0:bool=true
+0.3:list
+1.0:int=-3
+0.4:list
+1.0:float=2.5
+0.5:list
+1.0:int=10
+0.6:list
+1.0:str="10"
+0.7:list
+1.0:time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+0.8:list
+1.0:str="B"
+0.9:list
+1.0:str="b"
+## min @mixed
+0.:null
+## max @mixed
+0.:str="b"
+## as numbers get .numbers
+0.0:int=4
+0.1:int=-2
+0.2:int=9
+0.3:int=-2
+## sort_by @numbers
+0.0:int=-2
+0.1:int=-2
+0.2:int=4
+0.3:int=9
+## min @numbers
+0.:int=-2
+## max @numbers
+0.:int=9
+## group_by @numbers
+0.0:list
+1.0:int=-2
+1.1:int=-2
+0.1:list
+1.0:int=4
+0.2:list
+1.0:int=9
+## as labels get .labels
+0.0:str="b"
+0.1:str="a"
+0.2:str="b"
+0.3:str="c"
+0.4:str="a"
+## sort_by @labels
+0.0:str="a"
+0.1:str="a"
+0.2:str="b"
+0.3:str="b"
+0.4:str="c"
+## group_by @labels
+0.0:list
+1.0:str="a"
+1.1:str="a"
+0.1:list
+1.0:str="b"
+1.1:str="b"
+0.2:list
+1.0:str="c"
+## min @labels
+0.:str="a"
+## max @labels
+0.:str="c"
+## as nested get .nested
+0.0:list
+1.0:int=1
+0.1:int=1
+## sort_by @nested
+!! 1 ERROR: silt: sort_by orders by scalars, not by a list, in the element at index 0
+## min @nested
+!! 1 ERROR: silt: min orders by scalars, not by a list, in the element at index 0
+## group_by @nested
+!! 1 ERROR: silt: group_by orders by scalars, not by a list, in the element at index 0
+## as none get .none
+0.:list
+## sort_by @none
+0.:list
+## group_by @none
+0.:list
+## min @none
+
+## max @none
+
+## min @none .iid
+
+## sort_by
+!! 1 ERROR: silt: sort_by takes a list, not a map
+## min
+!! 1 ERROR: silt: min takes a list, not a map
+## sort_by @queue .run[
+!! 1 ERROR: silt: the path has a [ with no ] after it: '['
+## as long get .long
+0.0:int=5
+0.1:int=12345678901234567890
+0.2:int=-1
+## min @long
+0.:int=-1
+## max @long
+0.:int=12345678901234567890
+## sort_by @long
+0.0:int=-1
+0.1:int=5
+0.2:int=12345678901234567890

@@ -37,6 +37,9 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__find      the first member's value a predicate takes
   silt__any       whether a predicate takes any member
   silt__all       whether a predicate takes every member
+  silt__text_is   a predicate: whether the text at a path is the text given
+  silt__text_is_not a predicate: whether the text at a path differs from the text given
+  silt__text_starts_with a predicate: whether the text at a path starts with a prefix
   silt__pluck     the value at a path in each member, as a list
   silt__project   the members named of each member, as a list of maps
   silt__unwrap    a JSON string literal to text
@@ -76,7 +79,12 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__sum       the sum of a list of numbers
   silt__values    a map's values as a list
   silt__entries   a map as a list of its keys and values
+  silt__from_entries a map from a list of its keys and values
   silt__unique    a list with its repeated values dropped
+  silt__sort_by   a list in the order of the values at paths in its elements
+  silt__group_by  a list's elements in lists of the ones alike at paths
+  silt__min       the element of a list that orders first
+  silt__max       the element of a list that orders last
   silt__difference the elements of a list another does not hold
   silt__intersect the elements of a list another holds too
   silt__merge     one map laid over another, one level deep
@@ -190,7 +198,12 @@ __silt__home || return 1
 . "$__silt__DIR/sum.sh"
 . "$__silt__DIR/values.sh"
 . "$__silt__DIR/entries.sh"
+. "$__silt__DIR/from_entries.sh"
 . "$__silt__DIR/unique.sh"
+. "$__silt__DIR/keyed.sh"
+. "$__silt__DIR/sort_by.sh"
+. "$__silt__DIR/group_by.sh"
+. "$__silt__DIR/min.sh"
 . "$__silt__DIR/difference.sh"
 . "$__silt__DIR/intersect.sh"
 . "$__silt__DIR/merge.sh"
@@ -211,6 +224,9 @@ __silt__home || return 1
 . "$__silt__DIR/find.sh"
 . "$__silt__DIR/any.sh"
 . "$__silt__DIR/all.sh"
+. "$__silt__DIR/text_is.sh"
+. "$__silt__DIR/text_is_not.sh"
+. "$__silt__DIR/text_starts_with.sh"
 . "$__silt__DIR/pluck.sh"
 . "$__silt__DIR/project.sh"
 . "$__silt__DIR/truth.sh"

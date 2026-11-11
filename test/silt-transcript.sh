@@ -19,8 +19,9 @@
 # take a command, and succeeds-reading and fails-reading take one word for
 # the command to read on stdin and then the command.
 # scalar, len, keys, canon, unique, is_true, is_false, is_zero, references,
-# to_json, to_yaml, to_toml, dump, dump-<format>, which sets SILT_DUMP, first, last, sum, values and entries take the
-# document; pop and shift take it and answer the element and the rest, and
+# to_json, to_yaml, to_toml, dump, dump-<format>, which sets SILT_DUMP, first, last, sum, values, entries and
+# from_entries take the document; sort_by, group_by, min and max take it and
+# then paths, or none; pop and shift take it and answer the element and the rest, and
 # pop-rest and shift-rest answer the rest alone, and pop-element and
 # shift-element call the verb without a variable for the rest;
 # take and take_last take it and a count; slice takes it and two indices; line takes it and answers
@@ -39,7 +40,8 @@
 # its callback, each-until the key at which the callback returns 3,
 # each-string a path its callback reads, and each-nested nothing: its
 # callback runs each again on every member that is a map or a list. map, filter, find, any and all take
-# the name of one of the callbacks below, without its prefix, and the extras
+# the name of one of the callbacks below, without its prefix, or one of the
+# library's predicates by its full name, silt__text_is among them, and the extras
 # after it, and reduce takes the same, with --from and a document among the
 # extras; apply takes the list and the words of a command; project takes its keys. A call written "as <name> <call>" keeps
 # its answer in a register, "@<name>" in place of the document makes a call
@@ -110,7 +112,7 @@ transcript__run_call() {
 
   # shellcheck disable=SC2086  # a writer's words are split on purpose
   case "${1%% *}" in
-    obj | arr | bind | with | apply | push | set | patch | get-first | string-first | concat | join | split | equals | pick | without | merge | deepmerge | flatten | difference | intersect | validate | to_strh | to_strt) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
+    obj | arr | bind | with | apply | push | set | patch | get-first | string-first | concat | join | split | equals | pick | without | merge | deepmerge | flatten | difference | intersect | validate | to_strh | to_strt | sort_by | group_by | min | max) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
     map | filter | find | any | all | reduce | project) transcript__run_collection "${1%% *}" $__transcript__run_call__rest ;;
     *) transcript__run_verb "${1%% *}" "$__transcript__run_call__rest" ;;
   esac
@@ -162,13 +164,23 @@ transcript__run_collection() {
   esac
 }
 
-# Runs a verb over each with one of this script's callbacks and the extras given.
+# Runs a verb over each with the callback a call names and the extras given.
 transcript__run_with_callback() {
   __transcript__run_with_callback__verb="$1"
-  __transcript__run_with_callback__callback="transcript__$2"
+  transcript__name_callback "$2"
   shift 2
 
-  golden__capture "silt__$__transcript__run_with_callback__verb" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" "$__transcript__run_with_callback__callback" "$@"
+  golden__capture "silt__$__transcript__run_with_callback__verb" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" "$CALLBACK" "$@"
+}
+
+# Sets CALLBACK to the function a call names: one of the library's
+# predicates by its full name, or one of this script's callbacks by its name
+# without the prefix.
+transcript__name_callback() {
+  case "$1" in
+    silt__*) CALLBACK="$1" ;;
+    *) CALLBACK="transcript__$1" ;;
+  esac
 }
 
 # Dispatches a reader verb, with the document where the verb takes one.
@@ -188,7 +200,7 @@ transcript__run_verb() {
     to_json | to_yaml | to_toml | dump) transcript__translate "$1" "$DOCUMENT_FOR_CALL" ;;
     dump-*) transcript__dump_as "${1#dump-}" "$DOCUMENT_FOR_CALL" ;;
     load) transcript__load "${2%% *}" "${2#* }" ;;
-    first | last | sum | values | entries) golden__capture "silt__$1" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" ;;
+    first | last | sum | values | entries | from_entries) golden__capture "silt__$1" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" ;;
     take | take_last) golden__capture "silt__$1" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
     pop | shift) transcript__take_end "$1" ;;
     pop-element | shift-element) golden__capture "silt__${1%-element}" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" ;;
