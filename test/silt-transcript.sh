@@ -22,8 +22,8 @@
 # to_json, to_yaml, to_toml, dump, dump-<format>, which sets SILT_DUMP, first, last, sum, values, entries and
 # from_entries take the document; sort_by, group_by, min and max take it and
 # then paths, or none; run takes an awk program, a file beside the calls
-# file, and then the words of its options, and run-bare takes the program
-# and no document; pop and shift take it and answer the element and the rest, and
+# file, and then the words of its options, a library after --load beside
+# the calls file too, and run-bare takes the program and no document; pop and shift take it and answer the element and the rest, and
 # pop-rest and shift-rest answer the rest alone, and pop-element and
 # shift-element call the verb without a variable for the rest;
 # take and take_last take it and a count; slice takes it and two indices; line takes it and answers
@@ -157,11 +157,22 @@ transcript__run_writer() {
 }
 
 # Runs run on a document, the awk program its first word names beside the
-# calls file, and the words after it, which are run's options.
+# calls file, and the words after it, which are run's options. A word that
+# ends in .awk names a library beside the calls file.
 transcript__run_program() {
   __transcript__run_program__document="$1"
   __transcript__run_program__program="$(golden__file_of "$2")"
   shift 2
+
+  __transcript__run_program__count=$#
+  while [ "$__transcript__run_program__count" -gt 0 ]; do
+    case "$1" in
+      *.awk) set -- "$@" "$(golden__file_of "$1")" ;;
+      *) set -- "$@" "$1" ;;
+    esac
+    shift
+    __transcript__run_program__count=$((__transcript__run_program__count - 1))
+  done
 
   golden__capture silt__run GOLDEN_ANSWER "$__transcript__run_program__program" "$__transcript__run_program__document" "$@"
   transcript__name_files_from_calls

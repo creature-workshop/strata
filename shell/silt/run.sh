@@ -14,14 +14,17 @@ The line library and tree.awk are loaded ahead of the program, so it reads
 the document as a tree of nodes and prints its answer as lines
 (shell/silt/awk/tree.awk says how). A document given with --with is read
 ahead of the main one, with tree_ahead(). A value given with --arg is read
-with arg("<name>"). The program runs under LC_ALL=C, so it reads bytes.
+with arg("<name>"). A file given with --load is an awk library, loaded
+ahead of the program, so two programs can share the functions they must
+agree on. The program runs under LC_ALL=C, so it reads bytes.
 
-Refuses a program that is not a file, no document, and an option it does
-not know. The program's own status is the verb's, and what the program
+Refuses a program or a library that is not a file, no document, and an
+option it does not know. The program's own status is the verb's, and what the program
 writes on stderr reaches the caller's.
 
   silt__run names "$dir/names.awk" "$records"
   silt__run diff "$dir/diff.awk" "$desired" --with "$actual" --arg since "$since"
+  silt__run order "$dir/fifo.awk" "$entries" --load "$dir/order.awk"
 
 args:
   $1  The name of the variable to answer in
@@ -30,6 +33,11 @@ args:
   --with <document>     A further document, read ahead of the main one
   --arg <name> <value>  A value the program reads by name; the name is
                         letters, digits and underscores
+  --load <file>         An awk library, loaded ahead of the program; its
+                        path holds no newline
+
+registers:
+  __silt__run__LIBRARIES  The libraries given with --load, one on each line
 PUB_FUN
 silt__run() {
   __silt__out "$1" || return 1
@@ -40,6 +48,7 @@ silt__run() {
   shift 3
 
   __silt__run__ahead=''
+  __silt__run__LIBRARIES=''
   __silt__run__left=$#
   while [ "$__silt__run__left" -gt 0 ]; do
     case "$1" in
@@ -57,18 +66,30 @@ silt__run() {
         __silt__run__left=$((__silt__run__left - 3))
         shift 3
         ;;
+      --load)
+        __silt__run__needs "$__silt__run__left" 2 --load || return 1
+        __silt__run__library "$2" || return 1
+        __silt__run__left=$((__silt__run__left - 2))
+        shift 2
+        ;;
       *)
-        __silt__fail "run does not know the option '$1'; it takes --with <document> and --arg <name> <value>"
+        __silt__fail "run does not know the option '$1'; it takes --with <document>, --arg <name> <value> and --load <file>"
         return 1
         ;;
     esac
   done
 
+  # structs-lint: allow -- SILT sits beneath structs, so awk's command line is built in the positionals
+  set -- "$@" LC_ALL=C awk -f "$__silt__DIR/awk/lines.awk" -f "$__silt__DIR/awk/tree.awk"
+  __silt__split_lines
+  for __silt__run__file in $__silt__run__LIBRARIES; do
+    # structs-lint: allow -- SILT sits beneath structs, so awk's command line is built in the positionals
+    set -- "$@" -f "$__silt__run__file"
+  done
+  __silt__split_over
+
   __silt__ANSWER="$(printf '%s%s\n' "$__silt__run__ahead" "$__silt__run__document" \
-    | env "$@" LC_ALL=C awk \
-      -f "$__silt__DIR/awk/lines.awk" \
-      -f "$__silt__DIR/awk/tree.awk" \
-      -f "$__silt__run__program"
+    | env "$@" -f "$__silt__run__program"
   )" || return $?
 
   __silt__OUT="$__silt__run__out"
@@ -91,6 +112,21 @@ __silt__run__check() {
     __silt__fail "run takes a document after its program, and none was given"
     return 1
   fi
+}
+
+: <<'FUN'
+Adds a library to __silt__run__LIBRARIES. Refuses one that is not a file.
+
+args:
+  $1  The library
+FUN
+__silt__run__library() {
+  if [ ! -f "$1" ]; then
+    __silt__fail "run takes an awk library in a file after --load, and '$1' is not a file"
+    return 1
+  fi
+
+  __silt__run__LIBRARIES="$__silt__run__LIBRARIES${__silt__run__LIBRARIES:+$__silt__NL}$1"
 }
 
 : <<'FUN'

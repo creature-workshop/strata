@@ -108,13 +108,21 @@
 ## run-bare renamed.awk
 !! 1 ERROR: silt: run takes a document after its program, and none was given
 ## run renamed.awk --sorted
-!! 1 ERROR: silt: run does not know the option '--sorted'; it takes --with <document> and --arg <name> <value>
+!! 1 ERROR: silt: run does not know the option '--sorted'; it takes --with <document>, --arg <name> <value> and --load <file>
 ## run summary.awk --with
 !! 1 ERROR: silt: run was given --with without what follows it
 ## run summary.awk --arg status
 !! 1 ERROR: silt: run was given --arg without what follows it
 ## run summary.awk --arg a-b c
 !! 1 ERROR: silt: run takes a name of letters, digits and underscores after --arg, not 'a-b'
+## run shouted.awk --load shout.awk
+0.0:str="BUILD!"
+0.1:str="TEST \"QUOTED\"!"
+0.2:str="LINT!"
+## run shouted.awk --load missing.awk
+!! 1 ERROR: silt: run takes an awk library in a file after --load, and 'missing.awk' is not a file
+## run shouted.awk --load
+!! 1 ERROR: silt: run was given --load without what follows it
 ## read-register
 0."suite":str="unit"
 0."records":list

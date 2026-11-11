@@ -19,4 +19,7 @@ run renamed.awk --sorted
 run summary.awk --with
 run summary.awk --arg status
 run summary.awk --arg a-b c
+run shouted.awk --load shout.awk
+run shouted.awk --load missing.awk
+run shouted.awk --load
 read-register
