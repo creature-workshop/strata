@@ -1,0 +1,17 @@
+0."suite":str="unit"
+0."records":list
+1.0:map
+2."name":str="build"
+2."status":str="passed"
+2."reads":list
+3.0:str="lib/a.sh"
+3.1:str="lib/b.sh"
+2."owner":null
+1.1:map
+2."name":str="test \"quoted\""
+2."status":str="failed"
+2."reads":list
+1.2:map
+2."name":str="lint"
+2."status":str="passed"
+2."tries":int=3

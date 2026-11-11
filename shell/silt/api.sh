@@ -80,6 +80,7 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__values    a map's values as a list
   silt__entries   a map as a list of its keys and values
   silt__from_entries a map from a list of its keys and values
+  silt__run       what a caller's awk program prints for a document
   silt__unique    a list with its repeated values dropped
   silt__sort_by   a list in the order of the values at paths in its elements
   silt__group_by  a list's elements in lists of the ones alike at paths
@@ -204,6 +205,7 @@ __silt__home || return 1
 . "$__silt__DIR/sort_by.sh"
 . "$__silt__DIR/group_by.sh"
 . "$__silt__DIR/min.sh"
+. "$__silt__DIR/run.sh"
 . "$__silt__DIR/difference.sh"
 . "$__silt__DIR/intersect.sh"
 . "$__silt__DIR/merge.sh"

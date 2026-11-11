@@ -1,0 +1,25 @@
+run renamed.awk
+as records get .records
+as first get .records[0]
+run @first whole.awk
+run @records whole.awk
+run summary.awk --with $first --arg status passed --arg separator ,\040
+run summary.awk --arg status failed --with $records --arg separator +
+as none arr
+run @none renamed.awk
+run @none kinds.awk
+run @none whole.awk
+as scalar get .suite
+run @scalar kinds.awk
+run @scalar whole.awk
+run @first kinds.awk
+run missing.awk
+run-bare renamed.awk
+run renamed.awk --sorted
+run summary.awk --with
+run summary.awk --arg status
+run summary.awk --arg a-b c
+run shouted.awk --load shout.awk
+run shouted.awk --load missing.awk
+run shouted.awk --load
+read-register

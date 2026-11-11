@@ -1,0 +1,143 @@
+## run renamed.awk
+0.0:map
+1."title":str="unit/build"
+1."state":str="passed"
+1."reads":list
+2.0:str="lib/a.sh"
+2.1:str="lib/b.sh"
+1."owner":null
+0.1:map
+1."title":str="unit/test \"quoted\""
+1."state":str="failed"
+1."reads":list
+1."owner":null
+0.2:map
+1."title":str="unit/lint"
+1."state":str="passed"
+1."reads":null
+1."owner":null
+## as records get .records
+0.0:map
+1."name":str="build"
+1."status":str="passed"
+1."reads":list
+2.0:str="lib/a.sh"
+2.1:str="lib/b.sh"
+1."owner":null
+0.1:map
+1."name":str="test \"quoted\""
+1."status":str="failed"
+1."reads":list
+0.2:map
+1."name":str="lint"
+1."status":str="passed"
+1."tries":int=3
+## as first get .records[0]
+0."name":str="build"
+0."status":str="passed"
+0."reads":list
+1.0:str="lib/a.sh"
+1.1:str="lib/b.sh"
+0."owner":null
+## run @first whole.awk
+0."name":str="build"
+0."status":str="passed"
+0."reads":list
+1.0:str="lib/a.sh"
+1.1:str="lib/b.sh"
+0."owner":null
+## run @records whole.awk
+0.0:map
+1."name":str="build"
+1."status":str="passed"
+1."reads":list
+2.0:str="lib/a.sh"
+2.1:str="lib/b.sh"
+1."owner":null
+0.1:map
+1."name":str="test \"quoted\""
+1."status":str="failed"
+1."reads":list
+0.2:map
+1."name":str="lint"
+1."status":str="passed"
+1."tries":int=3
+## run summary.awk --with $first --arg status passed --arg separator ,\040
+2 build, lint | tries 3 | owner present 0 | other opens on name
+## run summary.awk --arg status failed --with $records --arg separator +
+1 test "quoted" | tries 3 | owner present 0 | other opens on 0
+## as none arr
+0.:list
+## run @none renamed.awk
+0.:list
+## run @none kinds.awk
+0."type":str="list"
+0."members":int=0
+0."whole":list
+0."alone":list
+1.0:map
+2."document":str="see below"
+## run @none whole.awk
+0.:list
+## as scalar get .suite
+0.:str="unit"
+## run @scalar kinds.awk
+0."type":str="str"
+0."members":int=0
+0."whole":str="unit"
+0."alone":list
+1.0:map
+2."document":str="see below"
+## run @scalar whole.awk
+0.:str="unit"
+## run @first kinds.awk
+0."type":str="map"
+0."members":int=4
+0."whole":map
+1."name":str="build"
+1."status":str="passed"
+1."reads":list
+2.0:str="lib/a.sh"
+2.1:str="lib/b.sh"
+1."owner":null
+0."alone":list
+1.0:map
+2."document":str="see below"
+## run missing.awk
+!! 1 ERROR: silt: run takes an awk program in a file, and 'missing.awk' is not a file
+## run-bare renamed.awk
+!! 1 ERROR: silt: run takes a document after its program, and none was given
+## run renamed.awk --sorted
+!! 1 ERROR: silt: run does not know the option '--sorted'; it takes --with <document>, --arg <name> <value> and --load <file>
+## run summary.awk --with
+!! 1 ERROR: silt: run was given --with without what follows it
+## run summary.awk --arg status
+!! 1 ERROR: silt: run was given --arg without what follows it
+## run summary.awk --arg a-b c
+!! 1 ERROR: silt: run takes a name of letters, digits and underscores after --arg, not 'a-b'
+## run shouted.awk --load shout.awk
+0.0:str="BUILD!"
+0.1:str="TEST \"QUOTED\"!"
+0.2:str="LINT!"
+## run shouted.awk --load missing.awk
+!! 1 ERROR: silt: run takes an awk library in a file after --load, and 'missing.awk' is not a file
+## run shouted.awk --load
+!! 1 ERROR: silt: run was given --load without what follows it
+## read-register
+0."suite":str="unit"
+0."records":list
+1.0:map
+2."name":str="build"
+2."status":str="passed"
+2."reads":list
+3.0:str="lib/a.sh"
+3.1:str="lib/b.sh"
+2."owner":null
+1.1:map
+2."name":str="test \"quoted\""
+2."status":str="failed"
+2."reads":list
+1.2:map
+2."name":str="lint"
+2."status":str="passed"
+2."tries":int=3
