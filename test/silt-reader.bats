@@ -94,6 +94,21 @@ program_starts() {
   assert_equal "$(program_starts writers rm)" 0
 }
 
+@test "no process: on the shell tier filter, find, any and all with the library's predicates over 4,000 members start nothing beyond the import" {
+  command -v strace >/dev/null || skip "strace is not installed"
+  wide_map 4000 > "$BATS_TEST_TMPDIR/wide.silt"
+  export SILT_THRESHOLD=1000000
+  assert_equal "$(process_starts predicates)" "$(process_starts import)"
+}
+
+@test "hand-off: past the threshold filter, find, any and all with a predicate start one awk each, and none for a member" {
+  command -v strace >/dev/null || skip "strace is not installed"
+  wide_map 4000 > "$BATS_TEST_TMPDIR/wide.silt"
+  unset SILT_THRESHOLD
+  process_starts predicates >/dev/null
+  assert_equal "$(awk_starts predicates)" 4
+}
+
 @test "subshells: two subshells of one process merging and setting at once never read each other's document, under dash and bash" {
   for shell in dash bash; do
     run "$shell" "$REPO/test/silt-workers.sh" "$REPO/shell/silt/api.sh" 300

@@ -51,6 +51,16 @@ member itself.
     silt__filter named "$names" silt__text_is_not . ''
     silt__filter areas "$labels" silt__text_starts_with . area/
 
+A predicate answers the way a verb does. Its first argument is the name of
+the variable to answer in, and it assigns `true` or `false` to that
+variable. It prints nothing and starts no process, so the verb reads the
+answer without a command substitution. A predicate a caller writes MUST
+answer the same way.
+
+A verb that takes a predicate starts no process for a document under the
+threshold. Past the threshold it starts one awk for its walk, however many
+members the document has, and none for a member.
+
 A call site that needs more than one of these can express gets a named
 predicate in its own module. That predicate can call the ones SILT
 provides.

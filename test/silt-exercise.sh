@@ -3,11 +3,13 @@
 # test/silt-reader.bats, under whatever shell runs it. Its functions carry the
 # exercise__ prefix because it sources the library into its own shell.
 #
-# Usage: <shell> test/silt-exercise.sh <api.sh> <document> import|verbs|writers|timed
+# Usage: <shell> test/silt-exercise.sh <api.sh> <document> import|verbs|writers|predicates|timed
 #
 #   import  sources the library and reads the document, exercise__nothing more
 #   verbs   runs type, get, string, has, len, keys and each over it
 #   writers runs set with one pair, set with two pairs and patch over it
+#   predicates runs filter, find, any and all over it, each with one of the
+#           library's predicates
 #   timed   runs get, len and each, then prints the get's answer, the len and
 #           the milliseconds the three took, one per line
 
@@ -21,6 +23,7 @@ main() {
     import) ;;
     verbs) exercise__run_verbs ;;
     writers) exercise__run_writers ;;
+    predicates) exercise__run_predicates ;;
     timed) exercise__run_timed ;;
     *)
       printf 'silt-exercise: %s is not a mode\n' "$3" >&2
@@ -32,7 +35,7 @@ main() {
 # The library, the document and the mode are all required.
 exercise__require_usage() {
   if [ "$#" -ne 3 ]; then
-    printf 'usage: silt-exercise.sh <api.sh> <document> import|verbs|writers|timed\n' >&2
+    printf 'usage: silt-exercise.sh <api.sh> <document> import|verbs|writers|predicates|timed\n' >&2
     exit 2
   fi
 }
@@ -65,6 +68,16 @@ exercise__run_writers() {
   silt__set w "$DOC" .key7 '0.:str="seven"'
   silt__set w "$DOC" .key8 '0.:str="eight"' .key9 '0.:str="nine"'
   silt__patch w "$DOC" .key10 '0.:str="ten"'
+}
+
+# filter, find, any and all once over the document's members, each with one
+# of the library's predicates. No member matches before the last, so every
+# verb asks its predicate about every member.
+exercise__run_predicates() {
+  silt__filter f "$DOC" silt__text_is . 'value number 7'
+  silt__find d "$DOC" silt__text_starts_with . 'value number 3999'
+  silt__any a "$DOC" silt__text_is . 'no member has this text'
+  silt__all l "$DOC" silt__text_is_not . 'no member has this text'
 }
 
 # get, len and each over the document, timed with date, which is outside the
