@@ -21,7 +21,9 @@
 # scalar, len, keys, canon, unique, is_true, is_false, is_zero, references,
 # to_json, to_yaml, to_toml, dump, dump-<format>, which sets SILT_DUMP, first, last, sum, values, entries and
 # from_entries take the document; sort_by, group_by, min and max take it and
-# then paths, or none; pop and shift take it and answer the element and the rest, and
+# then paths, or none; run takes an awk program, a file beside the calls
+# file, and then the words of its options, and run-bare takes the program
+# and no document; pop and shift take it and answer the element and the rest, and
 # pop-rest and shift-rest answer the rest alone, and pop-element and
 # shift-element call the verb without a variable for the rest;
 # take and take_last take it and a count; slice takes it and two indices; line takes it and answers
@@ -112,7 +114,7 @@ transcript__run_call() {
 
   # shellcheck disable=SC2086  # a writer's words are split on purpose
   case "${1%% *}" in
-    obj | arr | bind | with | apply | push | set | patch | get-first | string-first | concat | join | split | equals | pick | without | merge | deepmerge | flatten | difference | intersect | validate | to_strh | to_strt | sort_by | group_by | min | max) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
+    obj | arr | bind | with | apply | push | set | patch | get-first | string-first | concat | join | split | equals | pick | without | merge | deepmerge | flatten | difference | intersect | validate | to_strh | to_strt | sort_by | group_by | min | max | run | run-bare) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
     map | filter | find | any | all | reduce | project) transcript__run_collection "${1%% *}" $__transcript__run_call__rest ;;
     *) transcript__run_verb "${1%% *}" "$__transcript__run_call__rest" ;;
   esac
@@ -148,8 +150,21 @@ transcript__run_writer() {
     apply) golden__capture silt__apply "$DOCUMENT_FOR_CALL" "$@" ;;
     get-first | string-first) golden__capture "silt__${__transcript__run_writer__verb%-first}" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" "$@" ;;
     to_strh | to_strt) transcript__translate "$__transcript__run_writer__verb" "$DOCUMENT_FOR_CALL" "$@" ;;
+    run) transcript__run_program "$DOCUMENT_FOR_CALL" "$@" ;;
+    run-bare) transcript__run_program '' "$@" ;;
     *) golden__capture "silt__$__transcript__run_writer__verb" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" "$@" ;;
   esac
+}
+
+# Runs run on a document, the awk program its first word names beside the
+# calls file, and the words after it, which are run's options.
+transcript__run_program() {
+  __transcript__run_program__document="$1"
+  __transcript__run_program__program="$(golden__file_of "$2")"
+  shift 2
+
+  golden__capture silt__run GOLDEN_ANSWER "$__transcript__run_program__program" "$__transcript__run_program__document" "$@"
+  transcript__name_files_from_calls
 }
 
 # Runs a verb over each on its words: project on its keys, the others on the
@@ -297,12 +312,16 @@ transcript__take_end() {
   fi
 }
 
-# Runs load on a JSON file and a schema file. A message names a file by its
-# whole path, which is different in every checkout, so the directory of the
-# calls file is taken out of the messages.
+# Runs load on a JSON file and a schema file.
 transcript__load() {
   golden__capture silt__load GOLDEN_ANSWER "$(golden__file_of "$1")" "$(golden__file_of "$2")"
+  transcript__name_files_from_calls
+}
 
+# Takes the directory of the calls file out of the messages of the call
+# just run. A message names a file by its whole path, which is different in
+# every checkout.
+transcript__name_files_from_calls() {
   MESSAGES="$(cat "$GOLDEN_STDERR")"
   while [ "$MESSAGES" != "${MESSAGES#*"$GOLDEN_CALLS_DIR/"}" ]; do
     MESSAGES="${MESSAGES%%"$GOLDEN_CALLS_DIR/"*}${MESSAGES#*"$GOLDEN_CALLS_DIR/"}"
