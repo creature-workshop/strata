@@ -5,18 +5,8 @@ silt__join: makes one text from a list.
 MODULE
 
 : <<'PUB_FUN'
-Joins a list's elements into one text, with the separator between them.
-Each element is read the way silt__string reads it: a str unquoted, another
-scalar as written, null as the word null. Refuses a list that holds a
-collection.
-
-  silt__join text '0.0:str="a"
-  0.1:str="b"' ', '   ->  text='a, b'
-
-args:
-  $1  The name of the variable to answer in
-  $2  The list
-  $3  The separator; empty when omitted
+The plumbing of @join: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_join.sh documents it.
 PUB_FUN
 silt__join() {
   __silt__out "$1" || return 1

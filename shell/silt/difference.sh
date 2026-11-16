@@ -5,17 +5,8 @@ silt__difference: the elements of one list that another does not hold.
 MODULE
 
 : <<'PUB_FUN'
-Answers the elements of the first list whose value the second list holds
-nowhere, in their order and renumbered from 0. Two elements are the same
-value when silt__equals says so. This runs in awk whatever the lists' size.
-
-  silt__difference doc '0.0:int=1
-  0.1:int=2' '0.0:int=2'   ->  doc='0.0:int=1'
-
-args:
-  $1  The name of the variable to answer in
-  $2  The list
-  $3  The list whose values are taken out
+The plumbing of @difference: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_difference.sh documents it.
 PUB_FUN
 silt__difference() {
   __silt__out "$1" || return 1

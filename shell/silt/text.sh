@@ -127,15 +127,8 @@ __silt__octal() {
 }
 
 : <<'PUB_FUN'
-Answers the text a JSON string literal spells: the quotes off and every
-escape decoded.
-
-  silt__unwrap text '"lib/a.sh"'          ->  text=lib/a.sh
-  silt__unwrap text '"a \"b\"\nc"'        ->  text=a "b"<newline>c
-
-args:
-  $1  The name of the variable to answer in
-  $2  The literal, quotes included
+The plumbing of @unwrap: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_text.sh documents it.
 PUB_FUN
 silt__unwrap() {
   __silt__out "$1" || return 1
@@ -168,15 +161,8 @@ silt__unwrap() {
 }
 
 : <<'PUB_FUN'
-Answers the JSON string literal that spells <text>: quoted, with the quote,
-the backslash and every control character escaped, the four JSON names by
-letter and the rest as \u00XX.
-
-  silt__wrap literal 'a "b"'   ->  literal='"a \"b\""'
-
-args:
-  $1  The name of the variable to answer in
-  $2  The text
+The plumbing of @wrap: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_text.sh documents it.
 PUB_FUN
 silt__wrap() {
   __silt__out "$1" || return 1

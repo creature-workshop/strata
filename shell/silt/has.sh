@@ -5,13 +5,8 @@ silt__has: whether a path holds a value.
 MODULE
 
 : <<'PUB_FUN'
-Answers true when the document holds a value at the path, a null included,
-and false otherwise.
-
-args:
-  $1  The name of the variable to answer in
-  $2  The document
-  $3  The path
+The plumbing of @has: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_has.sh documents it.
 PUB_FUN
 silt__has() {
   __silt__out "$1" || return 1

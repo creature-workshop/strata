@@ -6,21 +6,8 @@ elements taken from either end.
 MODULE
 
 : <<'PUB_FUN'
-Answers the last element of a list and, when the caller names a second
-variable, the list without that element. For an empty list the element is
-the empty string, which no document is, and the rest is the empty list.
-Refuses a document that is not a list.
-
-  silt__pop last rest '0.0:str="a"
-  0.1:str="b"'   ->  last='0.:str="b"'  rest='0.0:str="a"'
-
-  silt__pop last '0.0:str="a"
-  0.1:str="b"'   ->  last='0.:str="b"'
-
-args:
-  $1  Name of the variable that receives the last element
-  $2  Name of the variable that receives the rest of the list, when given
-  $3  The list
+The plumbing of @pop: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_lists.sh documents it.
 PUB_FUN
 silt__pop() {
   if [ "$#" -lt 3 ]; then
@@ -41,21 +28,8 @@ silt__pop() {
 }
 
 : <<'PUB_FUN'
-Answers the first element of a list and, when the caller names a second
-variable, the list without that element, numbered from 0. For an empty
-list the element is the empty string, which no document is, and the rest
-is the empty list. Refuses a document that is not a list.
-
-  silt__shift first rest '0.0:str="a"
-  0.1:str="b"'   ->  first='0.:str="a"'  rest='0.0:str="b"'
-
-  silt__shift first '0.0:str="a"
-  0.1:str="b"'   ->  first='0.:str="a"'
-
-args:
-  $1  Name of the variable that receives the first element
-  $2  Name of the variable that receives the rest of the list, when given
-  $3  The list
+The plumbing of @shift: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_lists.sh documents it.
 PUB_FUN
 silt__shift() {
   if [ "$#" -lt 3 ]; then
@@ -73,17 +47,8 @@ silt__shift() {
 }
 
 : <<'PUB_FUN'
-Answers the first <count> elements of a list. When the list has fewer, it
-answers the whole list and logs a warning. Refuses a document that is not a
-list, and a count that is not a whole number of 0 or more.
-
-  silt__take doc '0.0:str="a"
-  0.1:str="b"' 1   ->  doc='0.0:str="a"'
-
-args:
-  $1  Name of the variable that receives the result
-  $2  The list
-  $3  How many elements to take
+The plumbing of @take: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_lists.sh documents it.
 PUB_FUN
 silt__take() {
   __silt__require_list "${2:-}" take || return 1
@@ -99,17 +64,8 @@ silt__take() {
 }
 
 : <<'PUB_FUN'
-Answers the last <count> elements of a list, numbered from 0. When the list
-has fewer, it answers the whole list and logs a warning. Refuses a document
-that is not a list, and a count that is not a whole number of 0 or more.
-
-  silt__take_last doc '0.0:str="a"
-  0.1:str="b"' 1   ->  doc='0.0:str="b"'
-
-args:
-  $1  Name of the variable that receives the result
-  $2  The list
-  $3  How many elements to take
+The plumbing of @take_last: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_lists.sh documents it.
 PUB_FUN
 silt__take_last() {
   __silt__require_list "${2:-}" take_last || return 1

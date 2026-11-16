@@ -5,15 +5,8 @@ silt__arr: builds a list from documents.
 MODULE
 
 : <<'PUB_FUN'
-Builds a list from the documents given, in order, indexed from 0. With no
-documents it builds the empty list.
-
-  silt__arr doc '0.:str="a"' '0.:int=2'   ->  doc='0.0:str="a"
-                                                   0.1:int=2'
-
-args:
-  $1  The name of the variable to answer in
-  $@  The documents
+The plumbing of @arr: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_arr.sh documents it.
 PUB_FUN
 silt__arr() {
   __silt__out "$1" || return 1

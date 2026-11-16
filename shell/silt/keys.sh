@@ -5,16 +5,8 @@ silt__keys: the members' keys, as a list document.
 MODULE
 
 : <<'PUB_FUN'
-Answers the members' keys as a list document: a map's as str leaves holding
-the key literals in the order they sit, a list's as int leaves.
-
-  silt__keys names '0."b":int=1
-  0."a":int=2'   ->  names='0.0:str="b"
-  0.1:str="a"'
-
-args:
-  $1  The name of the variable to answer in
-  $2  The document
+The plumbing of @keys: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_keys.sh documents it.
 PUB_FUN
 silt__keys() {
   __silt__out "$1" || return 1

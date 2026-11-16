@@ -5,20 +5,8 @@ silt__pluck: the value at a path in each member, as a list.
 MODULE
 
 : <<'PUB_FUN'
-Answers a list holding, for each member in order, the value at the path
-inside it, as a document of its own; null where a member holds nothing at
-the path.
-
-  silt__pluck names '0.0:map
-  1."name":str="build"
-  0.1:map
-  1."name":str="test"' .name   ->  names='0.0:str="build"
-                                          0.1:str="test"'
-
-args:
-  $1  The name of the variable to answer in
-  $2  The document, a map or a list
-  $3  The path into each member
+The plumbing of @pluck: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_pluck.sh documents it.
 PUB_FUN
 silt__pluck() {
   __silt__out "$1" || return 1

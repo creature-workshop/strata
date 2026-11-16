@@ -5,16 +5,8 @@ silt__concat: joins two lists end to end.
 MODULE
 
 : <<'PUB_FUN'
-Appends the second list's elements to the first, renumbering them to carry
-on from the first list's count.
-
-  silt__concat doc '0.0:str="a"' '0.0:str="b"'   ->  doc='0.0:str="a"
-                                                          0.1:str="b"'
-
-args:
-  $1  The name of the variable to answer in
-  $2  The first list
-  $3  The second list
+The plumbing of @concat: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_concat.sh documents it.
 PUB_FUN
 silt__concat() {
   __silt__out "$1" || return 1

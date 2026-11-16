@@ -19,17 +19,8 @@ are assigned as the empty string.
 MODULE
 
 : <<'PUB_FUN'
-Assigns a field of a document to a variable, for each key given. Refuses a
-prefix or a key that cannot be part of a variable name, and two keys that
-give the same variable. When it refuses, it assigns nothing.
-
-  silt__bind __close__ "$issue" id state.type
-    ->  __close__id=42  __close__state_type=started
-
-args:
-  $1  The prefix of the variables' names
-  $2  The document
-  $@  The keys
+The plumbing of @bind: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_bind.sh documents it.
 PUB_FUN
 silt__bind() {
   __silt__bind__prefix="${1:-}"
@@ -44,14 +35,8 @@ silt__bind() {
 }
 
 : <<'PUB_FUN'
-Unsets the variable that each key gives. It is the pair of silt__bind, and
-takes the same prefix and keys.
-
-  silt__unbind __close__ id state.type
-
-args:
-  $1  The prefix of the variables' names
-  $@  The keys
+The plumbing of @unbind: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_bind.sh documents it.
 PUB_FUN
 silt__unbind() {
   __silt__unbind__prefix="${1:-}"
@@ -62,22 +47,12 @@ silt__unbind() {
 }
 
 : <<'PUB_FUN'
-Assigns a field of a document to a variable for each key, runs a command,
-and then puts every variable back as it was: a variable that had a value
-gets it back, and any other is unset. Returns the command's status.
-
-The command can call silt__with itself, with the same prefix and keys.
-
-  silt__with __close__ "$issue" id state.type -- close_issue "$reason"
+The plumbing of @with: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_bind.sh documents it.
 
 registers:
   __silt__bind__WITHS  How many calls of silt__with are running, this one
                        included
-
-args:
-  $1  The prefix of the variables' names
-  $2  The document
-  $@  The keys, then --, then the command and its arguments
 PUB_FUN
 silt__with() {
   __silt__bind__WITHS=$((${__silt__bind__WITHS:-0} + 1))

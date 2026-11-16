@@ -6,18 +6,8 @@ arguments.
 FRAGMENT
 
 : <<'PUB_FUN'
-Runs a command once, with the text of each element of a list added after
-the command's own arguments, and returns the command's status. Each element
-is read the way silt__string reads it: a str unquoted, another scalar as
-written. Use it for a command that takes any number of files or names.
-
-  silt__apply "$files" git add --   ->  runs: git add -- a.sh b.sh
-
-Refuses a document that is not a list, and a call with no command.
-
-args:
-  $1  The list
-  $@  The command and its own arguments
+The plumbing of @apply: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_apply.sh documents it.
 PUB_FUN
 silt__apply() {
   __silt__require_list "${1:-}" apply || return 1

@@ -5,16 +5,8 @@ silt__scalar: the value text of a scalar document.
 MODULE
 
 : <<'PUB_FUN'
-Answers the value text of a scalar document: the JSON literal of a str, the
-digits of an int, "true" or "false", and the empty string for a null or an
-empty collection.
-
-  silt__scalar text '0.:str="bats"'   ->  text='"bats"'
-  silt__scalar text '0.:int=3'        ->  text=3
-
-args:
-  $1  The name of the variable to answer in
-  $2  The document, one keyless line
+The plumbing of @scalar: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_scalar.sh documents it.
 PUB_FUN
 silt__scalar() {
   __silt__out "$1" || return 1

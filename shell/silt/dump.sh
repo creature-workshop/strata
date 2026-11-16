@@ -6,41 +6,8 @@ SILT_DUMP names.
 FRAGMENT
 
 : <<'PUB_FUN'
-Answers the document as text for a person to read, for a log or a debug
-message. The environment variable SILT_DUMP chooses the format:
-
-  yaml  YAML in block style, as silt__to_yaml writes it; the default
-  json  JSON on several lines, indented by two spaces for each level, as jq
-        prints a value
-  silt  the document as it is
-
-Refuses any other value of SILT_DUMP.
-
-  doc="$(cat <<'SILT'
-  0."a":null
-  0."b":list
-  1.0:int=1
-  SILT
-  )"
-  silt__dump text "$doc"
-
-  text is:
-    a: null
-    b:
-      - 1
-
-  with SILT_DUMP=json, text is:
-    {
-      "a": null,
-      "b": [
-        1
-      ]
-    }
-
-args:
-  -s, --sort  Put the members of every map in canonical order
-  $1          The name of the variable to answer in
-  $2          The document
+The plumbing of @dump: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_dump.sh documents it.
 PUB_FUN
 silt__dump() {
   __silt__write_as __silt__dump__write "$@"

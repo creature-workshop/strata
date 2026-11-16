@@ -5,18 +5,8 @@ silt__find: the first member's value a predicate takes.
 MODULE
 
 : <<'PUB_FUN'
-Answers the value of the first member the predicate answers true for, as a
-document of its own, and the empty string, which no document is, when it
-takes none. The walk ends at that member. The predicate is called the way
-silt__filter calls one.
-
-  silt__find failed "$tests" has_status failed
-
-args:
-  $1  The name of the variable to answer in
-  $2  The document, a map or a list
-  $3  The predicate
-  $@  Extra arguments the predicate receives after the key and the value
+The plumbing of @find: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_find.sh documents it.
 PUB_FUN
 silt__find() {
   __silt__out "$1" || return 1

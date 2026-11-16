@@ -5,32 +5,13 @@ silt__get: the value at a path, as a document of its own.
 MODULE
 
 : <<'PUB_FUN'
-Answers the value at a path as a document of its own: a leaf becomes one
-keyless line, a collection becomes its members at depth 0, an empty
-collection or a null its one keyless line. Answers the empty string for a
-path nothing holds, which no document is.
-
-Given several paths, answers the value at the first path that holds a value
-that is not a null. When no path does, answers the document after
---default, or without --default what the last path holds.
-
-  silt__get nodes "$doc" .nodes .edges --default '0.:list'
-
-  silt__get runner "$doc" '.suites.unit.runner'   ->  runner='0.:str="bats"'
-  silt__get reads "$doc" '.suites.unit.tests'     ->  reads='0."test/a.bats":map
-                                                              1."reads":list
-                                                              2.0:str="lib/a.sh"'
+The plumbing of @get: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_get.sh documents it.
 
 registers:
   __silt__WANT   The depth the next segment should be at
   __silt__FOUND  Whether the value's own line has been reached
   __silt__AT     The depth of the value's own line
-
-args:
-  $1  The name of the variable to answer in
-  $2  The document
-  $@  The path, or several paths
-  --default  The document to answer when no path holds a value
 PUB_FUN
 silt__get() {
   if [ "$#" -ne 3 ]; then

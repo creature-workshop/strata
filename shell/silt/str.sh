@@ -5,14 +5,8 @@ silt__str: builds a str document from text.
 MODULE
 
 : <<'PUB_FUN'
-Builds a str document from text, quoted and escaped the way JSON writes a
-string.
-
-  silt__str doc 'lib/a.sh'   ->  doc='0.:str="lib/a.sh"'
-
-args:
-  $1  The name of the variable to answer in
-  $2  The text
+The plumbing of @str: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_str.sh documents it.
 PUB_FUN
 silt__str() {
   __silt__out "$1" || return 1

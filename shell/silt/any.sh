@@ -5,17 +5,8 @@ silt__any: whether a predicate takes any member.
 MODULE
 
 : <<'PUB_FUN'
-Answers true when the predicate answers true for some member, and false
-otherwise, the empty collection included. The walk ends at the first member
-taken. The predicate is called the way silt__filter calls one.
-
-  silt__any failing "$tests" has_status failed
-
-args:
-  $1  The name of the variable to answer in
-  $2  The document, a map or a list
-  $3  The predicate
-  $@  Extra arguments the predicate receives after the key and the value
+The plumbing of @any: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_any.sh documents it.
 PUB_FUN
 silt__any() {
   __silt__out "$1" || return 1

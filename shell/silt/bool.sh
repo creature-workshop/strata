@@ -5,14 +5,8 @@ silt__bool and silt__null: build a bool document and the null document.
 MODULE
 
 : <<'PUB_FUN'
-Builds a bool document from the word true or the word false. Refuses any
-other word.
-
-  silt__bool doc true   ->  doc='0.:bool=true'
-
-args:
-  $1  The name of the variable to answer in
-  $2  true or false
+The plumbing of @bool: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_bool.sh documents it.
 PUB_FUN
 silt__bool() {
   __silt__out "$1" || return 1
@@ -29,13 +23,8 @@ silt__bool() {
 }
 
 : <<'PUB_FUN'
-Builds the null document. A null is a value that a record holds on purpose.
-It is different from a field that is missing.
-
-  silt__null doc   ->  doc='0.:null'
-
-args:
-  $1  The name of the variable to answer in
+The plumbing of @null: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_bool.sh documents it.
 PUB_FUN
 silt__null() {
   __silt__out "$1" || return 1

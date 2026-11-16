@@ -5,16 +5,8 @@ silt__first and silt__last: the element at either end of a list.
 MODULE
 
 : <<'PUB_FUN'
-Answers the first element of a list as a document of its own. Answers the
-empty string for an empty list, which no document is. Refuses a document
-that is not a list.
-
-  silt__first doc '0.0:str="a"
-  0.1:str="b"'   ->  doc='0.:str="a"'
-
-args:
-  $1  Name of the variable that receives the result
-  $2  The list
+The plumbing of @first: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_lists.sh documents it.
 PUB_FUN
 silt__first() {
   __silt__require_list "$2" first || return 1
@@ -22,16 +14,8 @@ silt__first() {
 }
 
 : <<'PUB_FUN'
-Answers the last element of a list as a document of its own. Answers the
-empty string for an empty list, which no document is. Refuses a document
-that is not a list.
-
-  silt__last doc '0.0:str="a"
-  0.1:str="b"'   ->  doc='0.:str="b"'
-
-args:
-  $1  Name of the variable that receives the result
-  $2  The list
+The plumbing of @last: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_lists.sh documents it.
 PUB_FUN
 silt__last() {
   __silt__require_list "$2" last || return 1

@@ -5,27 +5,13 @@ silt__slice: part of a list, from one index up to another.
 MODULE
 
 : <<'PUB_FUN'
-Answers the elements of a list from the index <from> up to, but not
-including, the index <to>, as a list numbered from 0. An index past the end
-of the list takes what there is, so the answer may be shorter than asked,
-or the empty list. Refuses a document that is not a list, and an index that
-is not a whole number of 0 or more.
-
-  silt__slice doc '0.0:str="a"
-  0.1:str="b"
-  0.2:str="c"' 1 3   ->  doc='0.0:str="b"
-                              0.1:str="c"'
+The plumbing of @slice: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_lists.sh documents it.
 
 registers:
   __silt__FROM     The index of the first element to keep
   __silt__TO       The index after the last element to keep
   __silt__KEEPING  Whether the element being read is one to keep
-
-args:
-  $1  Name of the variable that receives the result
-  $2  The list
-  $3  The index of the first element to keep
-  $4  The index after the last element to keep
 PUB_FUN
 silt__slice() {
   __silt__out "$1" || return 1

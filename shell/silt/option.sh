@@ -7,18 +7,8 @@ each one here, so every option has a name and a default in one place.
 MODULE
 
 : <<'PUB_FUN'
-Answers the text of the option at a key, the way silt__string answers it.
-Answers the default when the map does not hold the key, or holds a null or
-a collection there. The key is the option's name as plain text, not a path.
-
-  silt__option how '0."arrays":str="union"' arrays replace   ->  how=union
-  silt__option how '0.:map' arrays replace                   ->  how=replace
-
-args:
-  $1  The name of the variable to answer in
-  $2  The map of options
-  $3  The key
-  $4  The default; the empty string when not given
+The plumbing of @option: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_option.sh documents it.
 PUB_FUN
 silt__option() {
   __silt__out "$1" || return 1
@@ -32,18 +22,8 @@ silt__option() {
 }
 
 : <<'PUB_FUN'
-Answers true when the option at a key has the text given, and false
-otherwise. An option that is missing or null never matches, whatever text
-is given.
-
-  silt__option_is yes '0."arrays":str="union"' arrays union   ->  yes=true
-  silt__option_is yes '0.:map' arrays ''                      ->  yes=false
-
-args:
-  $1  The name of the variable to answer in
-  $2  The map of options
-  $3  The key
-  $4  The text to compare with
+The plumbing of @option_is: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_option.sh documents it.
 PUB_FUN
 silt__option_is() {  # file-segment-check: allow -- a public verb's name is the API's; renaming it is STRATA-217's call, not the sweep's
   __silt__out "$1" || return 1
