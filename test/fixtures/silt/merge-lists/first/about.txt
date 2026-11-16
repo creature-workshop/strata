@@ -1,0 +1,1 @@
+A map with lists, a map and a scalar under its keys.

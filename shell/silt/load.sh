@@ -14,7 +14,7 @@ schema. Each validation error is logged on its own line.
   silt__load manifest manifest.json schema/manifest.schema.json
 
 A schema that refers to other schema documents is outside what this verb
-reads. Use silt__validate for it.
+reads. Use silt__validate_file for it.
 
 args:
   $1  The name of the variable to answer in

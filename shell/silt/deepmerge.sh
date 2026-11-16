@@ -57,7 +57,8 @@ silt__deepmerge() {
 
   __silt__require_map "${2:-}" deepmerge || return 1
   __silt__require_map "${3:-}" deepmerge || return 1
-  __silt__deepmerge__take_lists "${4:-}" "${5:-}" || return 1
+  __silt__lists__take deepmerge "${4:-}" "${5:-}" || return 1
+  __silt__deepmerge__LISTS="$__silt__lists__POLICY"
 
   __silt__deepmerge__MERGED="$2"
   __silt__deepmerge__OVER="$3"
@@ -68,29 +69,6 @@ silt__deepmerge() {
 
   __silt__ANSWER="$__silt__deepmerge__MERGED"
   __silt__answer__in "$__silt__deepmerge__out"
-}
-
-: <<'FUN'
-Sets __silt__deepmerge__LISTS from the arguments after the two maps. Refuses a flag
-that is not --lists, and a value that is not replace, concat or union.
-
-args:
-  $1  --lists, or nothing
-  $2  replace, concat or union
-FUN
-__silt__deepmerge__take_lists() {
-  __silt__deepmerge__LISTS=replace
-  if [ -z "$1" ]; then
-    return 0
-  fi
-
-  case "$1 $2" in
-    '--lists replace' | '--lists concat' | '--lists union') __silt__deepmerge__LISTS="$2" ;;
-    *)
-      __silt__fail "deepmerge accepts --lists replace, concat or union, not '$1 $2'"
-      return 1
-      ;;
-  esac
 }
 
 : <<'FUN'
@@ -170,14 +148,7 @@ args:
 FUN
 __silt__deepmerge__merge_lists() {
   __silt__deepmerge__merge_lists__path="$1"
-  __silt__deepmerge__merge_lists__list="$3"
+  __silt__lists__join "$__silt__deepmerge__LISTS" "$2" "$3" || return 1
 
-  if [ "$__silt__deepmerge__LISTS" != replace ]; then
-    silt__concat __silt__deepmerge__merge_lists__list "$2" "$3" || return 1
-  fi
-  if [ "$__silt__deepmerge__LISTS" = union ]; then
-    silt__unique __silt__deepmerge__merge_lists__list "$__silt__deepmerge__merge_lists__list" || return 1
-  fi
-
-  silt__set __silt__deepmerge__MERGED "$__silt__deepmerge__MERGED" "$__silt__deepmerge__merge_lists__path" "$__silt__deepmerge__merge_lists__list"
+  silt__set __silt__deepmerge__MERGED "$__silt__deepmerge__MERGED" "$__silt__deepmerge__merge_lists__path" "$__silt__lists__JOINED"
 }

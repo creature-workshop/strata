@@ -1,0 +1,155 @@
+## as first from_json first/first.json
+0."a":int=1
+0."l":list
+1.0:int=1
+1.1:int=2
+0."m":map
+1."x":int=1
+0."s":list
+1.0:int=1
+0."only":list
+1.0:int=9
+## as second from_json second/second.json
+0."l":list
+1.0:int=2
+1.1:int=3
+1.2:map
+2."k":int=1
+0."m":map
+1."y":int=2
+0."s":str="text"
+0."b":list
+1.0:int=4
+## as merged merge @first $second
+0."a":int=1
+0."l":list
+1.0:int=2
+1.1:int=3
+1.2:map
+2."k":int=1
+0."m":map
+1."y":int=2
+0."s":str="text"
+0."only":list
+1.0:int=9
+0."b":list
+1.0:int=4
+## to_json @merged
+{"a":1,"l":[2,3,{"k":1}],"m":{"y":2},"s":"text","only":[9],"b":[4]}
+## as replaced merge @first $second --lists replace
+0."a":int=1
+0."l":list
+1.0:int=2
+1.1:int=3
+1.2:map
+2."k":int=1
+0."m":map
+1."y":int=2
+0."s":str="text"
+0."only":list
+1.0:int=9
+0."b":list
+1.0:int=4
+## equals @merged $replaced
+true
+## as joined merge @first $second --lists concat
+0."a":int=1
+0."l":list
+1.0:int=1
+1.1:int=2
+1.2:int=2
+1.3:int=3
+1.4:map
+2."k":int=1
+0."m":map
+1."y":int=2
+0."s":str="text"
+0."only":list
+1.0:int=9
+0."b":list
+1.0:int=4
+## to_json @joined
+{"a":1,"l":[1,2,2,3,{"k":1}],"m":{"y":2},"s":"text","only":[9],"b":[4]}
+## as united merge @first $second --lists union
+0."a":int=1
+0."l":list
+1.0:int=1
+1.1:int=2
+1.2:int=3
+1.3:map
+2."k":int=1
+0."m":map
+1."y":int=2
+0."s":str="text"
+0."only":list
+1.0:int=9
+0."b":list
+1.0:int=4
+## to_json @united
+{"a":1,"l":[1,2,3,{"k":1}],"m":{"y":2},"s":"text","only":[9],"b":[4]}
+## as back merge @second $first --lists concat
+0."l":list
+1.0:int=2
+1.1:int=3
+1.2:map
+2."k":int=1
+1.3:int=1
+1.4:int=2
+0."m":map
+1."x":int=1
+0."s":list
+1.0:int=1
+0."b":list
+1.0:int=4
+0."a":int=1
+0."only":list
+1.0:int=9
+## to_json @back
+{"l":[2,3,{"k":1},1,2],"m":{"x":1},"s":[1],"b":[4],"a":1,"only":[9]}
+## as twice merge @first $first --lists union
+0."a":int=1
+0."l":list
+1.0:int=1
+1.1:int=2
+0."m":map
+1."x":int=1
+0."s":list
+1.0:int=1
+0."only":list
+1.0:int=9
+## equals @first $twice
+true
+## as none obj
+0.:map
+## as onto merge @none $first --lists concat
+0."a":int=1
+0."l":list
+1.0:int=1
+1.1:int=2
+0."m":map
+1."x":int=1
+0."s":list
+1.0:int=1
+0."only":list
+1.0:int=9
+## equals @first $onto
+true
+## as under merge @first $none --lists union
+0."a":int=1
+0."l":list
+1.0:int=1
+1.1:int=2
+0."m":map
+1."x":int=1
+0."s":list
+1.0:int=1
+0."only":list
+1.0:int=9
+## equals @first $under
+true
+## merge @first $second --lists sorted
+!! 1 ERROR: silt: merge accepts --lists replace, concat or union, not '--lists sorted'
+## merge @first $second --lists
+!! 1 ERROR: silt: merge accepts --lists replace, concat or union, not '--lists '
+## merge @first $second --arrays union
+!! 1 ERROR: silt: merge accepts --lists replace, concat or union, not '--arrays union'

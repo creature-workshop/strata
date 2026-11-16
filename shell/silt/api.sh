@@ -94,6 +94,7 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__flatten   a tree of named nodes as one map, keyed by the path to each
   silt__references the other schema documents a schema refers to
   silt__validate  the validation errors of a document against a JSON Schema
+  silt__validate_file the same, the schema and what it refers to read from files
   silt__read      the document a text spells, written as SILT or as JSON
   silt__to_line   a document written on one line
   silt__from_line a document read back from one line
@@ -210,10 +211,12 @@ __silt__home || return 1
 . "$__silt__DIR/run.sh"
 . "$__silt__DIR/difference.sh"
 . "$__silt__DIR/intersect.sh"
+. "$__silt__DIR/lists.sh"
 . "$__silt__DIR/merge.sh"
 . "$__silt__DIR/deepmerge.sh"
 . "$__silt__DIR/flatten.sh"
 . "$__silt__DIR/validate.sh"
+. "$__silt__DIR/validate_file.sh"
 . "$__silt__DIR/translate.sh"
 . "$__silt__DIR/read.sh"
 . "$__silt__DIR/dump.sh"

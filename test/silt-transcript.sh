@@ -31,7 +31,7 @@
 # and from_line take the document; read takes text read through printf %b,
 # and read-register the text a register holds; get, string, has and pluck
 # take the document and a path; load takes a JSON file and a schema file, each beside the calls
-# file unless absolute; pick and without take the document and keys; string-or takes a default word, then the path;
+# file unless absolute, and validate_file takes the document and such a schema file; pick and without take the document and keys; string-or takes a default word, then the path;
 # get-first and string-first take the document and then words: paths, and
 # --default with its value;
 # from_json, from_yaml, from_toml and from_strh take a file, beside the calls
@@ -226,6 +226,7 @@ transcript__run_verb() {
     to_json | to_yaml | to_toml | dump) transcript__translate "$1" "$DOCUMENT_FOR_CALL" ;;
     dump-*) transcript__dump_as "${1#dump-}" "$DOCUMENT_FOR_CALL" ;;
     load) transcript__load "${2%% *}" "${2#* }" ;;
+    validate_file) transcript__validate_file "$2" ;;
     first | last | sum | values | entries | from_entries) golden__capture "silt__$1" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" ;;
     take | take_last) golden__capture "silt__$1" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" "$2" ;;
     pop | shift) transcript__take_end "$1" ;;
@@ -321,6 +322,12 @@ transcript__take_end() {
   if [ "$GOLDEN_STATUS" -eq 0 ]; then
     GOLDEN_ANSWER="element:$__silt__NL$ELEMENT${__silt__NL}rest:$__silt__NL$REST"
   fi
+}
+
+# Runs validate_file on the document and a schema file.
+transcript__validate_file() {
+  golden__capture silt__validate_file GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" "$(golden__file_of "$1")"
+  transcript__name_files_from_calls
 }
 
 # Runs load on a JSON file and a schema file.

@@ -1,0 +1,1 @@
+{"type":"object","properties":{"org":{"$ref":"types.json#/$defs/name"},"count":{"$ref":"deep/limits.json#/$defs/small"},"unit":{"$ref":"deep/limits.json#/$defs/unit"},"plan":{"$ref":"plans.json"},"note":{"$ref":"broken.json"}}}

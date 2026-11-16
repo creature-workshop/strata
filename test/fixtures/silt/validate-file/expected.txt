@@ -1,0 +1,43 @@
+## as org str ksoft
+0.:str="ksoft"
+## as loud str KSoft
+0.:str="KSoft"
+## validate_file @org schemas/plain.json
+0.:list
+## as three obj n 0.:int=3
+0."n":int=3
+## validate_file @three schemas/plain.json
+0.0:str="$: expected string, got object"
+## as good obj org $org count 0.:int=3 unit 0.:str="kg"
+0."org":str="ksoft"
+0."count":int=3
+0."unit":str="kg"
+## validate_file @good schemas/root.json
+0.:list
+## as bad obj org $loud count 0.:int=12 unit 0.:str="mile"
+0."org":str="KSoft"
+0."count":int=12
+0."unit":str="mile"
+## validate_file @bad schemas/root.json
+0.0:str="$.count: value 12 exceeds maximum 9"
+0.1:str="$.org: string \"KSoft\" does not match pattern ^[a-z]+$"
+0.2:str="$.unit: value mile is not in enum [\"kg\",\"m\"]"
+## as planned set @good .plan 0.:int=1
+0."org":str="ksoft"
+0."count":int=3
+0."unit":str="kg"
+0."plan":int=1
+## validate_file @planned schemas/root.json
+0.0:str="$.plan: unresolvable $ref 'plans.json'"
+## as noted set @good .note 0.:int=1
+0."org":str="ksoft"
+0."count":int=3
+0."unit":str="kg"
+0."note":int=1
+## validate_file @noted schemas/root.json
+0.0:str="$.note: unresolvable $ref 'broken.json'"
+## validate_file @good schemas/missing.json
+!! 1 ERROR: silt: validate_file found no schema at 'schemas/missing.json'
+## validate_file @good schemas/broken.json
+!! 1 ERROR: silt: json line 1: not a JSON value: not 
+ERROR: silt: validate_file could not read 'schemas/broken.json' as JSON

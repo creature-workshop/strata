@@ -1,0 +1,1 @@
+validate_file: a schema file, and the schema files it refers to, read from disk
