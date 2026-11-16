@@ -1,6 +1,7 @@
 # The element of a list that orders last, as a document of its own:
 # silt__max. Of several that tie it is the last, and the empty list answers
-# nothing. Loaded after lines.awk, order.awk, elements.awk and keyed.awk.
+# nothing. Loaded after lines.awk, order.awk, elements.awk, sorting.awk and
+# keyed.awk.
 #
 #   0.0:int=3
 #   0.1:int=1   ->  0.:int=3

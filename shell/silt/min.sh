@@ -96,7 +96,7 @@ __silt__extreme() {
   __silt__SEGMENTS=''
   __silt__WHOLE=true
   __silt__ANSWER=''
-  __silt__AWK="order elements keyed $1"
+  __silt__AWK="order elements sorting keyed $1"
   __silt__walk "$2" __silt__extreme__line || return 1
   __silt__extreme__answer "$2"
 }
@@ -116,7 +116,7 @@ __silt__extreme__answer() {
   fi
   if [ "$__silt__WHOLE" = false ]; then
     __silt__ANSWER=''
-    __silt__hand_off "$1" "order elements keyed $__silt__EXTREME"
+    __silt__hand_off "$1" "order elements sorting keyed $__silt__EXTREME"
     return
   fi
   if [ -n "$__silt__ANSWER" ]; then

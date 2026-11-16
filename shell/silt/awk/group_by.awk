@@ -1,7 +1,7 @@
 # The list's elements gathered into lists of the ones whose keys are the
 # same, the groups in the order of their keys: silt__group_by. Inside a
 # group the elements keep their order. Loaded after lines.awk, order.awk,
-# elements.awk and keyed.awk.
+# elements.awk, sorting.awk and keyed.awk.
 #
 #   0.0:str="b"
 #   0.1:str="a"

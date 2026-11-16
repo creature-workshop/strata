@@ -1,6 +1,6 @@
 # The list with its elements ordered by the values at paths inside them:
 # silt__sort_by. Elements whose keys all tie keep their order. Loaded after
-# lines.awk, order.awk, elements.awk and keyed.awk.
+# lines.awk, order.awk, elements.awk, sorting.awk and keyed.awk.
 #
 #   0.0:map
 #   1."at":int=2

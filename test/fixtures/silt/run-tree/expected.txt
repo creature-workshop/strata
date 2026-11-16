@@ -1,0 +1,35 @@
+## run same.awk
+count: same
+ratio: same
+name: same
+text_or_number: differs
+flag: differs
+tags: same
+order: differs
+longer: differs
+owner: same
+limits: differs
+gone: same
+empty: differs
+## run edited.awk
+0."enabled":bool=true
+0."paths":list
+1.0:str="lib"
+1.1:str="test \"quoted\""
+1.2:int=7
+0."runner":map
+1."name":str="bats"
+0."retries":int=3
+0."report":map
+1."format":str="junit"
+0."watched":list
+1.0:str="lib"
+1.1:str="test \"quoted\""
+1.2:int=7
+0."missing":null
+0."labels":list
+1.0:str="fast"
+1.1:str="unit"
+## run totals.awk
+0."sum":int=14
+0."mean":float=3.5
