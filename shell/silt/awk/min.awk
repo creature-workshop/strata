@@ -1,7 +1,7 @@
 # The element of a list that orders first, as a document of its own:
 # silt__min. Of several that tie it is the first, and the empty list
 # answers nothing. Loaded after lines.awk, order.awk, elements.awk and
-# keyed.awk.
+# sorting.awk and keyed.awk.
 #
 #   0.0:int=3
 #   0.1:int=1   ->  0.:int=1

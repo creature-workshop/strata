@@ -18,7 +18,7 @@
 # key and a text, and option-bare the map and a key; succeeds and fails
 # take a command, and succeeds-reading and fails-reading take one word for
 # the command to read on stdin and then the command.
-# scalar, len, keys, canon, unique, is_true, is_false, is_zero, references,
+# scalar, len, keys, canon, unique, sort, is_true, is_false, is_zero, references,
 # to_json, to_yaml, to_toml, dump, dump-<format>, which sets SILT_DUMP, first, last, sum, values, entries and
 # from_entries take the document; sort_by, group_by, min and max take it and
 # then paths, or none; run takes an awk program, a file beside the calls
@@ -213,7 +213,7 @@ transcript__name_callback() {
 transcript__run_verb() {
   case "$1" in
     type) transcript__type "$2" ;;
-    scalar | len | keys | canon | unique | is_true | is_false | is_zero | references) golden__capture "silt__$1" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" ;;
+    scalar | len | keys | canon | unique | sort | is_true | is_false | is_zero | references) golden__capture "silt__$1" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" ;;
     defined | empty | not) golden__capture "silt__$1" GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" ;;
     defined-word | empty-word | not-word) golden__capture "silt__${1%-word}" GOLDEN_ANSWER "$2" ;;
     bool) golden__capture silt__bool GOLDEN_ANSWER "$2" ;;

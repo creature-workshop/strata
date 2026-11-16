@@ -1,0 +1,132 @@
+## as mixed get .mixed
+0.0:str="b"
+0.1:map
+1."a":int=1
+0.2:int=10
+0.3:list
+1.0:int=1
+0.4:null
+0.5:bool=true
+0.6:float=2.5
+0.7:str="B"
+0.8:bool=false
+0.9:int=-3
+0.10:float=10.0
+0.11:str="10"
+0.12:time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+0.13:list
+0.14:map
+## sort @mixed
+0.0:null
+0.1:bool=false
+0.2:bool=true
+0.3:int=-3
+0.4:float=2.5
+0.5:int=10
+0.6:float=10.0
+0.7:str="10"
+0.8:time-rfc3339-utc=2026-09-22T06:10:04.500000000Z
+0.9:str="B"
+0.10:str="b"
+0.11:list
+0.12:list
+1.0:int=1
+0.13:map
+0.14:map
+1."a":int=1
+## as escaped get .escaped
+0.0:str="b"
+0.1:str="\u0061"
+0.2:str="a\nb"
+0.3:str="a b"
+0.4:str="\"quoted\""
+## sort @escaped
+0.0:str="\"quoted\""
+0.1:str="\u0061"
+0.2:str="a\nb"
+0.3:str="a b"
+0.4:str="b"
+## as lists get .lists
+0.0:list
+1.0:int=1
+1.1:int=2
+0.1:list
+1.0:int=1
+0.2:list
+1.0:list
+2.0:int=0
+0.3:list
+1.0:int=1
+1.1:int=1
+0.4:list
+0.5:list
+1.0:str="a"
+## sort @lists
+0.0:list
+0.1:list
+1.0:int=1
+0.2:list
+1.0:int=1
+1.1:int=1
+0.3:list
+1.0:int=1
+1.1:int=2
+0.4:list
+1.0:str="a"
+0.5:list
+1.0:list
+2.0:int=0
+## as maps get .maps
+0.0:map
+1."b":int=1
+1."a":int=2
+0.1:map
+1."a":int=1
+1."b":int=1
+0.2:map
+1."a":int=9
+0.3:map
+1."c":int=0
+0.4:map
+1."a":int=2
+1."b":int=1
+0.5:map
+1."a":map
+2."x":int=1
+1."b":int=0
+0.6:map
+## sort @maps
+0.0:map
+0.1:map
+1."a":int=9
+0.2:map
+1."a":int=1
+1."b":int=1
+0.3:map
+1."b":int=1
+1."a":int=2
+0.4:map
+1."a":int=2
+1."b":int=1
+0.5:map
+1."a":map
+2."x":int=1
+1."b":int=0
+0.6:map
+1."c":int=0
+## as none get .none
+0.:list
+## sort @none
+0.:list
+## as one get .one
+0.0:map
+1."name":str="only"
+## sort @one
+0.0:map
+1."name":str="only"
+## as name get .name
+0.:str="not a list"
+## sort @name
+!! 1 ERROR: silt: sort takes a list, not a str
+## sort
+!! 1 ERROR: silt: sort takes a list, not a map

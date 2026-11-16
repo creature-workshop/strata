@@ -25,7 +25,7 @@ __silt__hand_keyed() {
   __silt__key_paths "$@" || return 1
 
   __silt__ANSWER=''
-  __silt__hand_off "$__silt__hand_keyed__list" "order elements keyed $__silt__hand_keyed__verb"
+  __silt__hand_off "$__silt__hand_keyed__list" "order elements sorting keyed $__silt__hand_keyed__verb"
 }
 
 : <<'FUN'

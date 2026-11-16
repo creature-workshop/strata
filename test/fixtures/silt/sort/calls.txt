@@ -1,0 +1,15 @@
+as mixed get .mixed
+sort @mixed
+as escaped get .escaped
+sort @escaped
+as lists get .lists
+sort @lists
+as maps get .maps
+sort @maps
+as none get .none
+sort @none
+as one get .one
+sort @one
+as name get .name
+sort @name
+sort

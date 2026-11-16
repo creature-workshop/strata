@@ -5,7 +5,9 @@ silt__run: a caller's awk program run over a document, in one process.
 
 The line library and tree.awk are loaded ahead of the program, so it reads
 the document as a tree of nodes and prints its answer as lines
-(shell/silt/awk/tree.awk says how). The program runs under LC_ALL=C, so it
+(shell/silt/awk/tree.awk says how). tree_edit.awk, tree_equal.awk and
+numbers.awk are loaded as well, so the program can change the tree, compare
+two values in it, and write a number it computed. The program runs under LC_ALL=C, so it
 reads bytes. Its own status is the verb's, and what it writes on stderr
 reaches the caller's.
 MODULE
@@ -68,6 +70,10 @@ silt__run() {
 
   # structs-lint: allow -- SILT sits beneath structs, so awk's command line is built in the positionals
   set -- "$@" LC_ALL=C awk -f "$__silt__DIR/awk/lines.awk" -f "$__silt__DIR/awk/tree.awk"
+  for __silt__run__file in tree_edit tree_equal numbers; do
+    # structs-lint: allow -- SILT sits beneath structs, so awk's command line is built in the positionals
+    set -- "$@" -f "$__silt__DIR/awk/$__silt__run__file.awk"
+  done
   __silt__split_lines
   for __silt__run__file in $__silt__run__LIBRARIES; do
     # structs-lint: allow -- SILT sits beneath structs, so awk's command line is built in the positionals
