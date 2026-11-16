@@ -1,0 +1,4 @@
+root.json refers to types.json, to deep/limits.json, to plans.json, which
+does not exist, and to broken.json, which is not JSON. deep/limits.json
+refers to deep/units.json, and types.json refers back to root.json.
+plain.json refers to nothing.

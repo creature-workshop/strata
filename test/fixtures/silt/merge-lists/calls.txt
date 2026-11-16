@@ -1,0 +1,26 @@
+as first from_json first/first.json
+as second from_json second/second.json
+
+# merge: each way of joining lists
+as merged merge @first $second
+to_json @merged
+as replaced merge @first $second --lists replace
+equals @merged $replaced
+as joined merge @first $second --lists concat
+to_json @joined
+as united merge @first $second --lists union
+to_json @united
+as back merge @second $first --lists concat
+to_json @back
+as twice merge @first $first --lists union
+equals @first $twice
+as none obj
+as onto merge @none $first --lists concat
+equals @first $onto
+as under merge @first $none --lists union
+equals @first $under
+
+# merge: what it refuses
+merge @first $second --lists sorted
+merge @first $second --lists
+merge @first $second --arrays union

@@ -1,0 +1,5 @@
+Validates documents against a JSON Schema in a file. The schema refers to
+other schema files, one of them through another, and the verb reads each
+from the directory of the first. A reference to a file that does not exist
+or is not JSON is an error in the result, and only when the document has a
+value there.

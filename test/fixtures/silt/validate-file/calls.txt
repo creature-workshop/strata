@@ -1,0 +1,23 @@
+as org str ksoft
+as loud str KSoft
+
+# A schema that refers to nothing
+validate_file @org schemas/plain.json
+as three obj n 0.:int=3
+validate_file @three schemas/plain.json
+
+# A schema that refers to other files, one of them through another
+as good obj org $org count 0.:int=3 unit 0.:str="kg"
+validate_file @good schemas/root.json
+as bad obj org $loud count 0.:int=12 unit 0.:str="mile"
+validate_file @bad schemas/root.json
+
+# A reference to a file that does not exist, and to one that is not JSON
+as planned set @good .plan 0.:int=1
+validate_file @planned schemas/root.json
+as noted set @good .note 0.:int=1
+validate_file @noted schemas/root.json
+
+# What it refuses
+validate_file @good schemas/missing.json
+validate_file @good schemas/broken.json

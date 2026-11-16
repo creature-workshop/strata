@@ -1,0 +1,1 @@
+{"$defs":{"small":{"type":"integer","maximum":9},"unit":{"$ref":"units.json#/$defs/unit"}}}

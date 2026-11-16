@@ -1,0 +1,4 @@
+Two maps that share keys. The calls lay the second over the first, one
+level deep, with each way of joining two lists under the same key. A map
+under a shared key is replaced whole with every one of them, and a list
+meets the option only when both maps have a list under the key.
