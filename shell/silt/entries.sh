@@ -5,24 +5,8 @@ silt__entries: a map as a list of its keys and values.
 MODULE
 
 : <<'PUB_FUN'
-Answers a map as a list with one element per member, in the order the map
-holds them. Each element is a map of two members: "key", the member's key
-as a str, and "value", the member's value. The empty map answers the empty
-list. Refuses a document that is not a map.
-
-  silt__entries doc '0."a":int=1
-  0."b":list
-  1.0:int=2'   ->  doc='0.0:map
-                        1."key":str="a"
-                        1."value":int=1
-                        0.1:map
-                        1."key":str="b"
-                        1."value":list
-                        2.0:int=2'
-
-args:
-  $1  Name of the variable that receives the result
-  $2  The map
+The plumbing of @entries: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_entries.sh documents it.
 PUB_FUN
 silt__entries() {
   __silt__out "$1" || return 1

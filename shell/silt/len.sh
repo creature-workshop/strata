@@ -5,16 +5,8 @@ silt__len: the number of members, or characters of a str.
 MODULE
 
 : <<'PUB_FUN'
-Answers how many members a map or a list holds, how many characters a str
-spells, and 0 for a null.
-
-  silt__len n '0."a":int=1
-  0."b":map
-  1."c":int=2'   ->  n=2
-
-args:
-  $1  The name of the variable to answer in
-  $2  The document
+The plumbing of @len: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_len.sh documents it.
 PUB_FUN
 silt__len() {
   __silt__out "$1" || return 1

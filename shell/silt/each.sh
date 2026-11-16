@@ -5,17 +5,8 @@ silt__each: a callback per member, with its key and its value.
 MODULE
 
 : <<'PUB_FUN'
-Calls a callback once for each member of a map or a list. The callback
-receives the member's key as text (a map's key unquoted, a list's index),
-the member's value as a document of its own, and then the extra arguments.
-Stops at the first call that returns non-zero, and returns that status.
-
-The callback can run any verb, including silt__each and the verbs built on
-it, so loops can be nested.
-
-  count_reads() { silt__len n "$2"; total=$((total + n)); }
-  total=0
-  silt__each "$tests" count_reads
+The plumbing of @each: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_each.sh documents it.
 
 registers:
   __silt__LOOPS         How many loops are running, this one included
@@ -25,11 +16,6 @@ registers:
   __silt__MEMBER_KEY    The key of the member being read
   __silt__MEMBER        The value of the member being read
   __silt__OPEN          Whether a member is being read
-
-args:
-  $1  The document
-  $2  The callback
-  $@  Extra arguments the callback receives after the key and the value
 PUB_FUN
 silt__each() {
   __silt__LOOPS=$((${__silt__LOOPS:-0} + 1))

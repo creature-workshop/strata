@@ -6,25 +6,8 @@ one that orders last.
 MODULE
 
 : <<'PUB_FUN'
-Answers the element of a list that orders first, as a document of its own.
-Elements are ordered as silt__sort_by orders them: by themselves when no
-path is given, and by the values at the paths inside each otherwise. Of
-several elements that tie, answers the first. Answers the empty string for
-an empty list, which no document is. Refuses a document that is not a list,
-and a map or a list where a scalar is compared.
-
-A list of whole numbers given without a path is compared in the shell. Any
-other call runs in awk.
-
-  silt__min doc '0.0:int=3
-  0.1:int=1'   ->  doc='0.:int=1'
-
-  silt__min first "$shards" .run.started_at   ->  the shard that started first
-
-args:
-  $1  The name of the variable to answer in
-  $2  The list
-  $@  The paths into each element
+The plumbing of @min: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_min.sh documents it.
 PUB_FUN
 silt__min() {
   __silt__out "$1" || return 1
@@ -38,25 +21,8 @@ silt__min() {
 }
 
 : <<'PUB_FUN'
-Answers the element of a list that orders last, as a document of its own.
-Elements are ordered as silt__sort_by orders them: by themselves when no
-path is given, and by the values at the paths inside each otherwise. Of
-several elements that tie, answers the last. Answers the empty string for
-an empty list, which no document is. Refuses a document that is not a list,
-and a map or a list where a scalar is compared.
-
-A list of whole numbers given without a path is compared in the shell. Any
-other call runs in awk.
-
-  silt__max doc '0.0:int=3
-  0.1:int=1'   ->  doc='0.:int=3'
-
-  silt__max longest "$areas" .length   ->  the area whose length is greatest
-
-args:
-  $1  The name of the variable to answer in
-  $2  The list
-  $@  The paths into each element
+The plumbing of @max: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_min.sh documents it.
 PUB_FUN
 silt__max() {
   __silt__out "$1" || return 1

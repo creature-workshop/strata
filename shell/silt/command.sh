@@ -8,15 +8,8 @@ the answer as a value.
 MODULE
 
 : <<'PUB_FUN'
-Runs a command and answers true when it exits with status 0, and false
-otherwise. The command reads the caller's stdin.
-
-  silt__succeeds yes [ "$kind" = map ]                  ->  yes=true or yes=false
-  printf '%s\n' "$text" | silt__succeeds yes grep -q x  ->  whether the text has an x
-
-args:
-  $1  The name of the variable to answer in
-  $@  The command and its arguments
+The plumbing of @succeeds: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_command.sh documents it.
 PUB_FUN
 silt__succeeds() {
   __silt__out "$1" || return 1
@@ -26,14 +19,8 @@ silt__succeeds() {
 }
 
 : <<'PUB_FUN'
-Runs a command and answers true when it exits with a status other than 0,
-and false when it exits with 0. The command reads the caller's stdin.
-
-  silt__fails drifted ./install.sh --check   ->  drifted=true when the check fails
-
-args:
-  $1  The name of the variable to answer in
-  $@  The command and its arguments
+The plumbing of @fails: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_command.sh documents it.
 PUB_FUN
 silt__fails() {
   __silt__out "$1" || return 1

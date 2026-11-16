@@ -5,23 +5,11 @@ silt__sum: the sum of a list of numbers.
 MODULE
 
 : <<'PUB_FUN'
-Answers the sum of a list of numbers as a number document. A list of whole
-numbers is added in the shell and answers an int. A list that holds a
-number with a fraction is added in awk and answers a float. The empty list
-answers the int 0. Refuses a document that is not a list, and a list that
-holds anything but numbers.
-
-  silt__sum total '0.0:int=1
-  0.1:int=2'       ->  total='0.:int=3'
-  silt__sum total '0.0:int=1
-  0.1:float=1.5'   ->  total='0.:float=2.5'
+The plumbing of @sum: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_sum.sh documents it.
 
 registers:
   __silt__FRACTION  Whether the walk met a number with a fraction
-
-args:
-  $1  Name of the variable that receives the result
-  $2  The list
 PUB_FUN
 silt__sum() {
   __silt__out "$1" || return 1

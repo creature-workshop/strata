@@ -6,19 +6,8 @@ some of them.
 FRAGMENT
 
 : <<'PUB_FUN'
-Answers the map with only the members under the keys given, in the map's
-own order. A key that the map does not hold is left out. Refuses a document
-that is not a map.
-
-  silt__pick doc '0."title":str="t"
-  0."token":str="s"
-  0."body":str="b"' title body   ->  doc='0."title":str="t"
-                                         0."body":str="b"'
-
-args:
-  $1  The name of the variable to answer in
-  $2  The map
-  $@  The keys to keep
+The plumbing of @pick: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_pick.sh documents it.
 PUB_FUN
 silt__pick() {
   __silt__require_map "${2:-}" pick || return 1
@@ -30,17 +19,8 @@ silt__pick() {
 }
 
 : <<'PUB_FUN'
-Answers the map without the members under the keys given. Use it to take a
-secret out of a map before the map is logged. Refuses a document that is
-not a map.
-
-  silt__without doc '0."title":str="t"
-  0."token":str="s"' token   ->  doc='0."title":str="t"'
-
-args:
-  $1  The name of the variable to answer in
-  $2  The map
-  $@  The keys to leave out
+The plumbing of @without: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_pick.sh documents it.
 PUB_FUN
 silt__without() {
   __silt__require_map "${2:-}" without || return 1

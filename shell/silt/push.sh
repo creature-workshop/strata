@@ -5,30 +5,8 @@ silt__push: appends documents to a list.
 MODULE
 
 : <<'PUB_FUN'
-Appends documents to the end of a list, numbering them on from its last
-index. Given --at and a path, appends them to the list at that path inside
-the document, and answers the whole document.
-
-  silt__push doc '0.0:str="a"' '0.:int=2'   ->  doc='0.0:str="a"
-                                                     0.1:int=2'
-
-  suite="$(cat <<'SILT'
-  0."tests":list
-  1.0:str="a"
-  SILT
-  )"
-  silt__push doc "$suite" --at .tests '0.:int=2'
-
-  doc is:
-    0."tests":list
-    1.0:str="a"
-    1.1:int=2
-
-args:
-  $1    The name of the variable to answer in
-  $2    The list, or with --at the document that holds it
-  --at  The path of the list inside the document
-  $@    The documents to append
+The plumbing of @push: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_push.sh documents it.
 PUB_FUN
 silt__push() {
   if [ "${3:-}" = --at ]; then

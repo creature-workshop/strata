@@ -5,17 +5,8 @@ silt__obj: builds a map from key and document pairs.
 MODULE
 
 : <<'PUB_FUN'
-Builds a map from key and document pairs, in the order given. With no pairs
-it builds the empty map. A key is plain text; the map quotes it. Members are
-appended as given, so a key given twice appears twice; silt__set is what
-replaces a member.
-
-  silt__obj doc runner '0.:str="bats"' count '0.:int=3'   ->  doc='0."runner":str="bats"
-                                                                    0."count":int=3'
-
-args:
-  $1  The name of the variable to answer in
-  $@  A key and a document, pair by pair
+The plumbing of @obj: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_obj.sh documents it.
 PUB_FUN
 silt__obj() {
   __silt__out "$1" || return 1

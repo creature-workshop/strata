@@ -13,31 +13,8 @@ reaches the caller's.
 MODULE
 
 : <<'PUB_FUN'
-Runs an awk program over a document in one process, and answers what the
-program prints: a document, or plain text. A caller uses it for a
-transformation that loops over the members of a document.
-
-A document given with --with is read ahead of the main one, with
-tree_ahead(). A value given with --arg is read with arg("<name>"). A file
-given with --load is an awk library, loaded ahead of the program, so two
-programs can share the functions they must agree on.
-
-Refuses a program or a library that is not a file, no document, and an
-option it does not know.
-
-  silt__run names "$dir/names.awk" "$records"
-  silt__run diff "$dir/diff.awk" "$desired" --with "$actual" --arg since "$since"
-  silt__run order "$dir/fifo.awk" "$entries" --load "$dir/order.awk"
-
-args:
-  $1  The name of the variable to answer in
-  $2  The awk program, a file
-  $3  The document
-  --with <document>     A further document, read ahead of the main one
-  --arg <name> <value>  A value the program reads by name; the name is
-                        letters, digits and underscores
-  --load <file>         An awk library, loaded ahead of the program; its
-                        path holds no newline
+The plumbing of @run: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_run.sh documents it.
 
 registers:
   __silt__run__AHEAD       The documents given with --with, each followed

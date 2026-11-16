@@ -9,15 +9,8 @@ through it one node at a time. No function calls itself.
 FRAGMENT
 
 : <<'PUB_FUN'
-Answers one map for a tree of named nodes. The tree is a map from a name
-to a node, and a node can hold more nodes under the child key. Each key of
-the answer is the names on the way to a node, joined by the separator.
-Each value is the node without its child key. A node comes before the
-nodes under it.
-
-  silt__flatten flat "$tree" areas
-    {"lib":{"owner":"a","areas":{"log":{"owner":"b"}}}}
-      ->  {"lib":{"owner":"a"},"lib.log":{"owner":"b"}}
+The plumbing of @flatten: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_flatten.sh documents it.
 
 registers:
   __silt__flatten__FLAT       The map as built so far
@@ -30,12 +23,6 @@ registers:
   __silt__flatten__CHILDREN   The nodes under the node being written, in the same
                               form
   __silt__NODE                The node being written, without its child key
-
-args:
-  $1  The name of the variable to answer in
-  $2  The tree, a map
-  $3  The child key
-  $4  The separator; a dot when not given
 PUB_FUN
 silt__flatten() {
   __silt__out "$1" || return 1

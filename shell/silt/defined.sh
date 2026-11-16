@@ -6,17 +6,8 @@ collection has members.
 MODULE
 
 : <<'PUB_FUN'
-Answers true when the value is a document and is not a null. Answers false
-for a null and for the empty string, which is what silt__get answers for a
-path that holds nothing.
-
-  silt__defined yes '0.:int=0'   ->  yes=true
-  silt__defined yes '0.:null'    ->  yes=false
-  silt__defined yes ''           ->  yes=false
-
-args:
-  $1  The name of the variable to answer in
-  $2  The value, a document or the empty string
+The plumbing of @defined: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_defined.sh documents it.
 PUB_FUN
 silt__defined() {
   __silt__out "$1" || return 1
@@ -30,17 +21,8 @@ silt__defined() {
 }
 
 : <<'PUB_FUN'
-Answers true when a map or a list has no members, and false when it has
-any. Refuses every other value: a scalar, a null and the empty string are
-not collections, so a missing value is never reported as an empty one.
-
-  silt__empty none '0.:list'       ->  none=true
-  silt__empty none '0.0:int=1'     ->  none=false
-  silt__empty none '0.:str="x"'    ->  refused: not a map or a list
-
-args:
-  $1  The name of the variable to answer in
-  $2  The document, a map or a list
+The plumbing of @empty: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_defined.sh documents it.
 PUB_FUN
 silt__empty() {
   __silt__out "$1" || return 1

@@ -12,25 +12,8 @@ CONST
 __silt__UNIT="$(printf '\037')"
 
 : <<'PUB_FUN'
-Answers the document a text spells, whichever way the text is written:
-
-  as SILT                 the text itself
-  as SILT on one line     the text with its newlines put back
-  as JSON                 the JSON translated
-
-A JSON scalar is read in the shell. JSON that holds a map or a list goes
-through silt__from_json, which starts one awk. Fails, without a message,
-when the text is none of the three; the empty string is none of them. The
-caller decides what such text means.
-
-  silt__read doc '{"a":[1]}'   ->  doc='0."a":list
-                                        1.0:int=1'
-  silt__read doc '"bats"'      ->  doc='0.:str="bats"'
-  silt__read doc 'bats'        ->  fails
-
-args:
-  $1  Name of the variable that receives the result
-  $2  The text
+The plumbing of @read: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_read.sh documents it.
 PUB_FUN
 silt__read() {
   __silt__out "$1" || return 1
@@ -187,17 +170,8 @@ EOF
 }
 
 : <<'PUB_FUN'
-Answers the document written on one line: every newline becomes the unit
-separator. A caller that reads values a line at a time, one value per line,
-can then carry a whole document as one of them. silt__from_line and
-silt__read both read the line back.
-
-  silt__to_line text '0."a":list
-  1.0:int=1'   ->  text='0."a":list<US>1.0:int=1'
-
-args:
-  $1  Name of the variable that receives the result
-  $2  The document
+The plumbing of @to_line: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_read.sh documents it.
 PUB_FUN
 silt__to_line() {
   __silt__out "$1" || return 1
@@ -210,16 +184,8 @@ silt__to_line() {
 }
 
 : <<'PUB_FUN'
-Answers the document that silt__to_line wrote on one line: every unit
-separator becomes a newline again. A document that was never on one line
-answers itself.
-
-  silt__from_line doc '0."a":list<US>1.0:int=1'   ->  doc='0."a":list
-                                                           1.0:int=1'
-
-args:
-  $1  Name of the variable that receives the result
-  $2  The document on one line
+The plumbing of @from_line: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_read.sh documents it.
 PUB_FUN
 silt__from_line() {
   __silt__out "$1" || return 1

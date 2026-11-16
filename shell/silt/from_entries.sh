@@ -5,26 +5,8 @@ silt__from_entries: a map from a list of its keys and values.
 MODULE
 
 : <<'PUB_FUN'
-Answers a map with one member for each element of a list, the reverse of
-silt__entries. Each element is a map that holds the member's key under
-"key" and the member's value under "value". The key is a scalar, and its
-text becomes the member's key. An element with no "value" gives a null. The
-members are in the order of the elements. When two elements have the same
-key, the member stays where the first put it and has the value of the last.
-The empty list answers the empty map.
-
-Refuses a document that is not a list, an element that is not a map, and an
-element whose "key" is missing, a null, a map or a list.
-
-  silt__from_entries doc '0.0:map
-  1."key":str="a"
-  1."value":int=1
-  0.1:map
-  1."key":str="b"
-  1."value":list
-  2.0:int=2'   ->  doc='0."a":int=1
-                        0."b":list
-                        1.0:int=2'
+The plumbing of @from_entries: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_from_entries.sh documents it.
 
 registers:
   __silt__ENTRY_INDEX  The index of the element being read, empty before
@@ -38,10 +20,6 @@ registers:
                        value, or empty for any other
   __silt__ENTRY_KEYS   The keys read so far, one on each line
   __silt__REPEATED     Whether the walk met a key for the second time
-
-args:
-  $1  The name of the variable to answer in
-  $2  The list
 PUB_FUN
 silt__from_entries() {
   __silt__out "$1" || return 1

@@ -6,26 +6,8 @@ with the other schema documents it refers to read from the files beside it.
 FRAGMENT
 
 : <<'PUB_FUN'
-Validates a document against the JSON Schema in a file and returns the
-validation errors as a list of strings, as silt__validate does. A valid
-document returns an empty list.
-
-When the schema refers to another schema document, the verb reads that
-document from the file its key names, relative to the directory of the
-schema file. It does the same for every document those refer to, and reads
-each file once. A file that does not exist or is not JSON is left out, and
-the errors then name the reference to it.
-
-Fails, and says why, when the schema file does not exist or is not JSON,
-and when the schema itself is invalid.
-
-  silt__validate_file errors "$manifest" schema/manifest.schema.json
-    ->  errors='0.0:str="$.name: expected string, got number"'
-
-args:
-  $1  Name of the variable that receives the result
-  $2  The document
-  $3  The JSON Schema file
+The plumbing of @validate_file: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_validate_file.sh documents it.
 PUB_FUN
 silt__validate_file() {
   __silt__out "$1" || return 1

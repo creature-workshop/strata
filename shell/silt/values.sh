@@ -5,19 +5,8 @@ silt__values: a map's values, as a list.
 MODULE
 
 : <<'PUB_FUN'
-Answers the values a map holds as a list, in the order the map holds them,
-numbered from 0. A list answers itself. The empty map answers the empty
-list. Refuses a document that is neither a map nor a list.
-
-  silt__values doc '0."a":int=1
-  0."b":map
-  1."c":int=2'   ->  doc='0.0:int=1
-                          0.1:map
-                          1."c":int=2'
-
-args:
-  $1  Name of the variable that receives the result
-  $2  The map
+The plumbing of @values: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_values.sh documents it.
 PUB_FUN
 silt__values() {
   __silt__out "$1" || return 1

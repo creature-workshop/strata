@@ -6,20 +6,8 @@ that looks past the order.
 MODULE
 
 : <<'PUB_FUN'
-Answers the document with every map's members in canonical order, the
-order RFC 8785 gives: by the keys' UTF-16 code units, which is what jq -S
-and the canonical JSON libraries agree on. Lists keep their order and every
-line keeps its text, so two maps that hold the same members come out the
-same bytes. This runs in awk whatever the document's size, since the shell
-cannot order two strings.
-
-  silt__canon doc '0."b":int=1
-  0."a":int=2'   ->  doc='0."a":int=2
-  0."b":int=1'
-
-args:
-  $1  The name of the variable to answer in
-  $2  The document
+The plumbing of @canon: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_canon.sh documents it.
 PUB_FUN
 silt__canon() {
   __silt__out "$1" || return 1
@@ -33,19 +21,8 @@ silt__canon() {
 }
 
 : <<'PUB_FUN'
-Answers true when two documents are the same value and false otherwise:
-the same bytes are the same value at once, and two documents that differ
-as bytes are put in canonical order before they are compared, so a map
-built in one order equals the same map built in another.
-
-  silt__equals same '0."a":int=1
-  0."b":int=2' '0."b":int=2
-  0."a":int=1'   ->  same=true
-
-args:
-  $1  The name of the variable to answer in
-  $2  One document
-  $3  The other
+The plumbing of @equals: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_canon.sh documents it.
 PUB_FUN
 silt__equals() {
   __silt__out "$1" || return 1

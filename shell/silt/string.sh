@@ -5,23 +5,8 @@ silt__string: the text at a path, a str unquoted.
 MODULE
 
 : <<'PUB_FUN'
-Answers the text at a path the way jq -r would: a str unquoted, another
-scalar as its spelling, a null as "null", and the empty string for a path
-nothing holds or a collection.
-
-Given several paths, reads the first path that holds a value that is not a
-null. Given --default, answers that text wherever the paths hold nothing, a
-null or a collection.
-
-  silt__string runner "$doc" '.suites.unit.runner'                  ->  runner=bats
-  silt__string runner "$doc" '.runner' '.suite.runner'              ->  the first that holds a value
-  silt__string runner "$doc" '.suites.unit.runner' --default bats   ->  runner=bats, the path missing too
-
-args:
-  $1  The name of the variable to answer in
-  $2  The document
-  $@  The path, or several paths
-  --default  The text to answer when no path holds a scalar
+The plumbing of @string: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_string.sh documents it.
 PUB_FUN
 silt__string() {
   __silt__out "$1" || return 1

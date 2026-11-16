@@ -6,27 +6,8 @@ with a text.
 MODULE
 
 : <<'PUB_FUN'
-A predicate for silt__filter, silt__find, silt__any and silt__all. Answers
-true when the text at a path of the member is the text given, and false
-otherwise.
-
-The text at a path is what silt__string answers: a str unquoted, another
-scalar as its spelling, a null as "null", and the empty string for a path
-that holds nothing or holds a collection. The path "." is the member
-itself.
-
-  silt__filter passing "$tests" silt__text_is .status passed
-  silt__filter builds "$names" silt__text_is . build
-
-  silt__text_is yes 0 '0."status":str="passed"' .status passed   ->  yes=true
-  silt__text_is yes 0 '0."status":str="passed"' .status failed   ->  yes=false
-
-args:
-  $1  The name of the variable to answer in
-  $2  The member's key, which this predicate does not read
-  $3  The member's value, a document
-  $4  The path
-  $5  The text to compare with; the empty string when not given
+The plumbing of @text_is: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_text_is.sh documents it.
 PUB_FUN
 silt__text_is() {
   __silt__out "$1" || return 1

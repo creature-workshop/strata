@@ -5,21 +5,8 @@ silt__type: the kind of value a document is.
 MODULE
 
 : <<'PUB_FUN'
-Answers what kind of value a document is: map or list from the key of its
-first member, else the type of its one keyless line. Given a path, answers
-the kind of the value at that path, and the empty string when the path
-holds nothing.
-
-  silt__type kind '0."a":int=1'      ->  kind=map
-  silt__type kind '0.0:int=1'        ->  kind=list
-  silt__type kind '0.:str="x"'       ->  kind=str
-  silt__type kind '0."a":int=1' .a   ->  kind=int
-  silt__type kind '0."a":int=1' .b   ->  kind=
-
-args:
-  $1  The name of the variable to answer in
-  $2  The document
-  $3  The path, when given
+The plumbing of @type: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_type.sh documents it.
 PUB_FUN
 silt__type() {
   if [ "$#" -ge 3 ]; then

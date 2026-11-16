@@ -5,23 +5,8 @@ silt__filter: the members a predicate keeps.
 MODULE
 
 : <<'PUB_FUN'
-Answers a document of the same kind as the one given, holding the members
-the predicate answers true for: a map's under their keys, a list's numbered
-on from 0. The predicate is called with the name of the variable to answer
-in, the member's key as text, its value as a document, and the extra
-arguments after them. It answers true or false, and it can run any verb, a
-loop of its own included.
-
-  passed() { silt__string status "$3" .status; ...answers whether it is passed }
-  silt__filter passing "$tests" passed
-
-  predicate <out> <key> <value> [extras...]  ->  answers true or false in <out>
-
-args:
-  $1  The name of the variable to answer in
-  $2  The document, a map or a list
-  $3  The predicate
-  $@  Extra arguments the predicate receives after the key and the value
+The plumbing of @filter: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_filter.sh documents it.
 PUB_FUN
 silt__filter() {
   __silt__out "$1" || return 1

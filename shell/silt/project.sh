@@ -5,20 +5,8 @@ silt__project: the members named of each member, as a list of maps.
 MODULE
 
 : <<'PUB_FUN'
-Answers a list holding, for each member in order, a map of the keys named
-and the values the member holds under them, in the order the keys are
-given; null under a key the member lacks.
-
-  silt__project shown "$records" name status   ->  shown='0.0:map
-                                                          1."name":str="build"
-                                                          1."status":str="passed"
-                                                          0.1:map
-                                                          ...'
-
-args:
-  $1  The name of the variable to answer in
-  $2  The document, a map or a list
-  $@  The keys, at least one
+The plumbing of @project: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_project.sh documents it.
 PUB_FUN
 silt__project() {
   __silt__out "$1" || return 1
