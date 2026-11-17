@@ -9,6 +9,39 @@ The plumbing of @filter: the same arguments in the same order, and the same
 answer. shell/silt/porcelain/_filter.sh documents it.
 PUB_FUN
 silt__filter() {
+  __silt__shape ''
+  __silt__filter__shaped "$@"
+}
+
+: <<'PUB_FUN'
+The plumbing of @filteri: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_filter.sh documents it.
+PUB_FUN
+silt__filteri() {
+  __silt__shape i
+  __silt__filter__shaped "$@"
+}
+
+: <<'PUB_FUN'
+The plumbing of @filterk: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_filter.sh documents it.
+PUB_FUN
+silt__filterk() {
+  __silt__shape k
+  __silt__filter__shaped "$@"
+}
+
+: <<'FUN'
+Does the work of silt__filter, silt__filteri and silt__filterk for the shape that __silt__shape was given: it walks
+the members and answers in the variable named.
+
+args:
+  $1  The name of the variable to answer in
+  $2  The document
+  $3  The predicate
+  $@  The extras
+FUN
+__silt__filter__shaped() {
   __silt__out "$1" || return 1
   __silt__filter__members "$@" || return $?
 
@@ -31,7 +64,7 @@ __silt__filter__members() {
   shift 2
 
   __silt__start_collecting "$__silt__filter__members__doc" || return 1
-  silt__each "$__silt__filter__members__doc" __silt__filter__member "$@"
+  __silt__each__keyed "$__silt__filter__members__doc" __silt__filter__member "$@"
 }
 
 : <<'FUN'

@@ -18,5 +18,5 @@ false
 true
 ## string-or x
 true
-## map str_of_key
+## mapk str_of_key
 !! 1 ERROR: silt: bool has no members

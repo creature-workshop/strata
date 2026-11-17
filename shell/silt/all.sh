@@ -9,6 +9,21 @@ The plumbing of @all: the same arguments in the same order, and the same
 answer. shell/silt/porcelain/_all.sh documents it.
 PUB_FUN
 silt__all() {
+  __silt__shape ''
+  __silt__all__shaped "$@"
+}
+
+: <<'FUN'
+Does the work of silt__all for the shape that __silt__shape was given: it walks
+the members and answers in the variable named.
+
+args:
+  $1  The name of the variable to answer in
+  $2  The document
+  $3  The predicate
+  $@  The extras
+FUN
+__silt__all__shaped() {
   __silt__out "$1" || return 1
   __silt__all__members "$@" || return $?
 
@@ -31,7 +46,7 @@ __silt__all__members() {
   shift 2
 
   __silt__ALL=true
-  silt__each "$__silt__all__members__doc" __silt__all__member "$@"
+  __silt__each__keyed "$__silt__all__members__doc" __silt__all__member "$@"
 }
 
 : <<'FUN'

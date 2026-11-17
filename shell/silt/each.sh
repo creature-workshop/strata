@@ -1,12 +1,114 @@
 #!/bin/sh
 
 : <<'MODULE'
-silt__each: a callback per member, with its key and its value.
+silt__each, silt__eachi and silt__eachk: a callback per member.
 MODULE
 
 : <<'PUB_FUN'
 The plumbing of @each: the same arguments in the same order, and the same
 answer. shell/silt/porcelain/_each.sh documents it.
+PUB_FUN
+silt__each() {
+  __silt__each__family __silt__each__value "$@"
+}
+
+: <<'PUB_FUN'
+The plumbing of @eachi: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_each.sh documents it.
+PUB_FUN
+silt__eachi() {
+  __silt__each__family __silt__each__value_and_index "$@"
+}
+
+: <<'PUB_FUN'
+The plumbing of @eachk: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_each.sh documents it.
+PUB_FUN
+silt__eachk() {
+  __silt__each__family __silt__each__value_and_key "$@"
+}
+
+: <<'FUN'
+Walks the members for one of silt__each, silt__eachi and silt__eachk, and
+calls the caller's callback through the function that passes it what that
+verb passes.
+
+args:
+  $1  The function that calls the callback
+  $2  The document
+  $3  The callback
+  $@  Extra arguments for the callback
+FUN
+__silt__each__family() {
+  __silt__each__family__pass="$1"
+  __silt__each__family__doc="${2-}"
+  shift "$(($# < 2 ? $# : 2))"
+
+  __silt__shape ''
+  __silt__each__keyed "$__silt__each__family__doc" "$__silt__each__family__pass" "$@"
+}
+
+: <<'FUN'
+Calls the callback of silt__each with the member's value and the extras.
+
+args:
+  $1  The key, as text, unread here
+  $2  The value, a document
+  $3  The callback
+  $@  The extras
+FUN
+__silt__each__value() {
+  __silt__each__value__value="$2"
+  __silt__each__value__callback="${3-}"
+  shift "$(($# < 3 ? $# : 3))"
+
+  "$__silt__each__value__callback" "$__silt__each__value__value" "$@"
+}
+
+: <<'FUN'
+Calls the callback of silt__eachi with the member's value, its position
+from 0, and the extras.
+
+args:
+  $1  The key, as text, unread here
+  $2  The value, a document
+  $3  The callback
+  $@  The extras
+FUN
+__silt__each__value_and_index() {
+  __silt__each__value_and_index__value="$2"
+  __silt__each__value_and_index__callback="${3-}"
+  shift "$(($# < 3 ? $# : 3))"
+  eval "__silt__each__value_and_index__index=\$__silt__INDEX_$__silt__LOOPS"
+  eval "__silt__INDEX_$__silt__LOOPS=\$((__silt__each__value_and_index__index + 1))"
+
+  "$__silt__each__value_and_index__callback" "$__silt__each__value_and_index__value" "$__silt__each__value_and_index__index" "$@"
+}
+
+: <<'FUN'
+Calls the callback of silt__eachk with the member's value, its key as plain
+text, and the extras.
+
+args:
+  $1  The key, as text
+  $2  The value, a document
+  $3  The callback
+  $@  The extras
+FUN
+__silt__each__value_and_key() {
+  __silt__each__value_and_key__key="$1"
+  __silt__each__value_and_key__value="$2"
+  __silt__each__value_and_key__callback="${3-}"
+  shift "$(($# < 3 ? $# : 3))"
+
+  "$__silt__each__value_and_key__callback" "$__silt__each__value_and_key__value" "$__silt__each__value_and_key__key" "$@"
+}
+
+: <<'FUN'
+Calls a callback once for each member of a map or a list, with the member's
+key as text, its value as a document, and then the extra arguments. The
+verbs that walk a document are built on it. Stops at the first call that
+returns non-zero, and returns that status.
 
 registers:
   __silt__LOOPS         How many loops are running, this one included
@@ -16,8 +118,13 @@ registers:
   __silt__MEMBER_KEY    The key of the member being read
   __silt__MEMBER        The value of the member being read
   __silt__OPEN          Whether a member is being read
-PUB_FUN
-silt__each() {
+
+args:
+  $1  The document
+  $2  The callback
+  $@  Extra arguments for the callback
+FUN
+__silt__each__keyed() {
   __silt__LOOPS=$((${__silt__LOOPS:-0} + 1))
 
   __silt__run_each "$@"
@@ -28,7 +135,7 @@ silt__each() {
 }
 
 : <<'FUN'
-Runs one loop at the current nesting level. silt__each counts the level up
+Runs one loop at the current nesting level. __silt__each__keyed counts the level up
 before it calls this function and down after it, whatever this function
 returns.
 

@@ -28,7 +28,7 @@ args:
   $1  The name of the variable to answer in
   $2  The SILT document, a map or a list
   $3  The predicate
-  $@  Extra arguments the predicate receives after the key and the value
+  $@  Extra arguments the predicate receives after the value
 PUB_FUN
 @all() {
   silt__all "$@"

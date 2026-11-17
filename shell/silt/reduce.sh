@@ -8,11 +8,42 @@ FRAGMENT
 : <<'PUB_FUN'
 The plumbing of @reduce: the same arguments in the same order, and the same
 answer. shell/silt/porcelain/_reduce.sh documents it.
-
-registers:
-  __silt__reduce__REDUCED  The value built so far
 PUB_FUN
 silt__reduce() {
+  __silt__shape r
+  __silt__reduce__shaped "$@"
+}
+
+: <<'PUB_FUN'
+The plumbing of @reducei: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_reduce.sh documents it.
+PUB_FUN
+silt__reducei() {
+  __silt__shape ri
+  __silt__reduce__shaped "$@"
+}
+
+: <<'PUB_FUN'
+The plumbing of @reducek: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_reduce.sh documents it.
+PUB_FUN
+silt__reducek() {
+  __silt__shape rk
+  __silt__reduce__shaped "$@"
+}
+
+: <<'FUN'
+Does the work of silt__reduce, silt__reducei and silt__reducek for the shape
+that __silt__shape was given: it walks the members and answers in the
+variable named.
+
+args:
+  $1  The name of the variable to answer in
+  $2  The document
+  $3  The callback
+  $@  --from and a document when given, then the extras
+FUN
+__silt__reduce__shaped() {
   __silt__out "$1" || return 1
   __silt__reduce__members "$@" || return $?
 
@@ -41,7 +72,7 @@ __silt__reduce__members() {
     shift 2
   fi
 
-  silt__each "$__silt__reduce__members__doc" __silt__reduce__member "$__silt__reduce__members__callback" "$@"
+  __silt__each__keyed "$__silt__reduce__members__doc" __silt__reduce__member "$__silt__reduce__members__callback" "$@"
 }
 
 : <<'FUN'

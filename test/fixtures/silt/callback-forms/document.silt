@@ -1,0 +1,8 @@
+0."unit":map
+1."runner":str="bats"
+1."files":list
+2.0:str="a.bats"
+2.1:str="b c.bats"
+0."lint":map
+1."runner":str="shellcheck"
+0."none":map

@@ -45,7 +45,7 @@ string-or unnamed .runner
 is_true
 is_zero
 as tests get .tests
-map @tests str_of_key
+mapk @tests str_of_key
 filter @tests string_is .status passed
 find @tests string_is .status failed
 pluck @tests .reads

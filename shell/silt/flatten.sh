@@ -61,7 +61,7 @@ __silt__flatten__list_nodes() {
 
   case "$1" in
     # structs-lint: allow -- a first line with a quoted key opens a map that has members; SILT sits beneath structs
-    0."$__silt__QUOTE"*) silt__each "$1" __silt__flatten__list_node "$2" "$3" ;;
+    0."$__silt__QUOTE"*) __silt__each__keyed "$1" __silt__flatten__list_node "$2" "$3" ;;
   esac
 }
 
@@ -147,23 +147,23 @@ __silt__flatten__split_node() {
 
   __silt__flatten__split_node__under=''
   silt__get __silt__flatten__split_node__under "$__silt__flatten__split_node__node" ".$__silt__LITERAL" || return 1
-  silt__filter __silt__NODE "$__silt__flatten__split_node__node" __silt__flatten__is_another_key "$__silt__flatten__CHILD_KEY" || return 1
+  silt__filterk __silt__NODE "$__silt__flatten__split_node__node" __silt__flatten__is_another_key "$__silt__flatten__CHILD_KEY" || return 1
 
   __silt__flatten__list_nodes "$__silt__flatten__split_node__under" "$__silt__flatten__split_node__key" "$__silt__flatten__split_node__path"
 }
 
 : <<'FUN'
 Answers true when a member's key is not the key given. It is a predicate
-for silt__filter.
+for silt__filterk.
 
 args:
   $1  The name of the variable to answer in
-  $2  The member's key, as text
-  $3  The member's value, unread here
+  $2  The member's value, unread here
+  $3  The member's key, as text
   $4  The key to leave out
 FUN
 __silt__flatten__is_another_key() {
-  if [ "$2" = "$4" ]; then
+  if [ "$3" = "$4" ]; then
     eval "$1=false"
   else
     eval "$1=true"

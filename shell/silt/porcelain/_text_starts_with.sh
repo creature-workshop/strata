@@ -28,20 +28,19 @@ starts with the empty prefix, the empty text among them.
 
   Called directly, as a verb calls it:
 
-  @text_starts_with yes 0 '0.:str="area/lib"' . area/   ->  yes=true
-  @text_starts_with yes 0 '0.:str="type/fix"' . area/   ->  yes=false
+  @text_starts_with yes '0.:str="area/lib"' . area/   ->  yes=true
+  @text_starts_with yes '0.:str="type/fix"' . area/   ->  yes=false
 
   The same, with each SILT document written as JSON:
 
-    @text_starts_with yes 0 "area/lib" . area/   ->  yes=true
-    @text_starts_with yes 0 "type/fix" . area/   ->  yes=false
+    @text_starts_with yes "area/lib" . area/   ->  yes=true
+    @text_starts_with yes "type/fix" . area/   ->  yes=false
 
 args:
   $1  The name of the variable to answer in
-  $2  The member's key, which this predicate does not read
-  $3  The member's value, a SILT document
-  $4  The path
-  $5  The prefix; the empty string when not given
+  $2  The member's value, a SILT document
+  $3  The path
+  $4  The prefix; the empty string when not given
 PUB_FUN
 @text_starts_with() {
   silt__text_starts_with "$@"

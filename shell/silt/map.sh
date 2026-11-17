@@ -9,6 +9,39 @@ The plumbing of @map: the same arguments in the same order, and the same
 answer. shell/silt/porcelain/_map.sh documents it.
 PUB_FUN
 silt__map() {
+  __silt__shape ''
+  __silt__map__shaped "$@"
+}
+
+: <<'PUB_FUN'
+The plumbing of @mapi: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_map.sh documents it.
+PUB_FUN
+silt__mapi() {
+  __silt__shape i
+  __silt__map__shaped "$@"
+}
+
+: <<'PUB_FUN'
+The plumbing of @mapk: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_map.sh documents it.
+PUB_FUN
+silt__mapk() {
+  __silt__shape k
+  __silt__map__shaped "$@"
+}
+
+: <<'FUN'
+Does the work of silt__map, silt__mapi and silt__mapk for the shape that __silt__shape was given: it walks
+the members and answers in the variable named.
+
+args:
+  $1  The name of the variable to answer in
+  $2  The document
+  $3  The callback
+  $@  The extras
+FUN
+__silt__map__shaped() {
   __silt__out "$1" || return 1
   __silt__map__members "$@" || return $?
 
@@ -30,7 +63,7 @@ __silt__map__members() {
   shift 2
 
   __silt__start_collecting "$__silt__map__members__doc" || return 1
-  silt__each "$__silt__map__members__doc" __silt__map__member "$@"
+  __silt__each__keyed "$__silt__map__members__doc" __silt__map__member "$@"
 }
 
 : <<'FUN'

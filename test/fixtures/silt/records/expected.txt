@@ -2,7 +2,7 @@
 list
 ## len
 3
-## map str_of_key
+## mapk str_of_key
 0.0:str="0"
 0.1:str="1"
 0.2:str="2"
@@ -109,7 +109,7 @@ false
 0."status":str="passed"
 0."reads":list
 1.0:str="lib/a.sh"
-## map @first str_of_key
+## mapk @first str_of_key
 0."name":str="name"
 0."status":str="status"
 0."reads":str="reads"
@@ -138,7 +138,7 @@ false
 [{"name":"build","status":"passed","reads":["lib/a.sh"]},{"name":"test","status":"failed","reads":[]},{"name":"lint","status":"passed"}]
 ## as none arr
 0.:list
-## map @none str_of_key
+## mapk @none str_of_key
 0.:list
 ## filter @none is_list
 0.:list
@@ -188,7 +188,7 @@ false
 !! 1 ERROR: silt: project takes at least one key
 ## as s str x
 0.:str="x"
-## map @s str_of_key
+## mapk @s str_of_key
 !! 1 ERROR: silt: str has no members
 ## filter @s is_list
 !! 1 ERROR: silt: str has no members

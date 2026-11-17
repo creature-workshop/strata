@@ -55,7 +55,7 @@ __silt__deepmerge__merge_next_map() {
     return 0
   fi
 
-  silt__each "$__silt__deepmerge__merge_next_map__over" __silt__deepmerge__merge_member "$__silt__deepmerge__merge_next_map__path"
+  __silt__each__keyed "$__silt__deepmerge__merge_next_map__over" __silt__deepmerge__merge_member "$__silt__deepmerge__merge_next_map__path"
 }
 
 : <<'FUN'

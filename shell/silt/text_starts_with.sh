@@ -14,9 +14,9 @@ silt__text_starts_with() {
   __silt__text_starts_with__out="$__silt__OUT"
 
   __silt__text_starts_with__held=''
-  silt__string __silt__text_starts_with__held "$3" "$4" || return 1
+  silt__string __silt__text_starts_with__held "$2" "$3" || return 1
   case "$__silt__text_starts_with__held" in
-    "${5:-}"*) __silt__ANSWER=true ;;
+    "${4:-}"*) __silt__ANSWER=true ;;
     *) __silt__ANSWER=false ;;
   esac
 

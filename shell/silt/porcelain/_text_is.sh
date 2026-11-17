@@ -48,20 +48,19 @@ itself.
 
   Called directly, as a verb calls it:
 
-  @text_is yes 0 '0."status":str="passed"' .status passed   ->  yes=true
-  @text_is yes 0 '0."status":str="passed"' .status failed   ->  yes=false
+  @text_is yes '0."status":str="passed"' .status passed   ->  yes=true
+  @text_is yes '0."status":str="passed"' .status failed   ->  yes=false
 
   The same, with each SILT document written as JSON:
 
-    @text_is yes 0 {"status":"passed"} .status passed   ->  yes=true
-    @text_is yes 0 {"status":"passed"} .status failed   ->  yes=false
+    @text_is yes {"status":"passed"} .status passed   ->  yes=true
+    @text_is yes {"status":"passed"} .status failed   ->  yes=false
 
 args:
   $1  The name of the variable to answer in
-  $2  The member's key, which this predicate does not read
-  $3  The member's value, a SILT document
-  $4  The path
-  $5  The text to compare with; the empty string when not given
+  $2  The member's value, a SILT document
+  $3  The path
+  $4  The text to compare with; the empty string when not given
 PUB_FUN
 @text_is() {
   silt__text_is "$@"

@@ -29,12 +29,23 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__with      a command run with fields assigned to variables
   silt__len       the number of members
   silt__keys      the members' keys, as a list document
-  silt__each      a callback per member, with its key and its value
+  silt__each      a callback per member, with its value
+  silt__eachi     the same, with the member's position after the value
+  silt__eachk     the same, with the member's key after the value
+  silt__member    the member a key or an index names
   silt__map       every member's value replaced by what a callback answers
+  silt__mapi      the same, with the position after the value
+  silt__mapk      the same, with the key after the value
   silt__reduce    one value built from the members by a callback
+  silt__reducei   the same, with the position after the value
+  silt__reducek   the same, with the key after the value
   silt__apply     a command run with a list's elements as its arguments
   silt__filter    the members a predicate keeps
+  silt__filteri   the same, with the position after the value
+  silt__filterk   the same, with the key after the value
   silt__find      the first member's value a predicate takes
+  silt__findi     the same, with the position after the value
+  silt__findk     the same, with the key after the value
   silt__any       whether a predicate takes any member
   silt__all       whether a predicate takes every member
   silt__text_is   a predicate: whether the text at a path is the text given
@@ -113,9 +124,9 @@ lines belongs to the awk tier, which answers the same call the same way.
   silt__to_strh   a document as .strh text, a LID drawn for every line
   silt__to_strt   a document as .strt text, its keys and types as codes
 
-A verb with a callback calls it as a verb is called: the answer variable's
-name, the member's key as text, its value as a document, then the caller's
-extras. A callback can run any verb, a loop of its own included.
+A verb calls its callback with the answer variable's name, the member's
+value, and the caller's extras. The suffix i adds the member's position, and
+k its key (ADR.36@strata). A callback can run any verb, loops included.
 
 A path names members from the top: ".a.b" the member b of the member a,
 ".a[2]" the third element of the list a, ".[0]" the first element of a list
@@ -182,6 +193,7 @@ __silt__home || return 1
 . "$__silt__DIR/len.sh"
 . "$__silt__DIR/keys.sh"
 . "$__silt__DIR/each.sh"
+. "$__silt__DIR/member.sh"
 . "$__silt__DIR/walk.sh"
 . "$__silt__DIR/nest.sh"
 . "$__silt__DIR/str.sh"

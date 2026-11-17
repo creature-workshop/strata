@@ -14,8 +14,8 @@ silt__text_is_not() {
   __silt__text_is_not__out="$__silt__OUT"
 
   __silt__text_is_not__held=''
-  silt__string __silt__text_is_not__held "$3" "$4" || return 1
-  if [ "$__silt__text_is_not__held" = "${5:-}" ]; then
+  silt__string __silt__text_is_not__held "$2" "$3" || return 1
+  if [ "$__silt__text_is_not__held" = "${4:-}" ]; then
     __silt__ANSWER=false
   else
     __silt__ANSWER=true

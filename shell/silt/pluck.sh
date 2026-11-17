@@ -14,7 +14,7 @@ silt__pluck() {
 
   __silt__COLLECTED='0.:list'
   __silt__KEPT=0
-  silt__each "$2" __silt__pluck__member "$3" || return $?
+  __silt__each__keyed "$2" __silt__pluck__member "$3" || return $?
 
   __silt__ANSWER="$__silt__COLLECTED"
   __silt__OUT="$__silt__pluck__out"

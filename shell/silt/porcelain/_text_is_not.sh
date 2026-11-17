@@ -48,20 +48,19 @@ so a path that holds nothing has the empty text.
 
   Called directly, as a verb calls it:
 
-  @text_is_not no 0 '0."status":str="passed"' .status passed   ->  no=false
-  @text_is_not no 0 '0."status":str="passed"' .status failed   ->  no=true
+  @text_is_not no '0."status":str="passed"' .status passed   ->  no=false
+  @text_is_not no '0."status":str="passed"' .status failed   ->  no=true
 
   The same, with each SILT document written as JSON:
 
-    @text_is_not no 0 {"status":"passed"} .status passed   ->  no=false
-    @text_is_not no 0 {"status":"passed"} .status failed   ->  no=true
+    @text_is_not no {"status":"passed"} .status passed   ->  no=false
+    @text_is_not no {"status":"passed"} .status failed   ->  no=true
 
 args:
   $1  The name of the variable to answer in
-  $2  The member's key, which this predicate does not read
-  $3  The member's value, a SILT document
-  $4  The path
-  $5  The text to compare with; the empty string when not given
+  $2  The member's value, a SILT document
+  $3  The path
+  $4  The text to compare with; the empty string when not given
 PUB_FUN
 @text_is_not() {
   silt__text_is_not "$@"
