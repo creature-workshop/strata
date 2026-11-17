@@ -9,6 +9,39 @@ The plumbing of @find: the same arguments in the same order, and the same
 answer. shell/silt/porcelain/_find.sh documents it.
 PUB_FUN
 silt__find() {
+  __silt__shape ''
+  __silt__find__shaped "$@"
+}
+
+: <<'PUB_FUN'
+The plumbing of @findi: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_find.sh documents it.
+PUB_FUN
+silt__findi() {
+  __silt__shape i
+  __silt__find__shaped "$@"
+}
+
+: <<'PUB_FUN'
+The plumbing of @findk: the same arguments in the same order, and the same
+answer. shell/silt/porcelain/_find.sh documents it.
+PUB_FUN
+silt__findk() {
+  __silt__shape k
+  __silt__find__shaped "$@"
+}
+
+: <<'FUN'
+Does the work of silt__find, silt__findi and silt__findk for the shape that __silt__shape was given: it walks
+the members and answers in the variable named.
+
+args:
+  $1  The name of the variable to answer in
+  $2  The document
+  $3  The predicate
+  $@  The extras
+FUN
+__silt__find__shaped() {
   __silt__out "$1" || return 1
   __silt__find__members "$@" || return $?
 
@@ -31,7 +64,7 @@ __silt__find__members() {
   shift 2
 
   __silt__HIT=''
-  silt__each "$__silt__find__members__doc" __silt__find__member "$@"
+  __silt__each__keyed "$__silt__find__members__doc" __silt__find__member "$@"
 }
 
 : <<'FUN'

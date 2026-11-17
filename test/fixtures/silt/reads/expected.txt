@@ -25,7 +25,7 @@ lib/a.sh
 1: 0.:str="test/a.bats"
 ## to_json
 ["lib/a.sh","test/a.bats"]
-## map str_of_key
+## mapk str_of_key
 0.0:str="0"
 0.1:str="1"
 ## filter is_list

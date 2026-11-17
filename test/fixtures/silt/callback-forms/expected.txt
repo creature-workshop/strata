@@ -1,0 +1,142 @@
+## as files get .unit.files
+0.0:str="a.bats"
+0.1:str="b c.bats"
+## each-value
+map
+map
+map
+## each-value tag
+map tag
+map tag
+map tag
+## each-index
+0: 0."runner":str="bats"
+0."files":list
+1.0:str="a.bats"
+1.1:str="b c.bats"
+1: 0."runner":str="shellcheck"
+2: 0.:map
+## each-index tag
+0 tag: 0."runner":str="bats"
+0."files":list
+1.0:str="a.bats"
+1.1:str="b c.bats"
+1 tag: 0."runner":str="shellcheck"
+2 tag: 0.:map
+## each
+unit: 0."runner":str="bats"
+0."files":list
+1.0:str="a.bats"
+1.1:str="b c.bats"
+lint: 0."runner":str="shellcheck"
+none: 0.:map
+## each-value @files
+str
+str
+## each-index @files
+0: 0.:str="a.bats"
+1: 0.:str="b c.bats"
+## each @files
+0: 0.:str="a.bats"
+1: 0.:str="b c.bats"
+## map len_as_int
+0."unit":int=2
+0."lint":int=1
+0."none":int=0
+## mapi index_of
+0."unit":int=0
+0."lint":int=1
+0."none":int=2
+## mapk str_of_key
+0."unit":str="unit"
+0."lint":str="lint"
+0."none":str="none"
+## mapi @files index_of
+0.0:int=0
+0.1:int=1
+## mapk @files str_of_key
+0.0:str="0"
+0.1:str="1"
+## filter has_at .files
+0."unit":map
+1."runner":str="bats"
+1."files":list
+2.0:str="a.bats"
+2.1:str="b c.bats"
+## filteri index_is 1
+0."lint":map
+1."runner":str="shellcheck"
+## filterk key_is lint
+0."lint":map
+1."runner":str="shellcheck"
+## filteri @files index_is 0
+0.0:str="a.bats"
+## filterk @files key_is 1
+0.0:str="b c.bats"
+## find has_at .files
+0."runner":str="bats"
+0."files":list
+1.0:str="a.bats"
+1.1:str="b c.bats"
+## findi index_is 2
+0.:map
+## findk key_is lint
+0."runner":str="shellcheck"
+## findi index_is 9
+
+## findk key_is absent
+
+## findi @files index_is 1
+0.:str="b c.bats"
+## findk @files key_is 0
+0.:str="a.bats"
+## reduce add --from 0.:int=0
+0.:int=3
+## reducei add_index --from 0.:int=0
+0.:int=3
+## reducek keys_so_far
+0.0:str="unit"
+0.1:str="lint"
+0.2:str="none"
+## reducei @files add_index --from 0.:int=10
+0.:int=11
+## reducek @files keys_so_far
+0.0:str="0"
+0.1:str="1"
+## mapi fails
+!! 7 
+## mapk fails
+!! 7 
+## filteri fails
+!! 7 
+## filterk fails
+!! 7 
+## findi fails
+!! 7 
+## findk fails
+!! 7 
+## reducei fails
+!! 7 
+## reducek fails
+!! 7 
+## member unit
+0."runner":str="bats"
+0."files":list
+1.0:str="a.bats"
+1.1:str="b c.bats"
+## member none
+0.:map
+## member absent
+
+## member @files 1
+0.:str="b c.bats"
+## member @files 5
+
+## as dotted obj test/a.bats 0.:str="passed"
+0."test/a.bats":str="passed"
+## member @dotted test/a.bats
+0.:str="passed"
+## as number get .unit.runner
+0.:str="bats"
+## member @number runner
+!! 1 ERROR: silt: member reads a map or a list, not a str

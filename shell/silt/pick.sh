@@ -15,7 +15,7 @@ silt__pick() {
   __silt__pick__map="$2"
   shift 2
 
-  silt__filter "$__silt__pick__out" "$__silt__pick__map" __silt__pick__key_is_among true "$@"
+  silt__filterk "$__silt__pick__out" "$__silt__pick__map" __silt__pick__key_is_among true "$@"
 }
 
 : <<'PUB_FUN'
@@ -28,26 +28,26 @@ silt__without() {
   __silt__without__map="$2"
   shift 2
 
-  silt__filter "$__silt__without__out" "$__silt__without__map" __silt__pick__key_is_among false "$@"
+  silt__filterk "$__silt__without__out" "$__silt__without__map" __silt__pick__key_is_among false "$@"
 }
 
 : <<'FUN'
 Answers one word when a member's key is one of the keys given, and the
-opposite word when it is not. It is a predicate for silt__filter.
+opposite word when it is not. It is a predicate for silt__filterk.
 
-  __silt__pick__key_is_among out title "$value" true title body   ->  out=true
-  __silt__pick__key_is_among out token "$value" true title body   ->  out=false
+  __silt__pick__key_is_among out "$value" title true title body   ->  out=true
+  __silt__pick__key_is_among out "$value" token true title body   ->  out=false
 
 args:
   $1  The name of the variable to answer in
-  $2  The member's key, as text
-  $3  The member's value, unread here
+  $2  The member's value, unread here
+  $3  The member's key, as text
   $4  The word to answer when the key is one of the keys: true or false
   $@  The keys
 FUN
 __silt__pick__key_is_among() {
   __silt__pick__key_is_among__out="$1"
-  __silt__pick__key_is_among__key="$2"
+  __silt__pick__key_is_among__key="$3"
   __silt__pick__key_is_among__found="$4"
   shift 4
 

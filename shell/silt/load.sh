@@ -69,7 +69,7 @@ args:
 FUN
 __silt__load__report_invalid() {
   error "silt: '$1' does not match its schema"
-  silt__each "$2" __silt__load__report_error
+  __silt__each__keyed "$2" __silt__load__report_error
 }
 
 : <<'FUN'

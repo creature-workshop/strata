@@ -38,13 +38,16 @@
 # file unless absolute, and read it on stdin, and from_strt such a file and
 # then the register holding the corpus's keys; unwrap takes the literal; wrap
 # and transcript__roundtrip take text read through printf %b, so a line can
-# spell a newline or a control character; each takes an extra argument for
+# spell a newline or a control character; member takes a key read the same
+# way; each runs eachk and takes an extra argument for
 # its callback, each-until the key at which the callback returns 3,
 # each-string a path its callback reads, and each-nested nothing: its
-# callback runs each again on every member that is a map or a list. map, filter, find, any and all take
+# callback runs eachk again on every member that is a map or a list;
+# each-value runs each and each-index runs eachi, with an extra argument.
+# map, filter, find, any and all, and the i and k forms of the first three, take
 # the name of one of the callbacks below, without its prefix, or one of the
 # library's predicates by its full name, silt__text_is among them, and the extras
-# after it, and reduce takes the same, with --from and a document among the
+# after it, and reduce, reducei and reducek take the same, with --from and a document among the
 # extras; apply takes the list and the words of a command; project takes its keys. A call written "as <name> <call>" keeps
 # its answer in a register, "@<name>" in place of the document makes a call
 # read that register, and a writer's words may name one as "$<name>": obj,
@@ -115,7 +118,7 @@ transcript__run_call() {
   # shellcheck disable=SC2086  # a writer's words are split on purpose
   case "${1%% *}" in
     obj | arr | bind | with | apply | push | set | patch | get-first | string-first | concat | join | split | equals | pick | without | merge | deepmerge | flatten | difference | intersect | validate | to_strh | to_strt | sort_by | group_by | min | max | run | run-bare) transcript__run_writer "${1%% *}" $__transcript__run_call__rest ;;
-    map | filter | find | any | all | reduce | project) transcript__run_collection "${1%% *}" $__transcript__run_call__rest ;;
+    map | mapi | mapk | filter | filteri | filterk | find | findi | findk | any | all | reduce | reducei | reducek | project) transcript__run_collection "${1%% *}" $__transcript__run_call__rest ;;
     *) transcript__run_verb "${1%% *}" "$__transcript__run_call__rest" ;;
   esac
 }
@@ -247,10 +250,13 @@ transcript__run_verb() {
     time) golden__capture silt__time GOLDEN_ANSWER "$2" ;;
     now) transcript__now ;;
     roundtrip) transcript__roundtrip "$(golden__unescape "$2")" ;;
-    each) golden__capture silt__each "$DOCUMENT_FOR_CALL" transcript__note "$2" ;;
-    each-until) golden__capture silt__each "$DOCUMENT_FOR_CALL" transcript__until_key "$2" ;;
-    each-string) golden__capture silt__each "$DOCUMENT_FOR_CALL" transcript__note_string "$2" ;;
-    each-nested) golden__capture silt__each "$DOCUMENT_FOR_CALL" transcript__note_nested '' ;;
+    each) golden__capture silt__eachk "$DOCUMENT_FOR_CALL" transcript__note "$2" ;;
+    each-until) golden__capture silt__eachk "$DOCUMENT_FOR_CALL" transcript__until_key "$2" ;;
+    each-string) golden__capture silt__eachk "$DOCUMENT_FOR_CALL" transcript__note_string "$2" ;;
+    each-nested) golden__capture silt__eachk "$DOCUMENT_FOR_CALL" transcript__note_nested '' ;;
+    each-value) golden__capture silt__each "$DOCUMENT_FOR_CALL" transcript__note_kind "$2" ;;
+    each-index) golden__capture silt__eachi "$DOCUMENT_FOR_CALL" transcript__note_index "$2" ;;
+    member) golden__capture silt__member GOLDEN_ANSWER "$DOCUMENT_FOR_CALL" "$(golden__unescape "$2")" ;;
     *) GOLDEN_STATUS=127 ;;
   esac
 }
@@ -388,81 +394,92 @@ transcript__identity_of() {
   fi
 }
 
-# each's callback: the key, the extra argument when one came, and the value.
+# eachk's callback: the key, the extra argument when one came, and the value.
 transcript__note() {
-  GOLDEN_ANSWER="$GOLDEN_ANSWER${GOLDEN_ANSWER:+$__silt__NL}$1${3:+ $3}: $2"
+  GOLDEN_ANSWER="$GOLDEN_ANSWER${GOLDEN_ANSWER:+$__silt__NL}$2${3:+ $3}: $1"
 }
 
-# each's callback that stops the walk with status 3 at the key given.
+# each's callback: the kind of the value, and the extra argument when one came.
+transcript__note_kind() {
+  silt__type KIND "$1" || return 1
+  GOLDEN_ANSWER="$GOLDEN_ANSWER${GOLDEN_ANSWER:+$__silt__NL}$KIND${2:+ $2}"
+}
+
+# eachi's callback: the index, the extra argument when one came, and the value.
+transcript__note_index() {
+  GOLDEN_ANSWER="$GOLDEN_ANSWER${GOLDEN_ANSWER:+$__silt__NL}$2${3:+ $3}: $1"
+}
+
+# eachk's callback that stops the walk with status 3 at the key given.
 transcript__until_key() {
-  GOLDEN_ANSWER="$GOLDEN_ANSWER${GOLDEN_ANSWER:+$__silt__NL}$1"
-  [ "$1" != "$3" ] || return 3
+  GOLDEN_ANSWER="$GOLDEN_ANSWER${GOLDEN_ANSWER:+$__silt__NL}$2"
+  [ "$2" != "$3" ] || return 3
 }
 
-# each's callback that notes the key and the text at the path in the member.
+# eachk's callback that notes the key and the text at the path in the member.
 transcript__note_string() {
-  silt__string TEXT "$2" "$3" || return 1
-  GOLDEN_ANSWER="$GOLDEN_ANSWER${GOLDEN_ANSWER:+$__silt__NL}$1: $TEXT"
+  silt__string TEXT "$1" "$3" || return 1
+  GOLDEN_ANSWER="$GOLDEN_ANSWER${GOLDEN_ANSWER:+$__silt__NL}$2: $TEXT"
 }
 
-# A callback for each: notes the path to the member, then runs each again
+# A callback for eachk: notes the path to the member, then runs eachk again
 # on the member if it is a map or a list.
 transcript__note_nested() {
-  GOLDEN_ANSWER="$GOLDEN_ANSWER${GOLDEN_ANSWER:+$__silt__NL}$3$1"
+  GOLDEN_ANSWER="$GOLDEN_ANSWER${GOLDEN_ANSWER:+$__silt__NL}$3$2"
 
-  silt__type KIND "$2" || return 1
+  silt__type KIND "$1" || return 1
   case "$KIND" in
-    map | list) silt__each "$2" transcript__note_nested "$3$1/" ;;
+    map | list) silt__eachk "$1" transcript__note_nested "$3$2/" ;;
   esac
 }
 
 # A callback for each: adds one to the count in the variable named.
 transcript__count_up() {
-  eval "$3=\$(($3 + 1))"
+  eval "$2=\$(($2 + 1))"
 }
 
 # A callback for map: the number of members, counted by running each.
 transcript__count_members() {
   COUNTED=0
-  silt__each "$3" transcript__count_up COUNTED || return 1
+  silt__each "$2" transcript__count_up COUNTED || return 1
   transcript__answer "$1" "0.:int=$COUNTED"
 }
 
 # A callback for map: the length of each member of the member.
 transcript__lengths_of() {
-  silt__map "$1" "$3" transcript__len_as_int
+  silt__map "$1" "$2" transcript__len_as_int
 }
 
 # A callback for map: transcript__lengths_of, one level further down.
 transcript__lengths_two_deep() {
-  silt__map "$1" "$3" transcript__lengths_of
+  silt__map "$1" "$2" transcript__lengths_of
 }
 
 # A callback for map: the members of the member that are lists.
 transcript__lists_of() {
-  silt__filter "$1" "$3" transcript__is_list
+  silt__filter "$1" "$2" transcript__is_list
 }
 
 # A predicate: whether any member of the member is a list.
 transcript__has_list() {
-  silt__any "$1" "$3" transcript__is_list
+  silt__any "$1" "$2" transcript__is_list
 }
 
 # A predicate: whether every member of the member is a list.
 transcript__all_are_lists() {
-  silt__all "$1" "$3" transcript__is_list
+  silt__all "$1" "$2" transcript__is_list
 }
 
 # A predicate: whether the member is a list that holds more elements than
 # the number given.
 transcript__longer_than() {
-  silt__type KIND "$3" || return 1
+  silt__type KIND "$2" || return 1
   LENGTH=0
   if [ "$KIND" = list ]; then
-    silt__len LENGTH "$3" || return 1
+    silt__len LENGTH "$2" || return 1
   fi
 
-  if [ "$LENGTH" -gt "$4" ]; then
+  if [ "$LENGTH" -gt "$3" ]; then
     transcript__answer "$1" true
   else
     transcript__answer "$1" false
@@ -472,7 +489,7 @@ transcript__longer_than() {
 # A predicate: whether any member of the member holds more members than the
 # number given, found by running find.
 transcript__holds_more_than() {
-  silt__find FOUND "$3" transcript__longer_than "$4" || return 1
+  silt__find FOUND "$2" transcript__longer_than "$3" || return 1
   if [ -n "$FOUND" ]; then
     transcript__answer "$1" true
   else
@@ -532,25 +549,32 @@ transcript__with_again() {
   transcript__note_bound id
 }
 
-# A callback for reduce: the list built so far with the member's key added
+# A callback for reducek: the list built so far with the member's key added
 # to it as a str.
 transcript__keys_so_far() {
-  silt__str KEY_DOCUMENT "$2" || return 1
-  silt__push "$1" "$4" "$KEY_DOCUMENT"
+  silt__str KEY_DOCUMENT "$4" || return 1
+  silt__push "$1" "$2" "$KEY_DOCUMENT"
+}
+
+# A callback for reducei: the int built so far with the member's index
+# added to it.
+transcript__add_index() {
+  silt__scalar SO_FAR "$2" || return 1
+  transcript__answer "$1" "0.:int=$((SO_FAR + $4))"
 }
 
 # A callback for reduce: the int built so far with the number given added
 # to it, or with 1 when no number is given.
 transcript__add() {
-  silt__scalar SO_FAR "$4" || return 1
-  transcript__answer "$1" "0.:int=$((SO_FAR + ${5:-1}))"
+  silt__scalar SO_FAR "$2" || return 1
+  transcript__answer "$1" "0.:int=$((SO_FAR + ${4:-1}))"
 }
 
 # A callback for reduce that runs reduce on the member: the int built so
 # far with the number of the member's own members added to it.
 transcript__add_members() {
   silt__reduce MEMBERS "$3" transcript__add --from 0.:int=0 || return 1
-  silt__scalar SO_FAR "$4" || return 1
+  silt__scalar SO_FAR "$2" || return 1
   silt__scalar MEMBERS "$MEMBERS" || return 1
   transcript__answer "$1" "0.:int=$((SO_FAR + MEMBERS))"
 }
@@ -567,9 +591,19 @@ transcript__arguments() {
   done
 }
 
-# A predicate: whether the member's key is the text given.
+# A predicate for the k forms: whether the member's key is the text given.
 transcript__key_is() {
-  transcript__answer_whether "$1" "$2" "$4"
+  transcript__answer_whether "$1" "$3" "$4"
+}
+
+# A predicate for the i forms: whether the member's index is the number given.
+transcript__index_is() {
+  transcript__answer_whether "$1" "$3" "$4"
+}
+
+# A callback for mapi: the member's index as an int document.
+transcript__index_of() {
+  transcript__answer "$1" "0.:int=$3"
 }
 
 # Assigns an answer to the variable a callback was told to answer in.
@@ -577,26 +611,26 @@ transcript__answer() {
   eval "$1=\$2"
 }
 
-# A callback for map: the member's key as a str document.
+# A callback for mapk: the member's key as a str document.
 transcript__str_of_key() {
-  silt__str "$1" "$2"
+  silt__str "$1" "$3"
 }
 
 # A callback for map: the value at the path in the member, nothing when the
 # member holds none there.
 transcript__value_at() {
-  silt__get "$1" "$3" "$4"
+  silt__get "$1" "$2" "$3"
 }
 
 # A callback for map: the member's length as an int document.
 transcript__len_as_int() {
-  silt__len LENGTH "$3" || return 1
+  silt__len LENGTH "$2" || return 1
   transcript__answer "$1" "0.:int=$LENGTH"
 }
 
 # A predicate: whether the member holds a value at the path.
 transcript__has_at() {
-  silt__has "$1" "$3" "$4"
+  silt__has "$1" "$2" "$3"
 }
 
 # Answers true in the variable named when two texts are the same, false otherwise.
@@ -610,19 +644,19 @@ transcript__answer_whether() {
 
 # A predicate: whether the text at the path in the member is the text given.
 transcript__string_is() {
-  silt__string TEXT "$3" "$4" || return 1
-  transcript__answer_whether "$1" "$TEXT" "$5"
+  silt__string TEXT "$2" "$3" || return 1
+  transcript__answer_whether "$1" "$TEXT" "$4"
 }
 
 # A predicate: whether the member is a list.
 transcript__is_list() {
-  silt__type KIND "$3" || return 1
+  silt__type KIND "$2" || return 1
   transcript__answer_whether "$1" "$KIND" list
 }
 
 # A predicate that answers the word given, whatever the member.
 transcript__says() {
-  transcript__answer "$1" "$4"
+  transcript__answer "$1" "$3"
 }
 
 # A callback that fails with status 7, whatever the member.

@@ -14,8 +14,8 @@ silt__text_is() {
   __silt__text_is__out="$__silt__OUT"
 
   __silt__text_is__held=''
-  silt__string __silt__text_is__held "$3" "$4" || return 1
-  __silt__is_spelled "$__silt__text_is__held" "${5:-}"
+  silt__string __silt__text_is__held "$2" "$3" || return 1
+  __silt__is_spelled "$__silt__text_is__held" "${4:-}"
 
   __silt__OUT="$__silt__text_is__out"
   __silt__answer

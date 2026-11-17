@@ -1,6 +1,6 @@
 type
 len
-map str_of_key
+mapk str_of_key
 map value_at .name
 map value_at .reads
 map len_as_int
@@ -21,7 +21,7 @@ project name status
 project name missing
 project status
 as first get .[0]
-map @first str_of_key
+mapk @first str_of_key
 filter @first is_list
 find @first is_list
 pluck @first .
@@ -29,7 +29,7 @@ project @first name
 each-string .name
 to_json
 as none arr
-map @none str_of_key
+mapk @none str_of_key
 filter @none is_list
 find @none is_list
 any @none is_list
@@ -54,7 +54,7 @@ map fails
 any fails
 project
 as s str x
-map @s str_of_key
+mapk @s str_of_key
 filter @s is_list
 find @s is_list
 any @s is_list

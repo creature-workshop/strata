@@ -1,4 +1,4 @@
-## reduce keys_so_far
+## reducek keys_so_far
 0.0:str="unit"
 0.1:str="lint"
 0.2:str="none"
@@ -11,16 +11,16 @@
 ## as files get .unit.files
 0.0:str="a.bats"
 0.1:str="b c.bats"
-## reduce @files keys_so_far
+## reducek @files keys_so_far
 0.0:str="0"
 0.1:str="1"
-## reduce @files keys_so_far --from 0.0:str="first"
+## reducek @files keys_so_far --from 0.0:str="first"
 0.0:str="first"
 0.1:str="0"
 0.2:str="1"
 ## as none get .none
 0.:map
-## reduce @none keys_so_far
+## reducek @none keys_so_far
 0.:list
 ## reduce @none add --from 0.:int=7
 0.:int=7
@@ -30,7 +30,7 @@
 !! 1 ERROR: silt: --from requires a document
 ## as runner get .unit.runner
 0.:str="bats"
-## reduce @runner keys_so_far
+## reducek @runner keys_so_far
 !! 1 ERROR: silt: str has no members
 ## apply @files transcript__arguments
 [a.bats]
@@ -63,9 +63,9 @@
 ## each @files
 0: 0.:str="a.bats"
 1: 0.:str="b c.bats"
-## map @files str_of_key
+## mapk @files str_of_key
 0.0:str="0"
 0.1:str="1"
-## find @files key_is 1
+## findk @files key_is 1
 0.:str="b c.bats"
-## find @files key_is 5
+## findk @files key_is 5

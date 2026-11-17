@@ -78,6 +78,7 @@ fi
 . "$__silt__porcelain__DIR/_lists.sh"
 . "$__silt__porcelain__DIR/_load.sh"
 . "$__silt__porcelain__DIR/_map.sh"
+. "$__silt__porcelain__DIR/_member.sh"
 . "$__silt__porcelain__DIR/_merge.sh"
 . "$__silt__porcelain__DIR/_min.sh"
 . "$__silt__porcelain__DIR/_obj.sh"

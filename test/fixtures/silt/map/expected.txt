@@ -211,7 +211,7 @@ false
 0."test/b.bats":map
 1."status":str="failed"
 1."reads":list
-## map @tests str_of_key
+## mapk @tests str_of_key
 0."test/a.bats":str="test/a.bats"
 0."test/b.bats":str="test/b.bats"
 ## filter @tests string_is .status passed

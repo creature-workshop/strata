@@ -1,0 +1,62 @@
+as files get .unit.files
+
+# each: the value alone, then with the index, then with the key
+each-value
+each-value tag
+each-index
+each-index tag
+each
+each-value @files
+each-index @files
+each @files
+
+# map
+map len_as_int
+mapi index_of
+mapk str_of_key
+mapi @files index_of
+mapk @files str_of_key
+
+# filter
+filter has_at .files
+filteri index_is 1
+filterk key_is lint
+filteri @files index_is 0
+filterk @files key_is 1
+
+# find
+find has_at .files
+findi index_is 2
+findk key_is lint
+findi index_is 9
+findk key_is absent
+findi @files index_is 1
+findk @files key_is 0
+
+# reduce
+reduce add --from 0.:int=0
+reducei add_index --from 0.:int=0
+reducek keys_so_far
+reducei @files add_index --from 0.:int=10
+reducek @files keys_so_far
+
+# a callback that fails stops each form
+mapi fails
+mapk fails
+filteri fails
+filterk fails
+findi fails
+findk fails
+reducei fails
+reducek fails
+
+# member: the member a key or an index names
+member unit
+member none
+member absent
+member @files 1
+member @files 5
+as dotted obj test/a.bats 0.:str="passed"
+member @dotted test/a.bats
+as number get .unit.runner
+member @number runner

@@ -53,7 +53,7 @@ args:
 FUN
 __silt__merge__lay_joining_lists() {
   __silt__merge__MERGED="$1"
-  silt__each "$2" __silt__merge__lay_member "$3" || return 1
+  __silt__each__keyed "$2" __silt__merge__lay_member "$3" || return 1
   __silt__ANSWER="$__silt__merge__MERGED"
 }
 

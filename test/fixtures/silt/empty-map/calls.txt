@@ -5,7 +5,7 @@ get
 scalar
 to_json
 to_yaml
-map str_of_key
+mapk str_of_key
 filter is_list
 find is_list
 any is_list
